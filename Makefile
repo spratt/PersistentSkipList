@@ -17,4 +17,6 @@ PersistentList.o: PersistentList.h
 
 # in case of emergency
 clean:
-	rm *.o
+	@if [ -f test_list ]; then rm test_list; fi
+	@rm -f *.o # remove all object files and be quiet about it
+
