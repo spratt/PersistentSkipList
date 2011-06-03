@@ -45,6 +45,8 @@ namespace persistent_list {
   typedef struct point2d {
     coord_t x, y;
   } point2d;
+
+  ostream& operator<<(ostream& os, const point2d& p);
   
   class PersistentList {
     vector<point2d> points_sorted_by_x;
@@ -55,6 +57,7 @@ namespace persistent_list {
       : points_sorted_by_x()
     {}
     int insertPoint(coord_t x,coord_t y);
+    void printArray();
   };
 }
 

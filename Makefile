@@ -10,10 +10,12 @@ endif
 all: test_list
 
 # executables
-test_list: PersistentList.o test_list.cpp
+test_list: array_utilities.o PersistentList.o test_list.cpp
 
 # object files
-PersistentList.o: PersistentList.h
+PersistentList.o: array_utilities.o PersistentList.h
+
+array_utilities.o: array_utilities.h
 
 # in case of emergency
 clean:

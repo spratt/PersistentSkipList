@@ -11,9 +11,22 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+#include <iostream>
 #include "PersistentList.h"
+#include "array_utilities.h"
+
+using namespace std;
+using namespace array_utilities;
 
 namespace persistent_list {
+  ostream& operator<<(ostream& os, const point2d& p) {
+    os << "(" << p.x << "," << p.y << ")";
+    return os;
+  }
+
+  void PersistentList::printArray() {
+    print(vectorToArray(points_sorted_by_x),(int)points_sorted_by_x.size());
+  }
   /////////////////////////////////////////////////////////////////////////////
   //                                                                         //
   // FUNCTION NAME: xInArray                                                 //
@@ -62,15 +75,15 @@ namespace persistent_list {
   int PersistentList::binarySearch(coord_t x) {
     int index = -1;
     int begin = 0, end = (int)points_sorted_by_x.size();
-    while(end > begin) {
-      index = ((end - begin)/2 + begin);
+    while(begin <= end) {
+      index = (begin+end)/2;
       point2d p = points_sorted_by_x[index];
       if(p.x == x) {
 	break;
       } else if(p.x > x) {
-	end = index;
+	end = index -1;
       } else {
-	begin = index;
+	begin = index +1;
       }
     }
     return index;
@@ -105,7 +118,15 @@ namespace persistent_list {
     p.x = x;
     p.y = y;
     // binary search
-    
+    int n = (int)points_sorted_by_x.size();
+    int index;
+    if(n > 0)
+      index = binarySearch(x);
+    // add point to end of vector
+    points_sorted_by_x.push_back(p);
+    // block permute points between the new point and its final location
+    if(n >= 1)
+      block_permute(vectorToArray(points_sorted_by_x),index,n-1,n);
     return 0;
   }
 }
