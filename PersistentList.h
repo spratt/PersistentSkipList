@@ -17,7 +17,7 @@
 // Public Variable:                     Description:                         //
 // ----------------                     ------------                         //
 // persistent_list::coord_t             the type of a coordinate             //
-// persistent_list::point2d             the type of a point in a 2d plane    //
+// persistent_list::Point2d             the type of a point in a 2d plane    //
 // persistent_list::PersistentList      an implementation of a linked        //
 //                                      list, in which previous              //
 //                                      versions may be accessed and         //
@@ -42,27 +42,38 @@ namespace persistent_list {
 
   typedef double coord_t;
   
-  typedef struct point2d {
+  class Point2d {
+  public:
+    // data
     coord_t x, y;
-  } point2d;
+
+    // methods
+    Point2d(const Point2d& p)
+      : x(p.x), y(p.y)
+    {}
+    Point2d(coord_t x, coord_t y)
+      : x(x), y(y)
+    {}
+  };
 
   class PointListNode {
   public:
     // data
-    point2d point;
+    Point2d point;
     PointListNode* next;
     
     // methods
-    PointListNode(point2d p)
-      : point(p), next(NULL)
+    PointListNode(Point2d p)
+      : point(p), next((PointListNode*)NULL)
     {}
   };
 
-  ostream& operator<<(ostream& os, const point2d& p);
+  ostream& operator<<(ostream& os, const Point2d& p);
+  ostream& operator<<(ostream& os, const PointListNode& pln);
   
   class PersistentList {
     // Data
-    vector<point2d> points_sorted_by_x;
+    vector<Point2d> points_sorted_by_x;
     vector< PointListNode* > points_right;
     // Methods
     int binarySearchX(coord_t x);
@@ -73,7 +84,11 @@ namespace persistent_list {
       : points_sorted_by_x(), points_right()
     {}
     int insertPoint(coord_t x,coord_t y);
+    vector< Point2d > enumerateNE(coord_t x, coord_t y);
+    Point2d* highestNE(coord_t x, coord_t y);
     void printArray();
+    PointListNode* getListAtTime(int t);
+    size_t size();
   };
 }
 

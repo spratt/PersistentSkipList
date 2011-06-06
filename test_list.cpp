@@ -18,8 +18,10 @@
 #include <unistd.h>
 #include <termios.h>
 #include "PersistentList.h"
+#include "array_utilities.h"
 
 using namespace std;
+using namespace array_utilities;
 using namespace persistent_list;
 
 char waitForEnter() {
@@ -40,18 +42,37 @@ char waitForEnter() {
 int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
   time_t before, after;
-  PersistentList p;
+  PersistentList pl;
+  /////////////////////////////////////////////////////////////////////////////
+  // insert points                                                           //
+  /////////////////////////////////////////////////////////////////////////////
   int n = 1000;
   if(argv > 1)
     n = atoi(argc[1]);
   before = time(0);
   for(int i = n; i > 0; --i)
-    p.insertPoint(i,i);
+    pl.insertPoint(i,i);
   after = time(0);
   cout << "Inserting " << n << " points took: " << (after-before) << endl;
   waitForEnter();
   if(n > 0 && n <= MAX_POINTS_DISPLAY) {
-    cout << "Points: "; p.printArray();
+    cout << "Points: "; pl.printArray();
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  // debug                                                                   //
+  /////////////////////////////////////////////////////////////////////////////
+  for(int i = 0; i < n; i++)
+    cout << i << ": " << *(pl.getListAtTime(i)) << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // enumerateNE                                                             //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  vector< Point2d > v = pl.enumerateNE(0,0);
+  after = time(0);
+  n = (int)v.size();
+  cout << "Enumerating " << n << " points took: " << (after-before) << endl;
+  if(n > 0 && n <= MAX_POINTS_DISPLAY) {
+    cout << "Found: "; print(vectorToArray(v),n);
   }
   return 0;
 }

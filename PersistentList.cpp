@@ -19,8 +19,16 @@ using namespace std;
 using namespace array_utilities;
 
 namespace persistent_list {
-  ostream& operator<<(ostream& os, const point2d& p) {
+  ostream& operator<<(ostream& os, const Point2d& p) {
     os << "(" << p.x << "," << p.y << ")";
+    return os;
+  }
+  ostream& operator<<(ostream& os, const PointListNode& pln) {
+    os << pln.point << "->";
+    if(pln.next != NULL)
+      os << *(pln.next);
+    else
+      os << "NULL";
     return os;
   }
 
@@ -47,7 +55,7 @@ namespace persistent_list {
   //                                                                         //
   /////////////////////////////////////////////////////////////////////////////
   bool PersistentList::xInArray(coord_t x) {
-    point2d p = points_sorted_by_x[binarySearchX(x)];
+    Point2d p = points_sorted_by_x[binarySearchX(x)];
     return x == p.x;
   }
   
@@ -77,7 +85,7 @@ namespace persistent_list {
     int begin = 0, end = (int)points_sorted_by_x.size();
     while(begin <= end) {
       index = (begin+end)/2;
-      point2d p = points_sorted_by_x[index];
+      Point2d p = points_sorted_by_x[index];
       if(p.x == x) {
 	break;
       } else if(p.x > x) {
@@ -145,9 +153,7 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   int PersistentList::insertPoint(coord_t x, coord_t y) {
     // build point
-    point2d p;
-    p.x = x;
-    p.y = y;
+    Point2d p = *(new Point2d(x,y));
     // binary search
     int n = (int)points_sorted_by_x.size();
     int index = 0;
@@ -155,12 +161,13 @@ namespace persistent_list {
       index = binarySearchX(x);
     // add point to end of vector
     points_sorted_by_x.push_back(p);
-    points_right.push_back(NULL);
+    points_right.push_back((PointListNode*)NULL);
     // block permute points between the new point and its final location
     if(n > 0) {
       block_permute(vectorToArray(points_sorted_by_x),index,n-1,n);
       block_permute(vectorToArray(points_right),index,n-1,n);
     }
+    n++;
     // copy right neighbor
     PointListNode* pln;
     PointListNode* temp;
@@ -174,6 +181,7 @@ namespace persistent_list {
 	pln = pln->next;
 	temp = new PointListNode(pln->point);
 	prev->next = temp;
+	prev = temp;
       }
     }
     // add point all left neighbors
@@ -182,9 +190,11 @@ namespace persistent_list {
     newpln->next = searchY(index,p.y);
     while(t >= 0) {
       pln = points_right[t];
-      if(pln == NULL) {
+      if(pln == NULL) { // empty list
 	points_right[t] = newpln;
-      } else {
+      } else if(pln->point.y > p.y) { // new element belongs before first in list
+	points_right[t] = newpln;
+      } else { // inserted element belongs somewhere else in list
 	while(pln->next != NULL && pln->point.y < p.y)
 	  pln = pln->next;
 	pln->next = newpln;
@@ -193,5 +203,81 @@ namespace persistent_list {
     }
     // success
     return 0;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                                                                         //
+  // FUNCTION NAME: enumerateNE                                              //
+  //                                                                         //
+  // PURPOSE:       Returns the a vector of all points where the             //
+  //                x-coordinate is greater than or equal to the given       //
+  //                x, and the y-coordinate is greater than or equal         //
+  //                to the given y.                                          //
+  //                                                                         //
+  // SECURITY:      public                                                   //
+  //                                                                         //
+  // PARAMETERS                                                              //
+  //   Type/Name:   coord_t/x                                                //
+  //   Description: The minimum x coordinate to consider.                    //
+  //                                                                         //
+  //   Type/Name:   coord_t/y                                                //
+  //   Description: The minimum y coordinate to consider.                    //
+  //                                                                         //
+  // RETURN:        A vector of all points p s.t. p.x >= x, p.y >= y.        //
+  //                                                                         //
+  // NOTES:         None.                                                    //
+  //                                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  vector< Point2d > PersistentList::enumerateNE(coord_t x, coord_t y) {
+    vector< Point2d > v;
+    int index = binarySearchX(x);
+    PointListNode* pln = points_right[index];
+    while(pln != NULL && pln->point.y < y)
+      pln = pln->next;
+    while(pln != NULL) {
+      v.push_back(pln->point);
+      pln = pln->next;
+    }
+    return v;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                                                                         //
+  // FUNCTION NAME: highestNE                                                //
+  //                                                                         //
+  // PURPOSE:       Returns the highest point in the set of all points       //
+  //                where the x-coordinate is greater than or equal to       //
+  //                the given x, and the y-coordinate is greater than        //
+  //                or equal to the given y.                                 //
+  //                                                                         //
+  // SECURITY:      public                                                   //
+  //                                                                         //
+  // PARAMETERS                                                              //
+  //   Type/Name:   coord_t/x                                                //
+  //   Description: The minimum x coordinate to consider.                    //
+  //                                                                         //
+  //   Type/Name:   coord_t/y                                                //
+  //   Description: The minimum y coordinate to consider.                    //
+  //                                                                         //
+  // RETURN:        The highest point p where p.x >= x, p.y >= y.            //
+  //                                                                         //
+  // NOTES:         None.                                                    //
+  //                                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  Point2d* PersistentList::highestNE(coord_t x, coord_t y) {
+    vector< Point2d > v;
+    int index = binarySearchX(x);
+    PointListNode* pln = points_right[index];
+    if(pln == NULL) return NULL;
+    while(pln->next != NULL) pln = pln->next;
+    return &(pln->point);
+  }
+
+  PointListNode* PersistentList::getListAtTime(int t) {
+    return points_right[t];
+  }
+
+  size_t PersistentList::size() {
+    return points_sorted_by_x.size();
   }
 }
