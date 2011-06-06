@@ -108,28 +108,16 @@ namespace persistent_list {
   //   Type/Name:   coord_t/y                                                //
   //   Description: The y coordinate for which to search.                    //
   //                                                                         //
-  // RETURN:        The index of the y coordinate in the array, or the       //
-  //                index where the y coordinate should be.                  //
+  // RETURN:        A pointer to the first point with y-coordinate           //
+  //                higher than or equal to the given y.                     //
   //                                                                         //
   // NOTES:         None.                                                    //
   //                                                                         //
   /////////////////////////////////////////////////////////////////////////////
-  int PersistentList::binarySearchY(int t, coord_t y) {
-    vector<point2d> vt = *(points_right[t]);
-    int index = -1;
-    int begin = 0, end = vt.size();
-    while(begin <= end) {
-      index = (begin+end)/2;
-      point2d p = vt[index];
-      if(p.y == y) {
-	break;
-      } else if(p.y > y) {
-	end = index -1;
-      } else {
-	begin = index +1;
-      }
-    }
-    return index;
+  PointListNode* PersistentList::searchY(int t, coord_t y) {
+    PointListNode* pln = points_right[t];
+    while(pln != NULL && pln->point.y < y) pln = pln->next;
+    return pln;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -167,26 +155,40 @@ namespace persistent_list {
       index = binarySearchX(x);
     // add point to end of vector
     points_sorted_by_x.push_back(p);
-    points_right.push_back(new vector<point2d>());
+    points_right.push_back(NULL);
     // block permute points between the new point and its final location
     if(n > 0) {
       block_permute(vectorToArray(points_sorted_by_x),index,n-1,n);
       block_permute(vectorToArray(points_right),index,n-1,n);
     }
-    // copy all points from right neighbor
-    if(index+1 < (int)points_right.size())
-      for(int i = 0; i < (int)(points_right[index+1])->size(); i++)
-	(points_right[index])->push_back((*points_right[index+1])[i]);
-    // add point to self and all left neighbors
+    // copy right neighbor
+    PointListNode* pln;
+    PointListNode* temp;
+    PointListNode* prev;
+    if(index + 1 < n) {
+      pln = points_right[index+1];
+      temp = new PointListNode(pln->point);
+      prev = temp;
+      points_right[index] = temp;
+      while(pln->next != NULL) {
+	pln = pln->next;
+	temp = new PointListNode(pln->point);
+	prev->next = temp;
+      }
+    }
+    // add point all left neighbors
     int t = index;
+    PointListNode* newpln = new PointListNode(p);
+    newpln->next = searchY(index,p.y);
     while(t >= 0) {
-      vector<point2d> points = *(points_right[t]);
-      n = (int)points.size();
-      if(n > 0)
-	index = binarySearchY(t,p.y);
-      points.push_back(p);
-      if(n > 0)
-	block_permute(vectorToArray(points),index,n-1,n);
+      pln = points_right[t];
+      if(pln == NULL) {
+	points_right[t] = newpln;
+      } else {
+	while(pln->next != NULL && pln->point.y < p.y)
+	  pln = pln->next;
+	pln->next = newpln;
+      }
       t--;
     }
     // success

@@ -50,7 +50,7 @@ int main(int argv, char** argc) {
   after = time(0);
   cout << "Inserting " << n << " points took: " << (after-before) << endl;
   waitForEnter();
-  if(n <= MAX_POINTS_DISPLAY) {
+  if(n > 0 && n <= MAX_POINTS_DISPLAY) {
     cout << "Points: "; p.printArray();
   }
   return 0;

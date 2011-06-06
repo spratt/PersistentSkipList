@@ -46,15 +46,27 @@ namespace persistent_list {
     coord_t x, y;
   } point2d;
 
+  class PointListNode {
+  public:
+    // data
+    point2d point;
+    PointListNode* next;
+    
+    // methods
+    PointListNode(point2d p)
+      : point(p), next(NULL)
+    {}
+  };
+
   ostream& operator<<(ostream& os, const point2d& p);
   
   class PersistentList {
     // Data
     vector<point2d> points_sorted_by_x;
-    vector< vector<point2d>* > points_right;
+    vector< PointListNode* > points_right;
     // Methods
     int binarySearchX(coord_t x);
-    int binarySearchY(int index, coord_t y);
+    PointListNode* searchY(int t, coord_t y);
     bool xInArray(coord_t x);
   public:
     PersistentList()
