@@ -49,12 +49,16 @@ namespace persistent_list {
   ostream& operator<<(ostream& os, const point2d& p);
   
   class PersistentList {
+    // Data
     vector<point2d> points_sorted_by_x;
-    int binarySearch(coord_t x);
+    vector< vector<point2d>* > points_right;
+    // Methods
+    int binarySearchX(coord_t x);
+    int binarySearchY(int index, coord_t y);
     bool xInArray(coord_t x);
   public:
     PersistentList()
-      : points_sorted_by_x()
+      : points_sorted_by_x(), points_right()
     {}
     int insertPoint(coord_t x,coord_t y);
     void printArray();
