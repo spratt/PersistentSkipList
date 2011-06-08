@@ -14,31 +14,14 @@
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <termios.h>
 #include "PersistentList.h"
 #include "PointPersistentList.h"
 #include "array_utilities.h"
+#include "control_utilities.h"
 
 using namespace std;
 using namespace array_utilities;
 using namespace persistent_list;
-
-char waitForEnter() {
-  cout << "Press any key to continue..." << flush;
-  int ch;
-  struct termios oldt;
-  struct termios newt;
-  tcgetattr(STDIN_FILENO, &oldt); // store old settings
-  newt = oldt; // copy old settings to new settings
-  newt.c_lflag &= ~(ICANON | ECHO); // make one change to old settings in new settings
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt); // apply the new settings immediatly
-  ch = getchar(); // standard getchar call
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // reapply the old settings
-  cout << endl;
-  return ch; // return received char
-}
 
 int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
@@ -64,7 +47,7 @@ int main(int argv, char** argc) {
   }
   after = time(0);
   cout << "Inserting " << n << " points took: " << (after-before) << endl;
-  waitForEnter();
+  control_utilities::waitForAnyKey();
   if(n <= MAX_POINTS_DISPLAY) {
     cout << "Points: "; ppl.printArray();
   }

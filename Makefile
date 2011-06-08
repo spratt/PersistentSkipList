@@ -10,7 +10,7 @@ endif
 all: test_list
 
 # executables
-test_list: array_utilities.o PersistentList.o PointPersistentList.o test_list.cpp
+test_list: control_utilities.o array_utilities.o PersistentList.o PointPersistentList.o test_list.cpp
 
 # object files
 PersistentList.o: array_utilities.o PersistentList.h
@@ -18,6 +18,8 @@ PersistentList.o: array_utilities.o PersistentList.h
 PointPersistentList.o: array_utilities.o PersistentList.o PointPersistentList.h
 
 array_utilities.o: array_utilities.h
+
+control_utilities.o: control_utilities.h
 
 # in case of emergency
 clean:

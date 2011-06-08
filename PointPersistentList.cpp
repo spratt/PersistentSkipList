@@ -28,51 +28,12 @@ namespace persistent_list {
   void PointPersistentList::printArray() {
     print(vectorToArray(points_sorted_by_x),(int)points_sorted_by_x.size());
   }
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: xInArray                                                 //
-  //                                                                         //
-  // PURPOSE:       Determines if a point with a given x coordinate is       //
-  //                in the array.                                            //
-  //                                                                         //
-  // SECURITY:      private                                                  //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   coord_t/x                                                //
-  //   Description: The x coordinate for which to search.                    //
-  //                                                                         //
-  // RETURN:        True  - x coordinate exists in array                     //
-  //                False - x coordinate does not exist in array             //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
+
   bool PointPersistentList::xInArray(coord_t x) {
     Point2d p = points_sorted_by_x[binarySearchX(x)];
     return x == p.x;
   }
-  
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: binarySearchX                                            //
-  //                                                                         //
-  // PURPOSE:       determines the position of a 2d point in the sorted      //
-  //                array.  If the point is not in the array, this           //
-  //                method will return the index of where the element        //
-  //                should be in the array.                                  //
-  //                                                                         //
-  // SECURITY:      private                                                  //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   coord_t/x                                                //
-  //   Description: The x coordinate for which to search.                    //
-  //                                                                         //
-  // RETURN:        The index of the x coordinate in the array, or the       //
-  //                index where the x coordinate should be.                  //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
+
   int PointPersistentList::binarySearchX(coord_t x) {
     int index = -1;
     int begin = 0, end = (int)points_sorted_by_x.size();
@@ -90,31 +51,6 @@ namespace persistent_list {
     return index;
   }
   
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: binarySearchY                                            //
-  //                                                                         //
-  // PURPOSE:       determines the position of a 2d point in array.  If      //
-  //                the point is not in the array, this method will          //
-  //                return the index of where the element should be in       //
-  //                the array.                                               //
-  //                                                                         //
-  // SECURITY:      private                                                  //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   int/t                                                    //
-  //   Description: Since there are several versions of the list, this       //
-  //                searches the list at time t.                             //
-  //                                                                         //
-  //   Type/Name:   coord_t/y                                                //
-  //   Description: The y coordinate for which to search.                    //
-  //                                                                         //
-  // RETURN:        A pointer to the first point with y-coordinate           //
-  //                higher than or equal to the given y.                     //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
   ListNode<Point2d>* PointPersistentList::searchY(int t, coord_t y) {
     ListNode<Point2d>* pln = getList(t);
     while(pln != NULL && pln->data.y < y) pln = pln->next;
@@ -132,29 +68,6 @@ namespace persistent_list {
     return i;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: insertPoint                                              //
-  //                                                                         //
-  // PURPOSE:       Inserts a point into the structure, with given x and y   //
-  //                coordinates.                                             //
-  //                                                                         //
-  // SECURITY:      public                                                   //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   coord_t/x                                                //
-  //   Description: x-coordinate                                             //
-  //                                                                         //
-  //   Type/Name:   coord_t/y                                                //
-  //   Description: y-coordinate                                             //
-  //                                                                         //
-  // RETURN:                                                                 //
-  //   Type/Name:   int                                                      //
-  //   Description: 0 for success.                                           //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
   int PointPersistentList::insertPoint(coord_t x, coord_t y) {
     // build point
     Point2d p = *(new Point2d(x,y));
@@ -182,29 +95,6 @@ namespace persistent_list {
     return 0;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: enumerateNE                                              //
-  //                                                                         //
-  // PURPOSE:       Returns the a vector of all points where the             //
-  //                x-coordinate is greater than or equal to the given       //
-  //                x, and the y-coordinate is greater than or equal         //
-  //                to the given y.                                          //
-  //                                                                         //
-  // SECURITY:      public                                                   //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   coord_t/x                                                //
-  //   Description: The minimum x coordinate to consider.                    //
-  //                                                                         //
-  //   Type/Name:   coord_t/y                                                //
-  //   Description: The minimum y coordinate to consider.                    //
-  //                                                                         //
-  // RETURN:        A vector of all points p s.t. p.x >= x, p.y >= y.        //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
   vector< Point2d > PointPersistentList::enumerateNE(coord_t x, coord_t y) {
     vector< Point2d > v;
     int index = binarySearchX(x);
@@ -218,29 +108,6 @@ namespace persistent_list {
     return v;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: highestNE                                                //
-  //                                                                         //
-  // PURPOSE:       Returns the highest point in the set of all points       //
-  //                where the x-coordinate is greater than or equal to       //
-  //                the given x, and the y-coordinate is greater than        //
-  //                or equal to the given y.                                 //
-  //                                                                         //
-  // SECURITY:      public                                                   //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   coord_t/x                                                //
-  //   Description: The minimum x coordinate to consider.                    //
-  //                                                                         //
-  //   Type/Name:   coord_t/y                                                //
-  //   Description: The minimum y coordinate to consider.                    //
-  //                                                                         //
-  // RETURN:        The highest point p where p.x >= x, p.y >= y.            //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
   Point2d* PointPersistentList::highestNE(coord_t x, coord_t y) {
     vector< Point2d > v;
     int index = binarySearchX(x);
@@ -249,10 +116,11 @@ namespace persistent_list {
     while(pln->next != NULL) pln = pln->next;
     return &(pln->data);
   }
-
+  
   size_t PointPersistentList::size() {
     return points_sorted_by_x.size();
   }
+  
   ListNode<Point2d>* PointPersistentList::getList(int t) {
     int n = (int)size();
     return points_right.getList(n-t-1);
