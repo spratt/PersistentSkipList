@@ -34,62 +34,123 @@
 #ifndef PERSISTENTLIST_H
 #define PERSISTENTLIST_H
 
+#include <iostream>
 #include <vector>
+#include <assert.h>
 
 using namespace std;
 
 namespace persistent_list {
-
-  typedef double coord_t;
-  
-  class Point2d {
+  template <class T>
+  class ListNode {
   public:
-    // data
-    coord_t x, y;
-
-    // methods
-    Point2d(const Point2d& p)
-      : x(p.x), y(p.y)
+    T data;
+    ListNode<T>* next;
+    ListNode(const T& original_data)
+      : data(original_data), next(NULL)
     {}
-    Point2d(coord_t x, coord_t y)
-      : x(x), y(y)
+    ListNode(const ListNode<T>* ln)
+      : data(ln->data), next(NULL)
     {}
-  };
-
-  class PointListNode {
-  public:
-    // data
-    Point2d point;
-    PointListNode* next;
     
-    // methods
-    PointListNode(Point2d p)
-      : point(p), next((PointListNode*)NULL)
-    {}
+
   };
 
-  ostream& operator<<(ostream& os, const Point2d& p);
-  ostream& operator<<(ostream& os, const PointListNode& pln);
-  
+  template <class T>
+  ostream& operator<<(ostream& os, const ListNode<T>& ln) {
+    os << ln.data << "->";
+    if(ln.next != NULL)
+      os << *(ln.next);
+    else
+      os << "NULL";
+    return os;
+  }
+
+  template <class T>
   class PersistentList {
     // Data
-    vector<Point2d> points_sorted_by_x;
-    vector< PointListNode* > points_right;
+    vector< ListNode<T>* > lists;
     // Methods
-    int binarySearchX(coord_t x);
-    PointListNode* searchY(int t, coord_t y);
-    bool xInArray(coord_t x);
   public:
     PersistentList()
-      : points_sorted_by_x(), points_right()
+      : lists()
     {}
-    int insertPoint(coord_t x,coord_t y);
-    vector< Point2d > enumerateNE(coord_t x, coord_t y);
-    Point2d* highestNE(coord_t x, coord_t y);
-    void printArray();
-    PointListNode* getListAtTime(int t);
+    int insert(int t, int index, ListNode<T>* ln);
+    int duplicateList(int t, int i);
+    int newList(int t);
+    ListNode<T>* getList(int t);
+    ListNode<T>* getNode(int t, int index);
     size_t size();
   };
+
+  
+  template <class T>
+  int PersistentList<T>::duplicateList(int t, int i=0) {
+    assert(t >= 0);
+    int n = (int)lists.size();
+    assert(t < n);
+    ListNode<T>* list = getList(t);
+    newList(t+1);
+    if(i <= 0) {
+      lists[t+1] = list;
+    } else {
+      ListNode<T>* dup = new ListNode<T>(list);
+      lists[t+1] = dup;
+      if(list != NULL) {
+	ListNode<T>* prev = dup;
+	while(list != NULL && --i > 0) {
+	  list = list->next;
+	  dup = new ListNode<T>(list);
+	  prev->next = dup;
+	}
+	if(list != NULL)
+	  dup->next = list->next;
+      }
+    }
+    // success
+    return 0;
+  }
+
+  template <class T>
+  int PersistentList<T>::newList(int t) {
+    assert(t >= 0);
+    int n = (int)lists.size();
+    assert(t <= n);
+    lists.push_back(NULL);
+    block_permute(vectorToArray(lists),t,n-1,n);
+    return 0;
+  }
+  
+  template <class T>
+  int PersistentList<T>::insert(int t, int index, ListNode<T>* ln) {
+    if(index == 0) {
+      ln->next = getNode(t,0);
+      lists[t] = ln;
+    } else {
+      ListNode<T>* oldln = getNode(t,index-1);
+      ln->next = oldln->next;
+      oldln->next = ln;
+    }
+    return 0; // success
+  }
+
+  template <class T>
+  ListNode<T>* PersistentList<T>::getList(int t) {
+    return lists[t];
+  }
+
+  template <class T>
+  ListNode<T>* PersistentList<T>::getNode(int t, int index) {
+    ListNode<T>* ln = getList(t);
+    while(ln != NULL && index-- > 0)
+      ln = ln->next;
+    return ln;
+  }
+
+  template <class T>
+  size_t PersistentList<T>::size() {
+    return lists.size();
+  }
 }
 
 #endif

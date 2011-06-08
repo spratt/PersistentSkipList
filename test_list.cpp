@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include "PersistentList.h"
+#include "PointPersistentList.h"
 #include "array_utilities.h"
 
 using namespace std;
@@ -42,32 +43,43 @@ char waitForEnter() {
 int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
   time_t before, after;
-  PersistentList pl;
+  PointPersistentList ppl;
+  bool worst = false;
   /////////////////////////////////////////////////////////////////////////////
   // insert points                                                           //
   /////////////////////////////////////////////////////////////////////////////
   int n = 1000;
   if(argv > 1)
     n = atoi(argc[1]);
+  if(argv > 2)
+    worst = true;
+  if(n <1)
+    return 1;
   before = time(0);
-  for(int i = n; i > 0; --i)
-    pl.insertPoint(i,i);
+  for(int i = n; i > 0; --i) {
+    if(worst)
+      ppl.insertPoint(i,n-i);
+    else
+      ppl.insertPoint(i,i);
+  }
   after = time(0);
   cout << "Inserting " << n << " points took: " << (after-before) << endl;
   waitForEnter();
-  if(n > 0 && n <= MAX_POINTS_DISPLAY) {
-    cout << "Points: "; pl.printArray();
+  if(n <= MAX_POINTS_DISPLAY) {
+    cout << "Points: "; ppl.printArray();
   }
   /////////////////////////////////////////////////////////////////////////////
   // debug                                                                   //
   /////////////////////////////////////////////////////////////////////////////
-  for(int i = 0; i < n; i++)
-    cout << i << ": " << *(pl.getListAtTime(i)) << endl;
+  if(n <= MAX_POINTS_DISPLAY) {
+    for(int i = 0; i < n; i++)
+      cout << i << ": " << *(ppl.getList(i)) << endl;
+  }
   /////////////////////////////////////////////////////////////////////////////
   // enumerateNE                                                             //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  vector< Point2d > v = pl.enumerateNE(0,0);
+  vector< Point2d > v = ppl.enumerateNE(0,0);
   after = time(0);
   n = (int)v.size();
   cout << "Enumerating " << n << " points took: " << (after-before) << endl;

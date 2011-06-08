@@ -3,17 +3,19 @@ ifeq ($(mode),release)
 	CXXFLAGS=-O2 -Wall
 else
 	mode = debug
-	CXXFLAGS=-O0 -g -Wall
+	CXXFLAGS=-g -Wall
 endif
 
 #begin actual makefile stuff
 all: test_list
 
 # executables
-test_list: array_utilities.o PersistentList.o test_list.cpp
+test_list: array_utilities.o PersistentList.o PointPersistentList.o test_list.cpp
 
 # object files
 PersistentList.o: array_utilities.o PersistentList.h
+
+PointPersistentList.o: array_utilities.o PersistentList.o PointPersistentList.h
 
 array_utilities.o: array_utilities.h
 
