@@ -55,19 +55,50 @@ int main(int argv, char** argc) {
   // debug                                                                   //
   /////////////////////////////////////////////////////////////////////////////
   if(n <= MAX_POINTS_DISPLAY) {
-    for(int i = 0; i < n; i++)
-      cout << i << ": " << *(ppl.getList(i)) << endl;
+    for(int i = 0; i < n; i++) {
+      cout << i << ": ";
+      if(ppl.getList(i) == NULL)
+	cout << "NULL";
+      else
+	cout << *(ppl.getList(i));
+      cout << endl;
+    }
   }
   /////////////////////////////////////////////////////////////////////////////
-  // enumerateNE                                                             //
+  // enumerateNE(0,0)                                                        //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
   vector< Point2d > v = ppl.enumerateNE(0,0);
   after = time(0);
-  n = (int)v.size();
-  cout << "Enumerating " << n << " points took: " << (after-before) << endl;
-  if(n > 0 && n <= MAX_POINTS_DISPLAY) {
-    cout << "Found: "; print(vectorToArray(v),n);
+  int size = (int)v.size();
+  cout << "enumerateNE(0,0) returned " << size << " points"
+       <<" and took: " << (after-before) << endl;
+  if(size > 0 && size <= MAX_POINTS_DISPLAY) {
+    cout << "Found: "; print(vectorToArray(v),size);
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  // enumerateNE(n/2,n/2)                                                    //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  v = ppl.enumerateNE(n/2,n/2);
+  after = time(0);
+  size = (int)v.size();
+  cout << "enumerateNE(" << n/2 << "," << n/2 << ") returned " << size << " points"
+       <<" and took: " << (after-before) << endl;
+  if(size > 0 && size <= MAX_POINTS_DISPLAY) {
+    cout << "Found: "; print(vectorToArray(v),size);
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  // enumerateNE(n,n)                                                        //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  v = ppl.enumerateNE(n,n);
+  after = time(0);
+  size = (int)v.size();
+  cout << "enumerateNE(" << n << "," << n << ") returned " << size << " points"
+       <<" and took: " << (after-before) << endl;
+  if(size > 0 && size <= MAX_POINTS_DISPLAY) {
+    cout << "Found: "; print(vectorToArray(v),size);
   }
   return 0;
 }

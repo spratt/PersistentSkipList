@@ -206,6 +206,32 @@ namespace persistent_list {
     /////////////////////////////////////////////////////////////////////////////
     int indexY(int t, coord_t y);
 
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getNodeBefore                                          //
+    //                                                                       //
+    // PURPOSE:       Returns the node directly preceding a node with        //
+    //                a given y-coordinate, or where that node should be.    //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The list time (version) to search                      //
+    //                                                                       //
+    //   Type/Name:   coord_t/y                                              //
+    //   Description: The y-coordinate for which to search                   //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   ListNode<Point2d>*                                     //
+    //   Description: The node preceding or which would precede a node       //
+    //                with the given y coordinate.                           //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    ListNode<Point2d>* getNodeBefore(int t, coord_t y);
+
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
     // FUNCTION NAME: xInArray                                                 //
@@ -226,6 +252,34 @@ namespace persistent_list {
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
     bool xInArray(coord_t x);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: duplicateListBeforeY                                   //
+    //                                                                       //
+    // PURPOSE:       Duplicates a list before a given Y coordinate          //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time to duplicate.  The new list will be           //
+    //                placed at t+1, all following lists will be             //
+    //                shifted up by 1.                                       //
+    //                                                                       //
+    //   Type/Name:   coord_t/y                                              //
+    //   Description: The y coordinate before which to duplicate             //
+    //                nodes.  The last node preceding this y                 //
+    //                coordinate will have a next pointer into the           //
+    //                preceding list.                                        //
+    //                                                                       //
+    // RETURN:        int return code, 0 means success.                      //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int duplicateListBeforeY(int t, coord_t y);
+    
   public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
