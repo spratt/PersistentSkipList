@@ -23,16 +23,17 @@
 //                                                                           //
 //                             Public Methods:                               //
 //                                                                           //
-// ListNode::ListNode(const T& original_data)                                //
-// ListNode::ListNode(const ListNode<T>* ln)                                 //
-// ostream& operator<<(ostream& os, const ListNode<T>& ln)                   //
+// ListNode::ListNode(int t, const T& original_data)                         //
+// ListNode::getNext(int t)                                                  //
+// ListNode::setNext(int t, ListNode<T>* ln)                                 //
+// ListNode::insertNext(int t, ListNode<T>* ln)                              //
+// ListNode::printList(int t)                                                //
 //                                                                           //
 // PersistentList::PersistentList()                                          //
 // int PersistentList::insert(int t, int index, ListNode<T>* ln)             //
-// int PersistentList::insert(int t,                                         //
-//                            ListNode<T>* old_ln,                           //
-//                            ListNode<T>* new_ln)                           //
-// int PersistentList::duplicateList(int t, int i)                           //
+// int PersistentList::insertAfterNode(int t,                                //
+//                                     ListNode<T>* old_ln,                  //
+//                                     ListNode<T>* new_ln)                  //
 // int PersistentList::newList(int t)                                        //
 // ListNode<T>* PersistentList::getList(int t)                               //
 // ListNode<T>* PersistentList::getNode(int t, int index)                    //
@@ -54,9 +55,9 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class ListNode {
+    vector< ListNode<T>* > next;
   public:
     T data;
-    ListNode<T>* next;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -73,63 +74,144 @@ namespace persistent_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(const T& original_data)
-      : data(original_data), next(NULL)
-    {}
-    
+    ListNode(int t, const T& original_data)
+      : next(), data(original_data) {
+      do
+	next.push_back(NULL);
+      while(t-- > 0);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: ListNode                                               //
+    // FUNCTION NAME: getNext                                                //
     //                                                                       //
-    // PURPOSE:       Copy constructor                                       //
+    // PURPOSE:       Retrieves the next pointer at a given time             //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
-    //   Type/Name:   ListNode/ln                                            //
-    //   Description: The node to copy                                       //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to retrieve the pointer              //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   ListNode<T>*                                           //
+    //   Description: The next pointer at time t.                            //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(const ListNode<T>* ln)
-      : data(ln->data), next(NULL)
-    {}
+    ListNode<T>* getNext(int t);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: setNext                                                //
+    //                                                                       //
+    // PURPOSE:       Set the next pointer at time t                         //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to set the pointer.                  //
+    //                                                                       //
+    //   Type/Name:   ListNode<T>*/ln                                        //
+    //   Description: The pointer to which to assign next.                   //
+    //                                                                       //
+    // RETURN:        int return code.  0 means success                      //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int setNext(int t, ListNode<T>* ln);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: insertNext                                             //
+    //                                                                       //
+    // PURPOSE:       Inserts a new next pointer at time t, shifting         //
+    //                all times >= t up by one.                              //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to insert                            //
+    //                                                                       //
+    //   Type/Name:   ListNode<T>*/ln                                        //
+    //   Description: The node to insert.                                    //
+    //                                                                       //
+    // RETURN:        int return code.  0 means success.                     //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int insertNext(int t, ListNode<T>* ln);
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: printList                                              //
+    //                                                                       //
+    // PURPOSE:       Prints a list at time t to cout.                       //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to print the list.                   //
+    //                                                                       //
+    // RETURN:        int return code.  0 means success.                     //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int printList(int t);
   };
 
   /////////////////////////////////////////////////////////////////////////////
   // ListNode implementation                                                 //
   /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
-  // FUNCTION NAME: operator<<                                               //
-  //                                                                         //
-  // PURPOSE:       Formats a List nicely for an ostream.                    //
-  //                                                                         //
-  // SECURITY:      public                                                   //
-  //                                                                         //
-  // PARAMETERS                                                              //
-  //   Type/Name:   ostream/os                                               //
-  //   Description: An os to which to send the List.                         //
-  //                                                                         //
-  //   Type/Name:   ListNode<T>/ln                                           //
-  //   Description: The List to format and send.                             //
-  //                                                                         //
-  // RETURN:        The ostream input.                                       //
-  //                This is standard practice for chaining such as:          //
-  //                cout << "List: " << list << endl;                        //
-  //                                                                         //
-  // NOTES:         None.                                                    //
-  //                                                                         //
-  /////////////////////////////////////////////////////////////////////////////
   template <class T>
-  ostream& operator<<(ostream& os, const ListNode<T>& ln) {
-    os << ln.data << "->";
-    if(ln.next != NULL)
-      os << *(ln.next);
+  ListNode<T>* ListNode<T>::getNext(int t) {
+    assert(t >= 0);
+    assert(t < (int)next.size());
+    return next[t];
+  }
+
+  template <class T>
+  int ListNode<T>::setNext(int t, ListNode<T>* ln) {
+    assert(t >= 0);
+    assert(t <= (int)next.size());
+    if(t == (int)next.size())
+      next.push_back(ln);
     else
-      os << "NULL";
-    return os;
+      next[t] = ln;
+    // success
+    return 0;
+  }
+
+  template <class T>
+  int ListNode<T>::insertNext(int t, ListNode<T>* ln) {
+    assert(t >= 0);
+    assert(t <= (int)next.size());
+    if(t == (int)next.size())
+      next.push_back(ln);
+    else
+      next.insert(next.begin()+t,ln);
+    // success
+    return 0;
+  }
+
+  template <class T>
+  int ListNode<T>::printList(int t) {
+    assert(t >= 0);
+    assert(t < (int)next.size());
+    cout << data << "->";
+    if(next[t] != NULL)
+      next[t]->printList(t);
+    else
+      cout << "NULL";
+    // success
+    return 0;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -139,7 +221,7 @@ namespace persistent_list {
   class PersistentList {
     vector< ListNode<T>* > lists;
     
-  public:
+  public:   
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: PersistentList                                         //
@@ -161,56 +243,28 @@ namespace persistent_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: set                                                    //
+    // FUNCTION NAME: insert                                                 //
     //                                                                       //
-    // PURPOSE:       Sets the node at index in list t's next pointer        //
-    //                to point to ln.                                        //
+    // PURPOSE:       Inserts a node at index i in list at time t.           //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   int/t                                                  //
-    //   Description: Time t at which to set                                 //
+    //   Description: Time t at which to insert                              //
     //                                                                       //
     //   Type/Name:   int/index                                              //
-    //   Description: The position in the list at which to set               //
+    //   Description: The position in the list at which to insert            //
     //                                                                       //
     //   Type/Name:   ListNode<T>*/ln                                        //
-    //   Description: A pointer to the node to set                           //
+    //   Description: A pointer to the node to insert                        //
     //                                                                       //
     // RETURN:                                                               //
     //   Type/Name:   int                                                    //
     //   Description: A return code, 0 means success.                        //
     //                                                                       //
-    // NOTES:         None.                                                  //
+    // NOTES:         Assumes list at time t exists.                         //
     //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int set(int t, int index, ListNode<T>* ln);
-
-    ///////////////////////////////////////////////////////////////////////////
-    // 
-    // FUNCTION NAME: insert
-    // 
-    // PURPOSE:       Inserts a node at index i in list at time t.
-    // 
-    // SECURITY:      public
-    // 
-    // PARAMETERS
-    //   Type/Name:   int/t
-    //   Description: Time t at which to insert
-    // 
-    //   Type/Name:   int/index
-    //   Description: The position in the list at which to insert
-    // 
-    //   Type/Name:   ListNode<T>*/ln
-    //   Description: A pointer to the node to insert
-    // 
-    // RETURN:
-    //   Type/Name:   int
-    //   Description: A return code, 0 means success.
-    // 
-    // NOTES:         Assumes list at time t exists.
-    // 
     ///////////////////////////////////////////////////////////////////////////
     int insert(int t, int index, ListNode<T>* ln);
 
@@ -239,37 +293,13 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int insertAfterNode(int t, ListNode<T>* old_ln, ListNode<T>* new_ln);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: duplicateList                                          //
-    //                                                                       //
-    // PURPOSE:       Duplicates the list at time t up to element i, placing //
-    //                the new list at t+1. Copied element i's next           //
-    //                pointer will point to the next element in list t.      //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time (version) of the list to copy                 //
-    //                                                                       //
-    //   Type/Name:   int/i                                                  //
-    //   Description: Elements up to i will be copied, the rest will         //
-    //                be pointed to.                                         //
-    //                                                                       //
-    // RETURN:        int return code, 0 means success.                      //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int duplicateList(int t, int i);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: newList                                                //
     //                                                                       //
-    // PURPOSE:       Creates a new (empty) list at time t                   //
+    // PURPOSE:       Creates a new list at time t with the same nodes       //
+    //                as in t-1.                                             //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
@@ -353,55 +383,11 @@ namespace persistent_list {
   // PersistentList implementation                                           //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
-  int PersistentList<T>::duplicateList(int t, int i=0) {
-    assert(t >= 0);
-    int n = (int)lists.size();
-    assert(t < n);
-    ListNode<T>* list = getList(t);
-    newList(t+1);
-    if(i <= 0) {
-      lists[t+1] = list;
-    } else {
-      ListNode<T>* dup = new ListNode<T>(list);
-      lists[t+1] = dup;
-      if(list != NULL) {
-	ListNode<T>* prev = dup;
-	while(list != NULL && --i > 0) {
-	  list = list->next;
-	  dup = new ListNode<T>(list);
-	  prev->next = dup;
-	  prev = dup;
-	}
-	if(list != NULL)
-	  dup->next = list->next;
-      }
-    }
-    // success
-    return 0;
-  }
-
-  template <class T>
-  int PersistentList<T>::newList(int t) {
+  int PersistentList<T>::insert(int t, int index, ListNode<T>* ln) {
     assert(t >= 0);
     assert(t <= (int)lists.size());
-    lists.insert(lists.begin()+t,NULL);
-    return 0;
-  }
-  
-  template <class T>
-  int PersistentList<T>::set(int t, int index, ListNode<T>* ln) {
     if(index <= 0) {
-      lists[t] = ln;
-    } else {
-      getNode(t,index-1)->next = ln;
-    }
-    return 0; // success
-  }
-  
-  template <class T>
-  int PersistentList<T>::insert(int t, int index, ListNode<T>* ln) {
-    if(index <= 0) {
-      ln->next = getNode(t,0);
+      ln->setNext(t,getNode(t,0));
       lists[t] = ln;
     } else {
       insertAfterNode(t,getNode(t,index-1),ln);
@@ -413,9 +399,33 @@ namespace persistent_list {
   int PersistentList<T>::insertAfterNode(int t,
 					 ListNode<T>* old_ln,
 					 ListNode<T>* new_ln) {
+    assert(t >= 0);
+    assert(t <= (int)lists.size());
     assert(old_ln != NULL);
-    new_ln->next = old_ln->next;
-    old_ln->next = new_ln;
+    new_ln->setNext(t,old_ln->getNext(t));
+    old_ln->setNext(t,new_ln);
+    return 0; // success
+  }
+
+  template <class T>
+  int PersistentList<T>::newList(int t) {
+    assert(t >= 0);
+    assert(t <= (int)lists.size());
+    // save the new head
+    ListNode<T>* prev_head = NULL;
+    if(t > 0)
+      prev_head = lists[t-1];
+    lists.insert(lists.begin()+t,prev_head);
+    if(t > 0 && prev_head != NULL) {
+      // create the new time in each node
+      ListNode<T>* ln;
+      ListNode<T>* next = prev_head;
+      do {
+	ln = next;
+	next = ln->getNext(t-1);
+	ln->insertNext(t,next);
+      } while(next != NULL);
+    }
     return 0; // success
   }
 
@@ -429,7 +439,7 @@ namespace persistent_list {
   ListNode<T>* PersistentList<T>::getNode(int t, int index) {
     ListNode<T>* ln = getList(t);
     while(ln != NULL && index-- > 0)
-      ln = ln->next;
+      ln = ln->getNext(t);
     return ln;
   }
 

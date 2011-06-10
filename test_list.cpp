@@ -60,7 +60,7 @@ int main(int argv, char** argc) {
       if(ppl.getList(i) == NULL)
 	cout << "NULL";
       else
-	cout << *(ppl.getList(i));
+	ppl.getList(i)->printList(i);
       cout << endl;
     }
   }
@@ -100,5 +100,31 @@ int main(int argv, char** argc) {
   if(size > 0 && size <= MAX_POINTS_DISPLAY) {
     cout << "Found: "; print(vectorToArray(v),size);
   }
+  /////////////////////////////////////////////////////////////////////////////
+  // highestNE(0,0)                                                          //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  Point2d* p = ppl.highestNE(0,0);
+  after = time(0);
+  cout << "highestNE(0,0) took: " << (after-before) << endl;
+  cout << "Found: " << *p << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // highestNE(n/2,n/2)                                                      //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  p = ppl.highestNE(n/2,n/2);
+  after = time(0);
+  cout << "highestNE(" << n/2 << "," << n/2 << ") took: "
+       << (after-before) << endl
+       << "Found: " << *p << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // highestNE(n,n)                                                          //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  p = ppl.highestNE(n,n);
+  after = time(0);
+  cout << "highestNE(" << n << "," << n << ") took: "
+       << (after-before) << endl
+       << "Found: " << *p << endl;
   return 0;
 }

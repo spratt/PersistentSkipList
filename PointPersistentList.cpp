@@ -25,15 +25,6 @@ namespace persistent_list {
     return os;
   }
 
-  void PointPersistentList::printArray() {
-    print(vectorToArray(points_sorted_by_x),(int)points_sorted_by_x.size());
-  }
-
-  bool PointPersistentList::xInArray(coord_t x) {
-    Point2d p = points_sorted_by_x[binarySearchX(x)];
-    return x == p.x;
-  }
-
   // assumes points_sorted_by_x is sorted in descending order
   int PointPersistentList::binarySearchX(coord_t x) {
     int index = -1;
@@ -52,106 +43,33 @@ namespace persistent_list {
     return index;
   }
   
-  ListNode<Point2d>* PointPersistentList::searchY(int t, coord_t y) {
-    ListNode<Point2d>* pln = points_right.getList(t);
-    while(pln != NULL && pln->data.y < y) pln = pln->next;
-    return pln;
-  }
-  
   ListNode<Point2d>* PointPersistentList::getNodeBefore(int t, coord_t y) {
     ListNode<Point2d>* pln = points_right.getList(t);
     if(pln != NULL && pln->data.y > y)
       return NULL;
-    while(pln != NULL && pln->next != NULL && pln->next->data.y < y)
-      pln = pln->next;
+    while(pln != NULL && pln->getNext(t) != NULL && pln->getNext(t)->data.y < y)
+      pln = pln->getNext(t);
     return pln;
   }
 
-  int PointPersistentList::indexY(int t, coord_t y) {
-    assert(t < (int)points_right.size());
-    ListNode<Point2d>* pln = points_right.getList(t);
-    int i = 0;
-    while(pln != NULL && pln->data.y < y) {
-      pln = pln->next;
-      i++;
-    }
-    return i;
-  }
-
-  int PointPersistentList::duplicateListBeforeY(int t, coord_t y) {
-    // duplicating before the 0th list gives an empty list at position 0
-    if(t < 0) {
-      points_right.newList(0);
-    } else {
-      // Otherwise, check that t is within bounds
-      int n = (int)points_right.size();
-      assert(t < n);
-      // if so, get the first node in the list to copy
-      ListNode<Point2d>* list = points_right.getList(t);
-      // create a new (empty) list after the copied list
-      points_right.newList(t+1);
-      // if the list to copy is empty, or the first element comes after
-      // the given y, simply make the new list a reference to the old list
-      if(list == NULL || list->data.y >= y) {
-	points_right.set(t+1,0,list);
-      } else {
-	// otherwise, duplicate the first node
-	ListNode<Point2d>* dup = new ListNode<Point2d>(list);
-	// Insert the duplicated node at position 0 in the new (empty) list
-	points_right.insert(t+1,0,dup);
-	// save the previous node copied (for next reference) 
-	ListNode<Point2d>* prev = dup;
-	// as long as the node isn't null, and the next node precedes
-	// the given y coordinate
-	while(list->next != NULL && list->next->data.y < y) {
-	  // duplicate next node
-	  list = list->next;
-	  dup = new ListNode<Point2d>(list);
-	  // preserve the list order
-	  prev->next = dup;
-	  // save the node just copied for next reference
-	  prev = dup;
-	}
-	// finally, once all the preceding nodes have been copied, copy
-	// the next pointer of the following node
-	if(list != NULL)
-	  dup->next = list->next;
-      }
-    }
-    // success
-    return 0;
-  }
-
   int PointPersistentList::insertPoint(coord_t x, coord_t y) {
-    // build point
-    Point2d* p = new Point2d(x,y);
+    // build point on stack
+    Point2d p(x,y);
+    // add point to the array of points sorted by x
     int n = (int)points_sorted_by_x.size();
-    // determine the position at which to insert the new point
     int index = 0;
     if(n > 0) {
-      index = binarySearchX(x);
-      if(points_sorted_by_x[index].x >= x)
-	index++;
+      index = binarySearchX(x) + 1;
     }
-    points_sorted_by_x.insert(points_sorted_by_x.begin()+index,*p);
-    // first point
-    if(n == 0) {
-      points_right.newList(0);
-      points_right.insert(0,0,new ListNode<Point2d>(*p));
-    } else {
-      // create a new time in the persistent list with all preceding elements
-      duplicateListBeforeY(index-1,y);
-      for(int t = index; t <= n; t++) {
-	ListNode<Point2d>* node_before = getNodeBefore(t,y);
-	ListNode<Point2d>* new_node = new ListNode<Point2d>(*p); 
-	if(node_before == NULL) {
-	  new_node->next = getList(t);
-	  points_right.insert(t,0,new_node);
-	} else
-	  points_right.insertAfterNode(t,node_before,new_node);
-      }
-    }
-    delete p;
+    points_sorted_by_x.insert(points_sorted_by_x.begin()+index,p);
+    // add point to the list at time index
+    points_right.newList(index);
+    ListNode<Point2d>* before = getNodeBefore(index,y);
+    ListNode<Point2d>* new_node = new ListNode<Point2d>(index,p);
+    if(before == NULL)
+      points_right.insert(index,0,new_node);
+    else
+      points_right.insertAfterNode(index,before,new_node);
     // success
     return 0;
   }
@@ -161,10 +79,10 @@ namespace persistent_list {
     int index = binarySearchX(x);
     ListNode<Point2d>* pln = points_right.getList(index);
     while(pln != NULL && pln->data.y < y)
-      pln = pln->next;
+      pln = pln->getNext(index);
     while(pln != NULL) {
       v.push_back(pln->data);
-      pln = pln->next;
+      pln = pln->getNext(index);
     }
     return v;
   }
@@ -174,15 +92,19 @@ namespace persistent_list {
     int index = binarySearchX(x);
     ListNode<Point2d>* pln = points_right.getList(index);
     if(pln == NULL) return NULL;
-    while(pln->next != NULL) pln = pln->next;
+    while(pln->getNext(index) != NULL) pln = pln->getNext(index);
     return &(pln->data);
-  }
-  
-  size_t PointPersistentList::size() {
-    return points_sorted_by_x.size();
   }
   
   ListNode<Point2d>* PointPersistentList::getList(int t) {
     return points_right.getList(t);
+  }
+
+  void PointPersistentList::printArray() {
+    print(vectorToArray(points_sorted_by_x),(int)points_sorted_by_x.size());
+  }
+  
+  size_t PointPersistentList::size() {
+    return points_sorted_by_x.size();
   }
 }

@@ -24,15 +24,14 @@
 //                             Public Methods:                               //
 //                                                                           //
 // Point2d::Point2d(coord_t x, coord_t y)                                    //
-// Point2d::Point2d(const Point2d& p)                                        //
 // ostream& operator<<(ostream& os, const Point2d& p)                        //
 //                                                                           //
 // PersistentList::PointPersistentList()                                     //
 // int PersistentList::insertPoint(coord_t x, coord_t y)                     //
 // vector<Point2d> PersistentList::enumerateNE(coord_t x, coord_t y)         //
 // Point2d* PersistentList::highestNE(coord_t x, coord_t y)                  //
-// void PersistentList::printArray()                                         //
 // ListNode<Point2d>* PersistentList::getList(int t)                         //
+// void PersistentList::printArray()                                         //
 // size_t PersistentList::size()                                             //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,25 +72,6 @@ namespace persistent_list {
     ///////////////////////////////////////////////////////////////////////////
     Point2d(coord_t x, coord_t y)
       : x(x), y(y)
-    {}
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: Point2d                                                //
-    //                                                                       //
-    // PURPOSE:       Copy constructor.                                      //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   Point2d/p                                              //
-    //   Description: The point on which to perform a deep copy.             //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    Point2d(const Point2d& p)
-      : x(p.x), y(p.y)
     {}
   };
 
@@ -152,60 +132,6 @@ namespace persistent_list {
     /////////////////////////////////////////////////////////////////////////////
     int binarySearchX(coord_t x);
 
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: searchY                                                  //
-    //                                                                         //
-    // PURPOSE:       determines the position of a 2d point in array.  If      //
-    //                the point is not in the array, this method will          //
-    //                return the index of where the element should be in       //
-    //                the array.                                               //
-    //                                                                         //
-    // SECURITY:      private                                                  //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   int/t                                                    //
-    //   Description: Since there are several versions of the list, this       //
-    //                searches the list at time t.                             //
-    //                                                                         //
-    //   Type/Name:   coord_t/y                                                //
-    //   Description: The y coordinate for which to search.                    //
-    //                                                                         //
-    // RETURN:        A pointer to the first point with y-coordinate           //
-    //                higher than or equal to the given y.                     //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    ListNode<Point2d>* searchY(int t, coord_t y);
-
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: indexY                                                   //
-    //                                                                         //
-    // PURPOSE:       Given a time t corresponding to a version of a           //
-    //                sorted list of points, determines the index at           //
-    //                which a given y should or does exist in the list.        //
-    //                                                                         //
-    // SECURITY:      public                                                   //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   int/t                                                    //
-    //   Description: The time (version) of the list.                          //
-    //                                                                         //
-    //   Type/Name:   coord_t/y                                                //
-    //   Description: The y coordinate for which to search.                    //
-    //                                                                         //
-    // RETURN:                                                                 //
-    //   Type/Name:   int                                                      //
-    //   Description: The index within the version of the list, where the y    //
-    //                coordinate should or does exist.                         //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    int indexY(int t, coord_t y);
-
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: getNodeBefore                                          //
@@ -231,54 +157,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode<Point2d>* getNodeBefore(int t, coord_t y);
-
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: xInArray                                                 //
-    //                                                                         //
-    // PURPOSE:       Determines if a point with a given x coordinate is       //
-    //                in the array.                                            //
-    //                                                                         //
-    // SECURITY:      private                                                  //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   coord_t/x                                                //
-    //   Description: The x coordinate for which to search.                    //
-    //                                                                         //
-    // RETURN:        True  - x coordinate exists in array                     //
-    //                False - x coordinate does not exist in array             //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    bool xInArray(coord_t x);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: duplicateListBeforeY                                   //
-    //                                                                       //
-    // PURPOSE:       Duplicates a list before a given Y coordinate          //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time to duplicate.  The new list will be           //
-    //                placed at t+1, all following lists will be             //
-    //                shifted up by 1.                                       //
-    //                                                                       //
-    //   Type/Name:   coord_t/y                                              //
-    //   Description: The y coordinate before which to duplicate             //
-    //                nodes.  The last node preceding this y                 //
-    //                coordinate will have a next pointer into the           //
-    //                preceding list.                                        //
-    //                                                                       //
-    // RETURN:        int return code, 0 means success.                      //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int duplicateListBeforeY(int t, coord_t y);
     
   public:
     ///////////////////////////////////////////////////////////////////////////
@@ -374,25 +252,6 @@ namespace persistent_list {
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
     Point2d* highestNE(coord_t x, coord_t y);
-    
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: printArray                                               //
-    //                                                                         //
-    // PURPOSE:       Prints the points sorted by x to cout.                   //
-    //                                                                         //
-    // SECURITY:      public                                                   //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   Void.                                                    //
-    //   Description: None.                                                    //
-    //                                                                         //
-    // RETURN:        Void.                                                    //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    void printArray();
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
@@ -414,6 +273,25 @@ namespace persistent_list {
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
     ListNode<Point2d>* getList(int t);
+    
+    /////////////////////////////////////////////////////////////////////////////
+    //                                                                         //
+    // FUNCTION NAME: printArray                                               //
+    //                                                                         //
+    // PURPOSE:       Prints the points sorted by x to cout.                   //
+    //                                                                         //
+    // SECURITY:      public                                                   //
+    //                                                                         //
+    // PARAMETERS                                                              //
+    //   Type/Name:   Void.                                                    //
+    //   Description: None.                                                    //
+    //                                                                         //
+    // RETURN:        Void.                                                    //
+    //                                                                         //
+    // NOTES:         None.                                                    //
+    //                                                                         //
+    /////////////////////////////////////////////////////////////////////////////
+    void printArray();
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
