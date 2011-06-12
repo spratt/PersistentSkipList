@@ -45,6 +45,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <assert.h>
 
 using namespace std;
@@ -55,7 +56,8 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class ListNode {
-    vector< ListNode<T>* > next;
+    typedef map<int, ListNode<T>* > NodeMapType;
+    NodeMapType next;
   public:
     T data;
 
@@ -74,11 +76,8 @@ namespace persistent_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(int t, const T& original_data)
+    ListNode(const T& original_data)
       : next(), data(original_data) {
-      do
-	next.push_back(NULL);
-      while(t-- > 0);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -123,29 +122,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int setNext(int t, ListNode<T>* ln);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: insertNext                                             //
-    //                                                                       //
-    // PURPOSE:       Inserts a new next pointer at time t, shifting         //
-    //                all times >= t up by one.                              //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to insert                            //
-    //                                                                       //
-    //   Type/Name:   ListNode<T>*/ln                                        //
-    //   Description: The node to insert.                                    //
-    //                                                                       //
-    // RETURN:        int return code.  0 means success.                     //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int insertNext(int t, ListNode<T>* ln);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -173,30 +149,15 @@ namespace persistent_list {
   template <class T>
   ListNode<T>* ListNode<T>::getNext(int t) {
     assert(t >= 0);
-    assert(t < (int)next.size());
+    if(next.find(t) == next.end())
+      assert(false);
     return next[t];
   }
 
   template <class T>
   int ListNode<T>::setNext(int t, ListNode<T>* ln) {
     assert(t >= 0);
-    assert(t <= (int)next.size());
-    if(t == (int)next.size())
-      next.push_back(ln);
-    else
-      next[t] = ln;
-    // success
-    return 0;
-  }
-
-  template <class T>
-  int ListNode<T>::insertNext(int t, ListNode<T>* ln) {
-    assert(t >= 0);
-    assert(t <= (int)next.size());
-    if(t == (int)next.size())
-      next.push_back(ln);
-    else
-      next.insert(next.begin()+t,ln);
+    next[t] = ln;
     // success
     return 0;
   }
@@ -204,9 +165,8 @@ namespace persistent_list {
   template <class T>
   int ListNode<T>::printList(int t) {
     assert(t >= 0);
-    assert(t < (int)next.size());
     cout << data << "->";
-    if(next[t] != NULL)
+    if(next.find(t) != next.end() && next[t] != NULL)
       next[t]->printList(t);
     else
       cout << "NULL";
@@ -423,7 +383,7 @@ namespace persistent_list {
       do {
 	ln = next;
 	next = ln->getNext(t-1);
-	ln->insertNext(t,next);
+	ln->setNext(t,next);
       } while(next != NULL);
     }
     return 0; // success
