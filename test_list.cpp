@@ -83,7 +83,8 @@ int main(int argv, char** argc) {
   v = ppl.enumerateNE(n/2,n/2);
   after = time(0);
   size = (int)v.size();
-  cout << "enumerateNE(" << n/2 << "," << n/2 << ") returned " << size << " points"
+  cout << "enumerateNE(" << n/2 << "," << n/2 << ")"
+       << " returned " << size << " points"
        <<" and took: " << (after-before) << endl;
   if(size > 0 && size <= MAX_POINTS_DISPLAY) {
     cout << "Found: "; print(vectorToArray(v),size);
@@ -95,7 +96,8 @@ int main(int argv, char** argc) {
   v = ppl.enumerateNE(n,n);
   after = time(0);
   size = (int)v.size();
-  cout << "enumerateNE(" << n << "," << n << ") returned " << size << " points"
+  cout << "enumerateNE(" << n << "," << n << ")"
+       << " returned " << size << " points"
        <<" and took: " << (after-before) << endl;
   if(size > 0 && size <= MAX_POINTS_DISPLAY) {
     cout << "Found: "; print(vectorToArray(v),size);

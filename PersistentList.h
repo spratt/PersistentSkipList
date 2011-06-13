@@ -26,11 +26,10 @@
 // ListNode::ListNode(int t, const T& original_data)                         //
 // ListNode::getNext(int t)                                                  //
 // ListNode::setNext(int t, ListNode<T>* ln)                                 //
-// ListNode::insertNext(int t, ListNode<T>* ln)                              //
 // ListNode::printList(int t)                                                //
 //                                                                           //
 // PersistentList::PersistentList()                                          //
-// int PersistentList::insert(int t, int index, ListNode<T>* ln)             //
+// int PersistentList::newHead(int t, ListNode<T>* ln)                       //
 // int PersistentList::insertAfterNode(int t,                                //
 //                                     ListNode<T>* old_ln,                  //
 //                                     ListNode<T>* new_ln)                  //
@@ -45,7 +44,6 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
 #include <assert.h>
 
 using namespace std;
@@ -56,8 +54,27 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class ListNode {
-    typedef map<int, ListNode<T>* > NodeMapType;
-    NodeMapType next;
+    vector<int> time;
+    vector<ListNode<T>* > next;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getNextIndex                                           //
+    //                                                                       //
+    // PURPOSE:       Given a time t, gives the index of the nearest time.   //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time for which to search.                          //
+    //                                                                       //
+    // RETURN:        The nearest index in the next pointer vector.          //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int getNextIndex(int t);
   public:
     T data;
 
@@ -84,7 +101,9 @@ namespace persistent_list {
     //                                                                       //
     // FUNCTION NAME: getNext                                                //
     //                                                                       //
-    // PURPOSE:       Retrieves the next pointer at a given time             //
+    // PURPOSE:       Retrieves the next pointer at a given time.  If        //
+    //                the given time is not set, returns the pointer         //
+    //                which would directly precede it.                       //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
@@ -147,17 +166,55 @@ namespace persistent_list {
   // ListNode implementation                                                 //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
+  int ListNode<T>::getNextIndex(int t) {
+    assert(t >= 0);
+    int index = -1;
+    int begin = 0, end = (int)next.size() -1;
+    while(begin <= end) {
+      index = (begin+end)/2;
+      if(t == time[index]) {
+	break;
+      } else if(t < time[index]) {
+	end = index -1;
+      } else {
+	begin = index +1;
+      }
+    }
+    return index;
+  }
+
+  template <class T>
   ListNode<T>* ListNode<T>::getNext(int t) {
     assert(t >= 0);
-    if(next.find(t) == next.end())
-      assert(false);
-    return next[t];
+    int index = getNextIndex(t);
+    ListNode<T>* ln = NULL;
+    bool overshot = time[index] > t;
+    if(index == -1) { // empty list
+    } else if(overshot) { // overshot
+      if(index > 0)
+	ln = next[index-1];
+    } else {
+      ln = next[index];
+    }
+    return ln;
   }
 
   template <class T>
   int ListNode<T>::setNext(int t, ListNode<T>* ln) {
     assert(t >= 0);
-    next[t] = ln;
+    int index = getNextIndex(t);
+    if(index == -1) {
+      time.push_back(t);
+      next.push_back(ln);
+    } else if(t == time[index]) {
+      next[index] = ln;
+    } else if(t < time[index]) {
+      time.insert(time.begin()+index,t);
+      next.insert(next.begin()+index,ln);
+    } else { // greater
+      time.insert(time.begin()+index+1,t);
+      next.insert(next.begin()+index+1,ln);
+    }
     // success
     return 0;
   }
@@ -166,8 +223,9 @@ namespace persistent_list {
   int ListNode<T>::printList(int t) {
     assert(t >= 0);
     cout << data << "->";
-    if(next.find(t) != next.end() && next[t] != NULL)
-      next[t]->printList(t);
+    ListNode<T>* ln = getNext(t);
+    if(ln != NULL)
+      ln->printList(t);
     else
       cout << "NULL";
     // success
@@ -203,18 +261,15 @@ namespace persistent_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: insert                                                 //
+    // FUNCTION NAME: newHead                                                //
     //                                                                       //
-    // PURPOSE:       Inserts a node at index i in list at time t.           //
+    // PURPOSE:       Inserts a node at the beginning of list at time t.     //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   int/t                                                  //
     //   Description: Time t at which to insert                              //
-    //                                                                       //
-    //   Type/Name:   int/index                                              //
-    //   Description: The position in the list at which to insert            //
     //                                                                       //
     //   Type/Name:   ListNode<T>*/ln                                        //
     //   Description: A pointer to the node to insert                        //
@@ -226,7 +281,7 @@ namespace persistent_list {
     // NOTES:         Assumes list at time t exists.                         //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int insert(int t, int index, ListNode<T>* ln);
+    int newHead(int t, ListNode<T>* ln);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -343,15 +398,11 @@ namespace persistent_list {
   // PersistentList implementation                                           //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
-  int PersistentList<T>::insert(int t, int index, ListNode<T>* ln) {
+  int PersistentList<T>::newHead(int t, ListNode<T>* ln) {
     assert(t >= 0);
     assert(t <= (int)lists.size());
-    if(index <= 0) {
-      ln->setNext(t,getNode(t,0));
-      lists[t] = ln;
-    } else {
-      insertAfterNode(t,getNode(t,index-1),ln);
-    }
+    ln->setNext(t,getNode(t,0));
+    lists[t] = ln;
     return 0; // success
   }
   
@@ -376,16 +427,6 @@ namespace persistent_list {
     if(t > 0)
       prev_head = lists[t-1];
     lists.insert(lists.begin()+t,prev_head);
-    if(t > 0 && prev_head != NULL) {
-      // create the new time in each node
-      ListNode<T>* ln;
-      ListNode<T>* next = prev_head;
-      do {
-	ln = next;
-	next = ln->getNext(t-1);
-	ln->setNext(t,next);
-      } while(next != NULL);
-    }
     return 0; // success
   }
 

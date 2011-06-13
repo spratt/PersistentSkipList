@@ -67,7 +67,7 @@ namespace persistent_list {
     ListNode<Point2d>* before = getNodeBefore(index,y);
     ListNode<Point2d>* new_node = new ListNode<Point2d>(p);
     if(before == NULL)
-      points_right.insert(index,0,new_node);
+      points_right.newHead(index,new_node);
     else
       points_right.insertAfterNode(index,before,new_node);
     // success
