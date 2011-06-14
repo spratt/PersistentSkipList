@@ -59,17 +59,29 @@ namespace persistent_list {
     int n = (int)points_sorted_by_x.size();
     int index = 0;
     if(n > 0) {
-      index = binarySearchX(x) + 1;
+      index = binarySearchX(x);
+      if(points_sorted_by_x[index].x >= x) index++;
     }
     points_sorted_by_x.insert(points_sorted_by_x.begin()+index,p);
     // add point to the list at time index
     points_right.newList(index);
-    ListNode<Point2d>* before = getNodeBefore(index,y);
+    ListNode<Point2d>* before = NULL;
     ListNode<Point2d>* new_node = new ListNode<Point2d>(p);
-    if(before == NULL)
-      points_right.newHead(index,new_node);
-    else
-      points_right.insertAfterNode(index,before,new_node);
+    // add point to all lists with t >= index
+    for(int i = index; i < (int)points_right.size(); i++) {
+      if(before == NULL) {
+	before = getNodeBefore(i,y);
+      }
+      if(before == NULL) {
+	new_node->setNext(i,points_right.getList(i));
+	points_right.setHead(i,new_node);
+      } else {
+	while(before->getNext(i) != NULL &&
+	      before->getNext(i)->data.y < y)
+	  before = before->getNext(i);
+	points_right.insertAfterNode(i,before,new_node);
+      }
+    }
     // success
     return 0;
   }

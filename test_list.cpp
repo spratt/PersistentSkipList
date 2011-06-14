@@ -27,7 +27,7 @@ int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
   time_t before, after;
   PointPersistentList ppl;
-  bool worst = false;
+  int type = 0;
   /////////////////////////////////////////////////////////////////////////////
   // insert points                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -35,15 +35,36 @@ int main(int argv, char** argc) {
   if(argv > 1)
     n = atoi(argc[1]);
   if(argv > 2)
-    worst = true;
+    type = atoi(argc[2]);
   if(n <1)
     return 1;
   before = time(0);
-  for(int i = n; i > 0; --i) {
-    if(worst)
-      ppl.insertPoint(i,n-i);
-    else
+  for(int i = 0; i < n; i++) {
+    switch(type) {
+    case 0:
       ppl.insertPoint(i,i);
+      break;
+    case 1:
+      ppl.insertPoint(i,n-i);
+      break;
+    case 2:
+      ppl.insertPoint(n-i,i);
+      break;
+    case 3:
+      ppl.insertPoint(n-i,n-i);
+      break;
+    case 4:
+      ppl.insertPoint(i,n/2);
+      break;
+    case 5:
+      ppl.insertPoint(n/2,i);
+      break;
+    case 6:
+      ppl.insertPoint(n/2,n/2);
+      break;
+    default:
+      assert(false);
+    }
   }
   after = time(0);
   cout << "Inserting " << n << " points took: " << (after-before) << endl;

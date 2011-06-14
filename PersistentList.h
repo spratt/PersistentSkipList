@@ -94,7 +94,7 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode(const T& original_data)
-      : next(), data(original_data) {
+      : time(), next(), data(original_data) {
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -187,10 +187,10 @@ namespace persistent_list {
   ListNode<T>* ListNode<T>::getNext(int t) {
     assert(t >= 0);
     int index = getNextIndex(t);
+    if(index == -1) return NULL;
     ListNode<T>* ln = NULL;
     bool overshot = time[index] > t;
-    if(index == -1) { // empty list
-    } else if(overshot) { // overshot
+    if(overshot) { // overshot
       if(index > 0)
 	ln = next[index-1];
     } else {
@@ -261,27 +261,27 @@ namespace persistent_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: newHead                                                //
+    // FUNCTION NAME: setHead                                                //
     //                                                                       //
-    // PURPOSE:       Inserts a node at the beginning of list at time t.     //
+    // PURPOSE:       Sets a node to the head of the list at time t.         //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   int/t                                                  //
-    //   Description: Time t at which to insert                              //
+    //   Description: Time t at which to set                                 //
     //                                                                       //
     //   Type/Name:   ListNode<T>*/ln                                        //
-    //   Description: A pointer to the node to insert                        //
+    //   Description: A pointer to the node to set                           //
     //                                                                       //
     // RETURN:                                                               //
     //   Type/Name:   int                                                    //
     //   Description: A return code, 0 means success.                        //
     //                                                                       //
-    // NOTES:         Assumes list at time t exists.                         //
+    // NOTES:         Assumes list at time t exists or is one past the end.  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int newHead(int t, ListNode<T>* ln);
+    int setHead(int t, ListNode<T>* ln);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -398,10 +398,9 @@ namespace persistent_list {
   // PersistentList implementation                                           //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
-  int PersistentList<T>::newHead(int t, ListNode<T>* ln) {
+  int PersistentList<T>::setHead(int t, ListNode<T>* ln) {
     assert(t >= 0);
     assert(t <= (int)lists.size());
-    ln->setNext(t,getNode(t,0));
     lists[t] = ln;
     return 0; // success
   }
