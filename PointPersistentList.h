@@ -26,6 +26,9 @@
 // Point2d::Point2d(coord_t x, coord_t y)                                    //
 // ostream& operator<<(ostream& os, const Point2d& p)                        //
 //                                                                           //
+// PointListNode(const Point2d& p)                                           //
+// int PointListNode::setNext(int t, PointListNode* ln)                      //
+//                                                                           //
 // PersistentList::PointPersistentList()                                     //
 // int PersistentList::insertPoint(coord_t x, coord_t y)                     //
 // vector<Point2d> PersistentList::enumerateNE(coord_t x, coord_t y)         //
@@ -98,6 +101,38 @@ namespace persistent_list {
   //                                                                         //
   /////////////////////////////////////////////////////////////////////////////
   ostream& operator<<(ostream& os, const Point2d& p);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PointListNode interface                                                 //
+  /////////////////////////////////////////////////////////////////////////////
+  class PointListNode : public ListNode<Point2d> {
+  public:
+    PointListNode(const Point2d& p)
+      : ListNode<Point2d>(p)
+    {}
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: setNext                                                //
+    //                                                                       //
+    // PURPOSE:       Set the next pointer at time t                         //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to set the pointer.                  //
+    //                                                                       //
+    //   Type/Name:   PointListNode*/ln                                      //
+    //   Description: The pointer to which to assign next.                   //
+    //                                                                       //
+    // RETURN:        int return code.  0 means success                      //
+    //                                                                       //
+    // NOTES:         Since this node type knows the ordering, it can        //
+    //                also set the next pointer in future versions.          //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int setNext(int t, PointListNode* ln);
+  };
   
   /////////////////////////////////////////////////////////////////////////////
   // PointPersistentList interface                                           //
@@ -157,6 +192,35 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode<Point2d>* getNodeBefore(int t, coord_t y);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getNodeBefore                                          //
+    //                                                                       //
+    // PURPOSE:       Returns the node directly preceding a node with        //
+    //                a given y-coordinate, or where that node should be.    //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The list time (version) to search                      //
+    //                                                                       //
+    //   Type/Name:   coord_t/y                                              //
+    //   Description: The y-coordinate for which to search                   //
+    //                                                                       //
+    //   Type/Name:   ListNode<Point2d>*/start                               //
+    //   Description: The node at which to begin searching                   //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   ListNode<Point2d>*                                     //
+    //   Description: The node preceding or which would precede a node       //
+    //                with the given y coordinate.                           //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    ListNode<Point2d>* getNodeBefore(int t, coord_t y, ListNode<Point2d>* start);
     
   public:
     ///////////////////////////////////////////////////////////////////////////

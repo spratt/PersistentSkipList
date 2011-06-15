@@ -45,13 +45,13 @@ int main(int argv, char** argc) {
       ppl.insertPoint(i,i);
       break;
     case 1:
-      ppl.insertPoint(i,n-i);
+      ppl.insertPoint(i,n-i-1);
       break;
     case 2:
-      ppl.insertPoint(n-i,i);
+      ppl.insertPoint(n-i-1,i);
       break;
     case 3:
-      ppl.insertPoint(n-i,n-i);
+      ppl.insertPoint(n-i-1,n-i-1);
       break;
     case 4:
       ppl.insertPoint(i,n/2);

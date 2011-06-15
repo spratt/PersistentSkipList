@@ -20,11 +20,69 @@ using namespace std;
 using namespace array_utilities;
 
 namespace persistent_list {
+  /////////////////////////////////////////////////////////////////////////////
+  // Point2d implementation                                                  //
+  /////////////////////////////////////////////////////////////////////////////
   ostream& operator<<(ostream& os, const Point2d& p) {
     os << "(" << p.x << "," << p.y << ")";
     return os;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // PointListNode implementation                                            //
+  /////////////////////////////////////////////////////////////////////////////
+  int PointListNode::setNext(int t, PointListNode* ln) {
+    // find the nearest index at which to set the next pointer
+    int index = getNextIndex(t);
+    // if there are no next pointers
+    if(index == -1) {
+      // push this one
+      time.push_back(t);
+      next.push_back(ln);
+    }
+    // if there was already a pointer at that time
+    else if(t == time[index]) {
+      // set the new pointer
+      ln->setNext(t,(PointListNode*)next[index]);
+      next[index] = ln;
+    }
+    // if the nearest index is greater
+    else if(time[index] > t) {
+      // insert before
+      ln->setNext(t,(PointListNode*)next[index]);
+      time.insert(time.begin()+index,t);
+      next.insert(next.begin()+index,ln);
+    }
+    // if the nearest index is smaller
+    else {
+      // insert after
+      ++index;
+      ln->setNext(t,(PointListNode*)next[index]);
+      time.insert(time.begin()+index,t);
+      next.insert(next.begin()+index,ln);
+    }
+    // iterate through the future versions
+    ++index;
+    while(index < (int)time.size()) {
+      // if next should precede the new point
+      if(next[index]->data.y < ln->data.y) {
+	// set next on next
+	return ((PointListNode*)next[index])
+	  ->setNext(time[index],(PointListNode*)ln);
+      }
+      // otherwise, delete this change index so that the previous next
+      // will continue through this time
+      ln->setNext(time[index],(PointListNode*)next[index]);
+      time.erase(time.begin() + index);
+      next.erase(next.begin() + index);
+    }
+    // success
+    return 0;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // PointPersistentList implementation                                      //
+  /////////////////////////////////////////////////////////////////////////////
   // assumes points_sorted_by_x is sorted in descending order
   int PointPersistentList::binarySearchX(coord_t x) {
     int index = -1;
@@ -44,12 +102,25 @@ namespace persistent_list {
   }
   
   ListNode<Point2d>* PointPersistentList::getNodeBefore(int t, coord_t y) {
-    ListNode<Point2d>* pln = points_right.getList(t);
-    if(pln != NULL && pln->data.y > y)
+    // search forward from the first node in the list at time t
+    // and return the immediately preceding node
+    return getNodeBefore(t,y,points_right.getList(t));
+  }
+
+  ListNode<Point2d>* PointPersistentList::getNodeBefore(int t,
+							coord_t y,
+							ListNode<Point2d>* start) {
+    // if that node does not precede y, return NULL
+    if(start != NULL && start->data.y >= y)
       return NULL;
-    while(pln != NULL && pln->getNext(t) != NULL && pln->getNext(t)->data.y < y)
-      pln = pln->getNext(t);
-    return pln;
+    // otherwise, search forward to find the node which immediately precedes
+    // the given y
+    while(start != NULL &&
+	  start->getNext(t) != NULL &&
+	  start->getNext(t)->data.y < y)
+      start = start->getNext(t);
+    // return the immediately preceding node
+    return start;
   }
 
   int PointPersistentList::insertPoint(coord_t x, coord_t y) {
@@ -60,27 +131,38 @@ namespace persistent_list {
     int index = 0;
     if(n > 0) {
       index = binarySearchX(x);
+      // binary search will return the nearest point already stored
+      // if this point is larger than or equal to the new point,
+      // we need to insert the new point _after_ the nearest
+      // since we are storing the points in descending order
       if(points_sorted_by_x[index].x >= x) index++;
     }
     points_sorted_by_x.insert(points_sorted_by_x.begin()+index,p);
-    // add point to the list at time index
+    // since we have just added a new point, increment the number of points
+    n++;
+    // create the version of the list at which the new node will be inserted
     points_right.newList(index);
-    ListNode<Point2d>* before = NULL;
-    ListNode<Point2d>* new_node = new ListNode<Point2d>(p);
-    // add point to all lists with t >= index
-    for(int i = index; i < (int)points_right.size(); i++) {
-      if(before == NULL) {
-	before = getNodeBefore(i,y);
-      }
-      if(before == NULL) {
-	new_node->setNext(i,points_right.getList(i));
-	points_right.setHead(i,new_node);
-      } else {
-	while(before->getNext(i) != NULL &&
-	      before->getNext(i)->data.y < y)
-	  before = before->getNext(i);
-	points_right.insertAfterNode(i,before,new_node);
-      }
+    // determine if there is a preceding node
+    ListNode<Point2d>* before = getNodeBefore(index,y);
+    // create the new node
+    ListNode<Point2d>* new_node = new PointListNode(p);
+    points_right.registerNode(new_node);
+    // while at time index there are no preceding nodes
+    while(before == NULL) {
+      // set the next of the current node to the previous head
+      new_node->setNext(index,(PointListNode*)points_right.getList(index));
+      // set the current node to be the new head
+      points_right.setHead(index,new_node);
+      // break if we have reached the end of the points
+      if(++index >= (int)points_right.size())
+	break;
+      // otherwise, look for a preceding node at the current index
+      before = getNodeBefore(index,y);
+    }
+    // if there is a preceding node
+    if(before != NULL) {
+      // set its next to the new node
+      before->setNext(index,new_node);
     }
     // success
     return 0;
@@ -88,10 +170,14 @@ namespace persistent_list {
 
   vector< Point2d > PointPersistentList::enumerateNE(coord_t x, coord_t y) {
     vector< Point2d > v;
+    // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    // get the first node in this list at time index
     ListNode<Point2d>* pln = points_right.getList(index);
+    // find the first point with a y coordinate equal to or greater than y
     while(pln != NULL && pln->data.y < y)
       pln = pln->getNext(index);
+    // return all points with y coordinate higher than that point
     while(pln != NULL) {
       v.push_back(pln->data);
       pln = pln->getNext(index);
@@ -101,10 +187,18 @@ namespace persistent_list {
 
   Point2d* PointPersistentList::highestNE(coord_t x, coord_t y) {
     vector< Point2d > v;
+    // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    // get the first node in this list at time index
     ListNode<Point2d>* pln = points_right.getList(index);
+    // if there are no points NE of the given point, return null
     if(pln == NULL) return NULL;
+    // since the list is sorted by y coordinate ascending, find the
+    // last node in the list
     while(pln->getNext(index) != NULL) pln = pln->getNext(index);
+    // return the address of the point contained in the last node
+    // which must be the highest y if the invariant of sorted by
+    // y coordinate ascending is upheld
     return &(pln->data);
   }
   
