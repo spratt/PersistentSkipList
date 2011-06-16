@@ -186,7 +186,6 @@ namespace persistent_list {
   }
 
   Point2d* PointPersistentList::highestNE(coord_t x, coord_t y) {
-    vector< Point2d > v;
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
     // get the first node in this list at time index
@@ -200,6 +199,30 @@ namespace persistent_list {
     // which must be the highest y if the invariant of sorted by
     // y coordinate ascending is upheld
     return &(pln->data);
+  }
+
+  Point2d* PointPersistentList::leftMostNE(coord_t x, coord_t y) {
+    Point2d* leftMost = NULL;
+    // determine the time at which to search by searching for the x
+    int index = binarySearchX(x);
+    // get the first node in this list at time index
+    ListNode<Point2d>* pln = points_right.getList(index);
+    // if there are no points NE of the given point, return null
+    if(pln == NULL) return NULL;
+    // take the first point as left most for now
+    leftMost = &(pln->data);
+    // set pln to its next pointer
+    pln = pln->getNext(index);
+    // iterate over nodes in the list
+    while(pln != NULL) {
+      // check if point is more left than current left most
+      if(pln->data.x < leftMost->x)
+	leftMost = &(pln->data);
+      // set pln to its next pointer
+      pln = pln->getNext(index);
+    }
+    // return the left most point
+    return leftMost;
   }
   
   ListNode<Point2d>* PointPersistentList::getList(int t) {

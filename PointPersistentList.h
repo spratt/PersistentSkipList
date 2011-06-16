@@ -317,6 +317,31 @@ namespace persistent_list {
     /////////////////////////////////////////////////////////////////////////////
     Point2d* highestNE(coord_t x, coord_t y);
 
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: leftMostNE                                             //
+    //                                                                       //
+    // PURPOSE:       Returns the point NE of a given point with             //
+    //                lowest x-coordinate.                                   //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   coord_t/x                                              //
+    //   Description: X coordinate                                           //
+    //                                                                       //
+    //   Type/Name:   coord_t/y                                              //
+    //   Description: Y coordinate                                           //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   Point2d                                                //
+    //   Description: Left-most point NE of the given point.                 //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    Point2d* leftMostNE(coord_t x, coord_t y);
+    
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
     // FUNCTION NAME: getList                                                  //

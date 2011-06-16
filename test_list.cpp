@@ -27,17 +27,37 @@ int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
   time_t before, after;
   PointPersistentList ppl;
-  int type = 0;
+  vector< Point2d > v;
+  Point2d* p;
+  int size, type, n, qi;
+  /////////////////////////////////////////////////////////////////////////////
+  // Ensure the user has entered required parameters, otherwise print        //
+  // a helpful message.                                                      //
+  /////////////////////////////////////////////////////////////////////////////
+  if(argv < 4) {
+    cout << "Usage: test_list"
+	 << " [number of points] [order of point insertion] [query iterations]"
+	 << endl << endl
+	 << "Orders available for insertion:" << endl
+	 << "   0: x and y increasing, each point is NE of each previous point"
+	 << endl
+	 << "   1: x increasing, y decreasing, each point is SE of previous"
+	 << endl
+	 << "   2: x decreasing, y increasing, each point is NW of previous"
+	 << endl
+	 << "   3: x and y decreasing, each point is SW of previous"
+	 << endl;
+    return 1;
+  }
+  // parse number of points
+  n = atoi(argc[1]);
+  // parse order of point insertion
+  type = atoi(argc[2]);
+  // parse query iterations
+  qi = atoi(argc[3]);
   /////////////////////////////////////////////////////////////////////////////
   // insert points                                                           //
   /////////////////////////////////////////////////////////////////////////////
-  int n = 1000;
-  if(argv > 1)
-    n = atoi(argc[1]);
-  if(argv > 2)
-    type = atoi(argc[2]);
-  if(n <1)
-    return 1;
   before = time(0);
   for(int i = 0; i < n; i++) {
     switch(type) {
@@ -52,16 +72,6 @@ int main(int argv, char** argc) {
       break;
     case 3:
       ppl.insertPoint(n-i-1,n-i-1);
-      break;
-    case 4:
-      ppl.insertPoint(i,n/2);
-      break;
-    case 5:
-      ppl.insertPoint(n/2,i);
-      break;
-    case 6:
-      ppl.insertPoint(n/2,n/2);
-      break;
     default:
       assert(false);
     }
@@ -73,7 +83,7 @@ int main(int argv, char** argc) {
     cout << "Points: "; ppl.printArray();
   }
   /////////////////////////////////////////////////////////////////////////////
-  // debug                                                                   //
+  // Print the structure if the number of points is small                    //
   /////////////////////////////////////////////////////////////////////////////
   if(n <= MAX_POINTS_DISPLAY) {
     for(int i = 0; i < n; i++) {
@@ -89,9 +99,11 @@ int main(int argv, char** argc) {
   // enumerateNE(0,0)                                                        //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  vector< Point2d > v = ppl.enumerateNE(0,0);
+  for(int i = 0; i < qi; i++)
+    v = ppl.enumerateNE(0,0);
   after = time(0);
-  int size = (int)v.size();
+  size = (int)v.size();
+  cout << qi << " iterations of ";
   cout << "enumerateNE(0,0) returned " << size << " points"
        <<" and took: " << (after-before) << endl;
   if(size > 0 && size <= MAX_POINTS_DISPLAY) {
@@ -101,9 +113,11 @@ int main(int argv, char** argc) {
   // enumerateNE(n/2,n/2)                                                    //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  v = ppl.enumerateNE(n/2,n/2);
+  for(int i = 0; i < qi; i++)
+    v = ppl.enumerateNE(n/2,n/2);
   after = time(0);
   size = (int)v.size();
+  cout << qi << " iterations of ";
   cout << "enumerateNE(" << n/2 << "," << n/2 << ")"
        << " returned " << size << " points"
        <<" and took: " << (after-before) << endl;
@@ -114,9 +128,11 @@ int main(int argv, char** argc) {
   // enumerateNE(n,n)                                                        //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  v = ppl.enumerateNE(n,n);
+  for(int i = 0; i < qi; i++)
+    v = ppl.enumerateNE(n,n);
   after = time(0);
   size = (int)v.size();
+  cout << qi << " iterations of ";
   cout << "enumerateNE(" << n << "," << n << ")"
        << " returned " << size << " points"
        <<" and took: " << (after-before) << endl;
@@ -127,16 +143,20 @@ int main(int argv, char** argc) {
   // highestNE(0,0)                                                          //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  Point2d* p = ppl.highestNE(0,0);
+  for(int i = 0; i < qi; i++)
+    p = ppl.highestNE(0,0);
   after = time(0);
+  cout << qi << " iterations of ";
   cout << "highestNE(0,0) took: " << (after-before) << endl;
   cout << "Found: " << *p << endl;
   /////////////////////////////////////////////////////////////////////////////
   // highestNE(n/2,n/2)                                                      //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  p = ppl.highestNE(n/2,n/2);
+  for(int i = 0; i < qi; i++)
+    p = ppl.highestNE(n/2,n/2);
   after = time(0);
+  cout << qi << " iterations of ";
   cout << "highestNE(" << n/2 << "," << n/2 << ") took: "
        << (after-before) << endl
        << "Found: " << *p << endl;
@@ -144,9 +164,44 @@ int main(int argv, char** argc) {
   // highestNE(n,n)                                                          //
   /////////////////////////////////////////////////////////////////////////////
   before = time(0);
-  p = ppl.highestNE(n,n);
+  for(int i = 0; i < qi; i++)
+    p = ppl.highestNE(n,n);
   after = time(0);
+  cout << qi << " iterations of ";
   cout << "highestNE(" << n << "," << n << ") took: "
+       << (after-before) << endl
+       << "Found: " << *p << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // leftMostNE(0,0)                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  for(int i = 0; i < qi; i++)
+    p = ppl.leftMostNE(0,0);
+  after = time(0);
+  cout << qi << " iterations of ";
+  cout << "leftMostNE(0,0) took: "
+       << (after-before) << endl
+       << "Found: " << *p << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // leftMostNE(n/2,n/2)                                                     //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  for(int i = 0; i < qi; i++)
+    p = ppl.leftMostNE(n/2,n/2);
+  after = time(0);
+  cout << qi << " iterations of ";
+  cout << "leftMostNE(" << n/2 << "," << n/2 << ") took: "
+       << (after-before) << endl
+       << "Found: " << *p << endl;
+  /////////////////////////////////////////////////////////////////////////////
+  // leftMostNE(n,n)                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  before = time(0);
+  for(int i = 0; i < qi; i++)
+    p = ppl.leftMostNE(n,n);
+  after = time(0);
+  cout << qi << " iterations of ";
+  cout << "leftMostNE(" << n << "," << n << ") took: "
        << (after-before) << endl
        << "Found: " << *p << endl;
   return 0;
