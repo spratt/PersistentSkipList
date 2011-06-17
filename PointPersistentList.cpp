@@ -188,6 +188,12 @@ namespace persistent_list {
   Point2d* PointPersistentList::highestNE(coord_t x, coord_t y) {
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    if(index == -1) return NULL;
+    if(points_sorted_by_x[index].x < x) {
+      --index;
+      if(index < 0)
+	return NULL;
+    }
     // get the first node in this list at time index
     ListNode<Point2d>* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
@@ -205,6 +211,12 @@ namespace persistent_list {
     Point2d* leftMost = NULL;
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    if(index == -1) return NULL;
+    if(points_sorted_by_x[index].x < x) {
+      --index;
+      if(index < 0)
+	return NULL;
+    }
     // get the first node in this list at time index
     ListNode<Point2d>* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
