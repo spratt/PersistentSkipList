@@ -72,16 +72,29 @@ int main(int argv, char** argc) {
   for(int i = 0; i < n; i++) {
     switch(type) {
     case 0:
+      // x increasing
+      // y increasing
       ppl.insertPoint(i,i);
       break;
     case 1:
+      // x increasing
+      // y decreasing
       ppl.insertPoint(i,n-i-1);
       break;
     case 2:
+      // x decreasing
+      // y increasing
       ppl.insertPoint(n-i-1,i);
       break;
     case 3:
+      // x decreasing
+      // y decreasing
       ppl.insertPoint(n-i-1,n-i-1);
+      break;
+    case 4:
+      // x random
+      // y random
+      ppl.insertPoint(rand() % n, rand() % n);
       break;
     default:
       assert(false);
@@ -97,7 +110,7 @@ int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
   if(QUIET_MODE) {
     cout << "Memory usage(%): " << flush;
-    system("ps auxww | grep test_list | grep -v grep | grep -v ps | awk '{print $4}'");
+    assert(system("ps auxww | grep test_list | grep -v grep | grep -v ps | awk '{print $4}'") == 0);
   } else {
     control_utilities::waitForAnyKey();
   }

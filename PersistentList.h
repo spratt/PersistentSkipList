@@ -600,15 +600,19 @@ namespace persistent_list {
   template <class T>
   int PersistentList<T>::newList(int t) {
     assert(t >= 0);
-    assert(t <= (int)lists.size());
+    int n = (int)lists.size();
+    assert(t <= n);
     // save the new head
     ListNode<T>* prev_head = NULL;
     if(t > 0)
       prev_head = lists[t-1];
     lists.insert(lists.begin()+t,prev_head);
-    // increment timestamps in all registered nodes
-    for(int i = 0; i < (int)all_nodes.size(); ++i)
+    // if there are any following times
+    if(t < n) {
+      // increment timestamps in all registered nodes
+      for(int i = 0; i < (int)all_nodes.size(); ++i)
 	all_nodes[i]->incrementTimestampsAfter(t);
+    }
     return 0; // success
   }
 

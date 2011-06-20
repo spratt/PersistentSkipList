@@ -32,16 +32,21 @@ namespace persistent_list {
   // PointListNode implementation                                            //
   /////////////////////////////////////////////////////////////////////////////
   int PointListNode::setNext(int t, PointListNode* ln) {
-    // find the nearest index at which to set the next pointer
-    int index = getNextIndex(t);
+    ///////////////////////////////////////////////////////////////////////////
+    // Insert next node at time t                                            //
+    ///////////////////////////////////////////////////////////////////////////
     // if there are no next pointers
-    if(index == -1) {
+    if(0 == (int)time.size()) {
       // push this one
       time.push_back(t);
       next.push_back(ln);
+      // success
+      return 0;
     }
+    // find the nearest index at which to set the next pointer
+    int index = getNextIndex(t);
     // if there was already a pointer at that time
-    else if(t == time[index]) {
+    if(t == time[index]) {
       // set the new pointer
       ln->setNext(t,(PointListNode*)next[index]);
       next[index] = ln;
@@ -61,6 +66,9 @@ namespace persistent_list {
       time.insert(time.begin()+index,t);
       next.insert(next.begin()+index,ln);
     }
+    ///////////////////////////////////////////////////////////////////////////
+    // Insert next node at all times > t                                     //
+    ///////////////////////////////////////////////////////////////////////////
     // iterate through the future versions
     ++index;
     while(index < (int)time.size()) {
