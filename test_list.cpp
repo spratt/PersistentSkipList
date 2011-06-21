@@ -52,6 +52,8 @@ int main(int argv, char** argc) {
 	 << "   2: x decreasing, y increasing, each point is NW of previous"
 	 << endl
 	 << "   3: x and y decreasing, each point is SW of previous"
+	 << endl
+	 << "   4: x and y random"
 	 << endl;
     return 1;
   }
