@@ -30,8 +30,10 @@ namespace array_utilities {
   // given a vector, returns the address of the inner array
   template <class T>
   T* vectorToArray(std::vector<T>& v) {
-    // C++ doesn't really do encapsulation
-    return &(v[0]);
+    // Since the elements in a vector are guaranteed to be stored in memory
+    // sequentially, we can simply take the address of the first element
+    // and treat it as an array.
+    return &(*v)[0];
   }
   // print the n first points in a given array
   template <class T>
