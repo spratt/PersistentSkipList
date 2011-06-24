@@ -42,10 +42,13 @@ namespace array_utilities {
   // N.B. can't overload a function template
   template <class T>
   void printRange(T* points, int begin, int end) {
-    std::cout << "{ " << points[begin];
-    for(int i = begin+1; i <= end; i++)
-      std::cout << " " << points[i];
-    std::cout << " }" << std::endl;
+    std::cout << "{ ";
+    if(begin <= end) {
+      std::cout << points[begin];
+      for(int i = begin+1; i <= end; i++)
+	std::cout << " " << points[i];
+    }
+    std::cout << "}" << std::endl;
   }
   // given an array, swaps point at index a with point at index b
   template <class T>

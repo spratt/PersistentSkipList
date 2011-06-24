@@ -41,7 +41,7 @@
 #ifndef POINTPERSISTENTLIST_H
 #define POINTPERSISTENTLIST_H
 
-#include <vector>
+#include <map>
 #include "PersistentList.h"
 
 namespace persistent_list {
@@ -55,6 +55,25 @@ namespace persistent_list {
   public:
     coord_t x, y;
 
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: Point2d                                                //
+    //                                                                       //
+    // PURPOSE:       Empty constructor                                      //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    Point2d()
+      : x(0), y(0)
+    {}
+    
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: Point2d                                                //
@@ -76,7 +95,37 @@ namespace persistent_list {
     Point2d(coord_t x, coord_t y)
       : x(x), y(y)
     {}
+
+    struct yxasc {
+      bool operator()(const Point2d& a, const Point2d& b) const {
+	if(a.y == b.y)
+	  return a.x < b.x;
+	return a.y < b.y;
+      }
+    };
   };
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                                                                         //
+  // FUNCTION NAME: operator>                                                //
+  //                                                                         //
+  // PURPOSE:       Compares two Point2d objects based on their x coordinate.//
+  //                                                                         //
+  // SECURITY:      public                                                   //
+  //                                                                         //
+  // PARAMETERS                                                              //
+  //   Type/Name:   Point2d/a                                                //
+  //   Description: The first point to compare.                              //
+  //                                                                         //
+  //   Type/Name:   Point2d/b                                                //
+  //   Description: The second point to compare.                             //
+  //                                                                         //
+  // RETURN:        True if a is greater than b, false otherwise.            //
+  //                                                                         //
+  // NOTES:         None.                                                    //
+  //                                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  bool operator>(const Point2d& a, const Point2d& b);
 
   /////////////////////////////////////////////////////////////////////////////
   //                                                                         //
@@ -138,11 +187,41 @@ namespace persistent_list {
   // PointPersistentList interface                                           //
   /////////////////////////////////////////////////////////////////////////////
   class PointPersistentList {
+    bool _LOCKED;
+    
     // An array of points sorted by x coordinate
-    vector<Point2d> points_sorted_by_x;
+    vector< Point2d > points_sorted_by_x;
 
     // A persistent list of points sorted by y coordinate
     PersistentList< Point2d > points_right;
+
+    // A tree to speed up insertion of points
+    map< Point2d, PointListNode*, Point2d::yxasc >* point_tree;
+
+    /////////////////////////////////////////////////////////////////////////////
+    //                                                                         //
+    // FUNCTION NAME: insertPoint                                              //
+    //                                                                         //
+    // PURPOSE:       Inserts a point into the structure, with given x and y   //
+    //                coordinates.                                             //
+    //                                                                         //
+    // SECURITY:      public                                                   //
+    //                                                                         //
+    // PARAMETERS                                                              //
+    //   Type/Name:   coord_t/x                                                //
+    //   Description: x-coordinate                                             //
+    //                                                                         //
+    //   Type/Name:   coord_t/y                                                //
+    //   Description: y-coordinate                                             //
+    //                                                                         //
+    // RETURN:                                                                 //
+    //   Type/Name:   int                                                      //
+    //   Description: 0 for success.                                           //
+    //                                                                         //
+    // NOTES:         None.                                                    //
+    //                                                                         //
+    /////////////////////////////////////////////////////////////////////////////
+    int insertPoint(const Point2d& p);
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
@@ -239,33 +318,54 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     PointPersistentList()
-      : points_sorted_by_x(), points_right()
-    {}
+      : _LOCKED(false), points_sorted_by_x(), points_right()
+    {
+      point_tree = new map< Point2d , PointListNode*, Point2d::yxasc >();
+    }
 
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: insertPoint                                              //
-    //                                                                         //
-    // PURPOSE:       Inserts a point into the structure, with given x and y   //
-    //                coordinates.                                             //
-    //                                                                         //
-    // SECURITY:      public                                                   //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   coord_t/x                                                //
-    //   Description: x-coordinate                                             //
-    //                                                                         //
-    //   Type/Name:   coord_t/y                                                //
-    //   Description: y-coordinate                                             //
-    //                                                                         //
-    // RETURN:                                                                 //
-    //   Type/Name:   int                                                      //
-    //   Description: 0 for success.                                           //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    int insertPoint(coord_t x,coord_t y);
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: insertPoints                                           //
+    //                                                                       //
+    // PURPOSE:       Inserts an array of points efficiently and             //
+    //                closes the structure against future changes.           //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Point2d*/points                                        //
+    //   Description: An array of points to be added.                        //
+    //                                                                       //
+    //   Type/Name:   int/npoints                                            //
+    //   Description: The number of elements in the array.                   //
+    //                                                                       //
+    // RETURN:        An integer return code.  0 means success.              //
+    //                                                                       //
+    // NOTES:         The order of the points may change as a side effect.   //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int insertPoints(Point2d* points, int npoints);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: lock                                                   //
+    //                                                                       //
+    // PURPOSE:       Locks the data structure and frees all memory          //
+    //                used while inserting points.                           //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:        0  means success.                                      //
+    //                -1 means already locked.                               //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int lock();
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //

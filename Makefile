@@ -15,11 +15,13 @@ test_list: control_utilities.o array_utilities.o PersistentList.o PointPersisten
 # object files
 PersistentList.o: array_utilities.o PersistentList.h
 
-PointPersistentList.o: array_utilities.o PersistentList.o PointPersistentList.h
+PointPersistentList.o: array_utilities.o sort/heap_sort.o PersistentList.o PointPersistentList.h
 
 array_utilities.o: array_utilities.h
 
 control_utilities.o: control_utilities.h
+
+sort/heap_sort.o: sort/heap_sort.h
 
 # in case of emergency
 clean:

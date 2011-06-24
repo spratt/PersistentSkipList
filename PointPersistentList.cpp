@@ -11,10 +11,14 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+#include <assert.h>
 #include <iostream>
+#include <vector>
+#include <map>
 #include "PersistentList.h"
 #include "PointPersistentList.h"
 #include "array_utilities.h"
+#include "sort/heap_sort.h"
 
 using namespace std;
 using namespace array_utilities;
@@ -23,6 +27,10 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   // Point2d implementation                                                  //
   /////////////////////////////////////////////////////////////////////////////
+  bool operator>(const Point2d& a, const Point2d& b) {
+    return a.x > b.x;
+  }
+  
   ostream& operator<<(ostream& os, const Point2d& p) {
     os << "(" << p.x << "," << p.y << ")";
     return os;
@@ -31,59 +39,10 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   // PointListNode implementation                                            //
   /////////////////////////////////////////////////////////////////////////////
+  
   int PointListNode::setNext(int t, PointListNode* ln) {
-    ///////////////////////////////////////////////////////////////////////////
-    // Insert next node at time t                                            //
-    ///////////////////////////////////////////////////////////////////////////
-    // if there are no next pointers
-    if(0 == (int)time.size()) {
-      // push this one
-      time.push_back(t);
-      next.push_back(ln);
-      // success
-      return 0;
-    }
-    // find the nearest index at which to set the next pointer
-    int index = getNextIndex(t);
-    // if there was already a pointer at that time
-    if(t == time[index]) {
-      // set the new pointer
-      ln->setNext(t,(PointListNode*)next[index]);
-      next[index] = ln;
-    }
-    // if the nearest index is greater
-    else if(time[index] > t) {
-      // insert before
-      ln->setNext(t,(PointListNode*)next[index]);
-      time.insert(time.begin()+index,t);
-      next.insert(next.begin()+index,ln);
-    }
-    // if the nearest index is smaller
-    else {
-      // insert after
-      ++index;
-      ln->setNext(t,(PointListNode*)next[index]);
-      time.insert(time.begin()+index,t);
-      next.insert(next.begin()+index,ln);
-    }
-    ///////////////////////////////////////////////////////////////////////////
-    // Insert next node at all times > t                                     //
-    ///////////////////////////////////////////////////////////////////////////
-    // iterate through the future versions
-    ++index;
-    while(index < (int)time.size()) {
-      // if next should precede the new point
-      if(next[index]->data.y < ln->data.y) {
-	// set next on next
-	return ((PointListNode*)next[index])
-	  ->setNext(time[index],(PointListNode*)ln);
-      }
-      // otherwise, delete this change index so that the previous next
-      // will continue through this time
-      ln->setNext(time[index],(PointListNode*)next[index]);
-      time.erase(time.begin() + index);
-      next.erase(next.begin() + index);
-    }
+    if(getNext(t) == ln) return 0; // already done
+    ((ListNode< Point2d >*)this)->setNext(t,(ListNode< Point2d >*)ln);
     // success
     return 0;
   }
@@ -91,6 +50,44 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   // PointPersistentList implementation                                      //
   /////////////////////////////////////////////////////////////////////////////
+
+  int PointPersistentList::insertPoint(const Point2d& p) {
+    // check for duplicate
+    if(point_tree->find(p) != point_tree->end())
+      return -1;
+    // determine the time
+    int t = points_sorted_by_x.size();
+    // assume point is at a smaller x coordinate than all preceding points
+    points_sorted_by_x.push_back(p);
+    // create a new node
+    PointListNode* ln = new PointListNode(p);
+    // insert point into tree                  O(logn)
+    (*point_tree)[p] = ln;
+    // find previous node                      O(logn)ish
+    map<Point2d, PointListNode*, Point2d::yxasc >::iterator it =
+      point_tree->find(p);
+    // if new node was at the beginning
+    if(it == point_tree->begin()) {
+      points_right.setHead(t,(ListNode< Point2d >*)ln);
+    }
+    // otherwise, the new node must not be at the beginning
+    else {
+      // create a new head for the list
+      points_right.setHead(t,points_right.getList(t-1));
+      // set the next pointer on the previous node
+      PointListNode* prev = (--it)->second;
+      prev->setNext(t,ln);
+      ++it;
+    }
+    // if the new node was not at the end
+    if(it != point_tree->end()) {
+      // set the next pointer on the new node
+      ln->setNext(t,(++it)->second);
+    }
+    // success
+    return 0;
+  }
+
   // assumes points_sorted_by_x is sorted in descending order
   int PointPersistentList::binarySearchX(coord_t x) {
     int index = -1;
@@ -131,48 +128,26 @@ namespace persistent_list {
     return start;
   }
 
-  int PointPersistentList::insertPoint(coord_t x, coord_t y) {
-    // build point on stack
-    Point2d p(x,y);
-    // add point to the array of points sorted by x
-    int n = (int)points_sorted_by_x.size();
-    int index = 0;
-    if(n > 0) {
-      index = binarySearchX(x);
-      // binary search will return the nearest point already stored
-      // if this point is larger than or equal to the new point,
-      // we need to insert the new point _after_ the nearest
-      // since we are storing the points in descending order
-      if(points_sorted_by_x[index].x >= x) index++;
+  int PointPersistentList::insertPoints(Point2d* points, int npoints) {
+    assert(npoints > 0);
+    assert(_LOCKED == false);
+    // sort the points by x coordinate           O(nlogn)
+    sort::heap_sort(points,0,npoints-1);
+    // for each point
+    for(int i = npoints-1; i >= 0; --i) { //     O(n)
+      // insert into structure
+      insertPoint(points[i]); //                 O(logn)
     }
-    points_sorted_by_x.insert(points_sorted_by_x.begin()+index,p);
-    // since we have just added a new point, increment the number of points
-    n++;
-    // create the version of the list at which the new node will be inserted
-    points_right.newList(index);
-    // determine if there is a preceding node
-    ListNode<Point2d>* before = getNodeBefore(index,y);
-    // create the new node
-    ListNode<Point2d>* new_node = new PointListNode(p);
-    points_right.registerNode(new_node);
-    // while at time index there are no preceding nodes
-    while(before == NULL) {
-      // set the next of the current node to the previous head
-      new_node->setNext(index,(PointListNode*)points_right.getList(index));
-      // set the current node to be the new head
-      points_right.setHead(index,new_node);
-      // break if we have reached the end of the points
-      if(++index >= (int)points_right.size())
-	break;
-      // otherwise, look for a preceding node at the current index
-      before = getNodeBefore(index,y);
-    }
-    // if there is a preceding node
-    if(before != NULL) {
-      // set its next to the new node
-      before->setNext(index,new_node);
-    }
+    // lock the structure against any more points being inserted
+    lock();
     // success
+    return 0;
+  }
+
+  int PointPersistentList::lock() {
+    if(_LOCKED) return -1;
+    delete point_tree;
+    _LOCKED = true;
     return 0;
   }
 

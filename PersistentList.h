@@ -392,7 +392,6 @@ namespace persistent_list {
   template <class T>
   class PersistentList {
     vector< ListNode<T>* > lists;
-    vector< ListNode<T>* > all_nodes;
     
   public:   
     ///////////////////////////////////////////////////////////////////////////
@@ -413,25 +412,6 @@ namespace persistent_list {
     PersistentList()
       : lists()
     {}
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: registerNode                                           //
-    //                                                                       //
-    // PURPOSE:       Saves the node to a list of all nodes.                 //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   ListNode<T>*/ln                                        //
-    //   Description: The node to save.                                      //
-    //                                                                       //
-    // RETURN:        int return code.  0 means success.                     //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int registerNode(ListNode<T>* ln);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -456,52 +436,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int setHead(int t, ListNode<T>* ln);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: insertAfterNode                                        //
-    //                                                                       //
-    // PURPOSE:       Inserts a given ListNode<T>* before an already         //
-    //                existing ListNode<T>* in the list.                     //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: Time t at which to insert                              //
-    //                                                                       //
-    //   Type/Name:   ListNode<T>*/old_ln                                    //
-    //   Description: A pointer to a node which already exists in a list.    //
-    //                                                                       //
-    //   Type/Name:   ListNode<T>*/new_ln                                    //
-    //   Description: A pointer to the node to insert                        //
-    //                                                                       //
-    // RETURN:        Void.                                                  //
-    //                                                                       //
-    // NOTES:         Assumes list at time t exists.                         //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int insertAfterNode(int t, ListNode<T>* old_ln, ListNode<T>* new_ln);
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: newList                                                //
-    //                                                                       //
-    // PURPOSE:       Creates a new list at time t with the same nodes       //
-    //                as in t-1.                                             //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to insert the empty list             //
-    //                                                                       //
-    // RETURN:        int return code, 0 means success.                      //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int newList(int t);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -572,47 +506,13 @@ namespace persistent_list {
   // PersistentList implementation                                           //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
-  int PersistentList<T>::registerNode(ListNode<T>* ln) {
-    assert(ln != NULL);
-    all_nodes.push_back(ln);
-    return 0;
-  }
-  template <class T>
   int PersistentList<T>::setHead(int t, ListNode<T>* ln) {
     assert(t >= 0);
     assert(t <= (int)lists.size());
-    lists[t] = ln;
-    return 0; // success
-  }
-  
-  template <class T>
-  int PersistentList<T>::insertAfterNode(int t,
-					 ListNode<T>* old_ln,
-					 ListNode<T>* new_ln) {
-    assert(t >= 0);
-    assert(t <= (int)lists.size());
-    assert(old_ln != NULL);
-    new_ln->setNext(t,old_ln->getNext(t));
-    old_ln->setNext(t,new_ln);
-    return 0; // success
-  }
-
-  template <class T>
-  int PersistentList<T>::newList(int t) {
-    assert(t >= 0);
-    int n = (int)lists.size();
-    assert(t <= n);
-    // save the new head
-    ListNode<T>* prev_head = NULL;
-    if(t > 0)
-      prev_head = lists[t-1];
-    lists.insert(lists.begin()+t,prev_head);
-    // if there are any following times
-    if(t < n) {
-      // increment timestamps in all registered nodes
-      for(int i = 0; i < (int)all_nodes.size(); ++i)
-	all_nodes[i]->incrementTimestampsAfter(t);
-    }
+    if(t == (int)lists.size())
+      lists.push_back(ln);
+    else
+      lists[t] = ln;
     return 0; // success
   }
 
