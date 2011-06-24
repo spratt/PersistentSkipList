@@ -25,23 +25,15 @@
 //                                                                           //
 // ListNode<T>::ListNode(int t, const T& original_data)                      //
 // ListNode<T>::getNextIndex(int t)                                          //
-// ListNode<T>::getTimeAtIndex(int t)                                        //
 // ListNode<T>::getNextAtIndex(int t)                                        //
 // ListNode<T>::numberOfChangeIndices(int t)                                 //
 // ListNode<T>::getNext(int t)                                               //
 // ListNode<T>::setNext(int t, ListNode<T>* ln)                              //
 // ListNode<T>::printList(int t)                                             //
-// ListNode<T>::incrementTimestampsAfter(int t)                              //
 //                                                                           //
 // PersistentList<T>::PersistentList()                                       //
-// int PersistentList<T>::registerNode(ListNode<T>* ln)                      //
 // int PersistentList<T>::setHead(int t, ListNode<T>* ln)                    //
-// int PersistentList<T>::insertAfterNode(int t,                             //
-//                                     ListNode<T>* old_ln,                  //
-//                                     ListNode<T>* new_ln)                  //
-// int PersistentList<T>::newList(int t)                                     //
 // ListNode<T>* PersistentList<T>::getList(int t)                            //
-// ListNode<T>* PersistentList<T>::getNode(int t, int index)                 //
 // size_t PersistentList<T>::size()                                          //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,29 +96,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int getNextIndex(int t);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getTimeAtIndex                                         //
-    //                                                                       //
-    // PURPOSE:       Allows timestamp to be retrieved by change             //
-    //                index.  This is useful for efficient                   //
-    //                construction of persistent lists.                      //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/ci                                                 //
-    //   Description: The change index at which to retrieve the next pointer.//
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: The timestamp at the given change index.               //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int getTimeAtIndex(int ci);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -237,30 +206,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int printList(int t);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: incremenetTimestampsAfter                              //
-    //                                                                       //
-    // PURPOSE:       Given a timestamp, increments all timestamps in        //
-    //                the node at or after the given timestamp.              //
-    //                Important for inserting new times between two          //
-    //                existing times.  All times after the inserted          //
-    //                time must be incremented.                              //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The timestamp at or after which to increment           //
-    //                timestamps.                                            //
-    //                                                                       //
-    // RETURN:        int return code.  0 means success.                     //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int incrementTimestampsAfter(int t);
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -286,14 +231,6 @@ namespace persistent_list {
   }
 
   template <class T>
-  int ListNode<T>::getTimeAtIndex(int ci) {
-    assert(this != NULL);
-    assert(ci >= 0);
-    assert(ci < numberOfChangeIndices());
-    return time[ci];
-  }
-
-  template <class T>
   ListNode<T>* ListNode<T>::getNextAtIndex(int ci) {
     assert(this != NULL);
     assert(ci >= 0);
@@ -314,8 +251,7 @@ namespace persistent_list {
     int index = getNextIndex(t);
     if(index == -1) return NULL;
     ListNode<T>* ln = NULL;
-    bool overshot = time[index] > t;
-    if(overshot) { // overshot
+    if(time[index] > t) { // overshot
       if(index > 0)
 	ln = getNextAtIndex(index-1);
     } else {
@@ -366,22 +302,6 @@ namespace persistent_list {
       ln->printList(t);
     else
       cout << "NULL";
-    // success
-    return 0;
-  }
-
-  template <class T>
-  int ListNode<T>::incrementTimestampsAfter(int t) {
-    assert(this != NULL);
-    int index = getNextIndex(t);
-    if(index == -1) {
-      // success
-      return 0;
-    } else if(time[index] < t) {
-      ++index;
-    }
-    for(int i = index; i < numberOfChangeIndices(); ++i)
-      ++(time[i]);
     // success
     return 0;
   }
@@ -455,30 +375,6 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode<T>* getList(int t);
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getNode                                                //
-    //                                                                       //
-    // PURPOSE:       Gets node at index in list t                           //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time (version) of the list to search               //
-    //                                                                       //
-    //   Type/Name:   int/index                                              //
-    //   Description: The index'th node at time t will be returned           //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<T>*                                           //
-    //   Description: A pointer to the index'th node in list at time t       //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode<T>* getNode(int t, int index);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -520,14 +416,6 @@ namespace persistent_list {
   ListNode<T>* PersistentList<T>::getList(int t) {
     assert(t < (int)lists.size());
     return lists[t];
-  }
-
-  template <class T>
-  ListNode<T>* PersistentList<T>::getNode(int t, int index) {
-    ListNode<T>* ln = getList(t);
-    while(ln != NULL && index-- > 0)
-      ln = ln->getNext(t);
-    return ln;
   }
 
   template <class T>

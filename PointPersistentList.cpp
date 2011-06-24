@@ -105,28 +105,6 @@ namespace persistent_list {
     }
     return index;
   }
-  
-  ListNode<Point2d>* PointPersistentList::getNodeBefore(int t, coord_t y) {
-    // search forward from the first node in the list at time t
-    // and return the immediately preceding node
-    return getNodeBefore(t,y,points_right.getList(t));
-  }
-
-  ListNode<Point2d>* PointPersistentList::getNodeBefore(int t,
-							coord_t y,
-							ListNode<Point2d>* start) {
-    // if that node does not precede y, return NULL
-    if(start != NULL && start->data.y >= y)
-      return NULL;
-    // otherwise, search forward to find the node which immediately precedes
-    // the given y
-    while(start != NULL &&
-	  start->getNext(t) != NULL &&
-	  start->getNext(t)->data.y < y)
-      start = start->getNext(t);
-    // return the immediately preceding node
-    return start;
-  }
 
   int PointPersistentList::insertPoints(Point2d* points, int npoints) {
     assert(npoints > 0);

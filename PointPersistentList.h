@@ -24,13 +24,15 @@
 //                             Public Methods:                               //
 //                                                                           //
 // Point2d::Point2d(coord_t x, coord_t y)                                    //
+// bool operator>(const Point2d& a, const Point2d& b)                        //
 // ostream& operator<<(ostream& os, const Point2d& p)                        //
 //                                                                           //
 // PointListNode(const Point2d& p)                                           //
 // int PointListNode::setNext(int t, PointListNode* ln)                      //
 //                                                                           //
 // PersistentList::PointPersistentList()                                     //
-// int PersistentList::insertPoint(coord_t x, coord_t y)                     //
+// int PersistentList::insertPoints(Point2d* points, int npoints)            //
+// int lock()                                                                //
 // vector<Point2d> PersistentList::enumerateNE(coord_t x, coord_t y)         //
 // Point2d* PersistentList::highestNE(coord_t x, coord_t y)                  //
 // ListNode<Point2d>* PersistentList::getList(int t)                         //
@@ -245,61 +247,6 @@ namespace persistent_list {
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
     int binarySearchX(coord_t x);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getNodeBefore                                          //
-    //                                                                       //
-    // PURPOSE:       Returns the node directly preceding a node with        //
-    //                a given y-coordinate, or where that node should be.    //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The list time (version) to search                      //
-    //                                                                       //
-    //   Type/Name:   coord_t/y                                              //
-    //   Description: The y-coordinate for which to search                   //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<Point2d>*                                     //
-    //   Description: The node preceding or which would precede a node       //
-    //                with the given y coordinate.                           //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode<Point2d>* getNodeBefore(int t, coord_t y);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getNodeBefore                                          //
-    //                                                                       //
-    // PURPOSE:       Returns the node directly preceding a node with        //
-    //                a given y-coordinate, or where that node should be.    //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The list time (version) to search                      //
-    //                                                                       //
-    //   Type/Name:   coord_t/y                                              //
-    //   Description: The y-coordinate for which to search                   //
-    //                                                                       //
-    //   Type/Name:   ListNode<Point2d>*/start                               //
-    //   Description: The node at which to begin searching                   //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<Point2d>*                                     //
-    //   Description: The node preceding or which would precede a node       //
-    //                with the given y coordinate.                           //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode<Point2d>* getNodeBefore(int t, coord_t y, ListNode<Point2d>* start);
     
   public:
     ///////////////////////////////////////////////////////////////////////////
