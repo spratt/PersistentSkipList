@@ -263,31 +263,11 @@ namespace persistent_list {
   template <class T>
   int ListNode<T>::setNext(int t, ListNode<T>* ln) {
     assert(this != NULL);
-    // find the nearest index at which to set the next pointer
-    int index = getNextIndex(t);
-    // if there are no next pointers
-    if(index == -1) {
-      // push this one
-      time.push_back(t);
-      next.push_back(ln);
-    }
-    // if there was already a pointer at that time
-    else if(t == time[index]) {
-      // set the new pointer
-      next[index] = ln;
-    }
-    // if the nearest index is greater
-    else if(time[index] > t) {
-      // insert before
-      time.insert(time.begin()+index,t);
-      next.insert(next.begin()+index,ln);
-    }
-    // if the nearest index is smaller
-    else {
-      // insert after
-      time.insert(time.begin()+index+1,t);
-      next.insert(next.begin()+index+1,ln);
-    }
+    // since we have restricted point insertion to strictly increasing
+    // time, we can simply push these values to the back of their
+    // respective lists.
+    time.push_back(t);
+    next.push_back(ln);
     // success
     return 0;
   }
