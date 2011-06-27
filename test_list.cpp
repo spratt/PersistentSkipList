@@ -29,7 +29,7 @@ int main(int argv, char** argc) {
   time_t before, after;
   PointPersistentList ppl;
   Point2d* p = NULL;
-  int size, n, qi;
+  int size, n, qi, ei;
   /////////////////////////////////////////////////////////////////////////////
   // Seed the PRNG                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -39,16 +39,18 @@ int main(int argv, char** argc) {
   // a helpful message.                                                      //
   /////////////////////////////////////////////////////////////////////////////
   if(argv < 4) {
-    cout << "Usage: test_list [number of points] [query iterations] [quiet]"
-	 << endl;
+    cout << "Usage: test_list [number of points] [query iterations] "
+	 << "[enumerate iterations] [quiet]" << endl;
     return 1;
   }
   // parse number of points
   n = atoi(argc[1]);
   // parse query iterations
   qi = atoi(argc[2]);
+  // parse query iterations
+  ei = atoi(argc[3]);
   // check for quiet mode
-  if(argv > 3)
+  if(argv > 4)
     QUIET_MODE = true;
   /////////////////////////////////////////////////////////////////////////////
   // Create points                                                           //
@@ -126,9 +128,9 @@ int main(int argv, char** argc) {
   // enumerateNE                                                             //
   /////////////////////////////////////////////////////////////////////////////
   vector< Point2d > v;
-  cout << qi << " iterations of enumerateNE" << flush;
+  cout << ei << " iterations of enumerateNE" << flush;
   before = time(0);
-  for(int i = 0; i < qi; i++) {
+  for(int i = 0; i < ei; i++) {
     int x = rand() % n, y = rand() % n;
     v = ppl.enumerateNE(x,y);
     if(i == 0 && (int)v.size() <= MAX_POINTS_DISPLAY) {

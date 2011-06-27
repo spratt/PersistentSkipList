@@ -33,7 +33,7 @@ namespace array_utilities {
     // Since the elements in a vector are guaranteed to be stored in memory
     // sequentially, we can simply take the address of the first element
     // and treat it as an array.
-    return &(*v)[0];
+    return &(v[0]);
   }
   // print the n first points in a given array
   template <class T>
