@@ -27,9 +27,6 @@
 // bool operator>(const Point2d& a, const Point2d& b)                        //
 // ostream& operator<<(ostream& os, const Point2d& p)                        //
 //                                                                           //
-// PointListNode(const Point2d& p)                                           //
-// int PointListNode::setNext(int t, PointListNode* ln)                      //
-//                                                                           //
 // PersistentList::PointPersistentList()                                     //
 // int PersistentList::insertPoints(Point2d* points, int npoints)            //
 // int lock()                                                                //
@@ -152,38 +149,6 @@ namespace persistent_list {
   //                                                                         //
   /////////////////////////////////////////////////////////////////////////////
   ostream& operator<<(ostream& os, const Point2d& p);
-
-  /////////////////////////////////////////////////////////////////////////////
-  // PointListNode interface                                                 //
-  /////////////////////////////////////////////////////////////////////////////
-  class PointListNode : public ListNode<Point2d> {
-  public:
-    PointListNode(const Point2d& p)
-      : ListNode<Point2d>(p)
-    {}
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: setNext                                                //
-    //                                                                       //
-    // PURPOSE:       Set the next pointer at time t                         //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to set the pointer.                  //
-    //                                                                       //
-    //   Type/Name:   PointListNode*/ln                                      //
-    //   Description: The pointer to which to assign next.                   //
-    //                                                                       //
-    // RETURN:        int return code.  0 means success                      //
-    //                                                                       //
-    // NOTES:         Since this node type knows the ordering, it can        //
-    //                also set the next pointer in future versions.          //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int setNext(int t, PointListNode* ln);
-  };
   
   /////////////////////////////////////////////////////////////////////////////
   // PointPersistentList interface                                           //
@@ -198,7 +163,7 @@ namespace persistent_list {
     PersistentList< Point2d > points_right;
 
     // A tree to speed up insertion of points
-    map< Point2d, PointListNode*, Point2d::yxasc >* point_tree;
+    map< Point2d, ListNode<Point2d>*, Point2d::yxasc >* point_tree;
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
@@ -267,7 +232,7 @@ namespace persistent_list {
     PointPersistentList()
       : _LOCKED(false), points_sorted_by_x(), points_right()
     {
-      point_tree = new map< Point2d , PointListNode*, Point2d::yxasc >();
+      point_tree = new map< Point2d , ListNode<Point2d>*, Point2d::yxasc >();
     }
 
     ///////////////////////////////////////////////////////////////////////////

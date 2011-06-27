@@ -37,17 +37,6 @@ namespace persistent_list {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  // PointListNode implementation                                            //
-  /////////////////////////////////////////////////////////////////////////////
-  
-  int PointListNode::setNext(int t, PointListNode* ln) {
-    if(getNext(t) == ln) return 0; // already done
-    ((ListNode< Point2d >*)this)->setNext(t,(ListNode< Point2d >*)ln);
-    // success
-    return 0;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
   // PointPersistentList implementation                                      //
   /////////////////////////////////////////////////////////////////////////////
 
@@ -60,22 +49,22 @@ namespace persistent_list {
     // assume point is at a smaller x coordinate than all preceding points
     points_sorted_by_x.push_back(p);
     // create a new node
-    PointListNode* ln = new PointListNode(p);
+    ListNode<Point2d>* ln = new ListNode<Point2d>(p);
     // insert point into tree                  O(logn)
     (*point_tree)[p] = ln;
     // find previous node                      O(logn)ish
-    map<Point2d, PointListNode*, Point2d::yxasc >::iterator it =
+    map<Point2d, ListNode<Point2d>*, Point2d::yxasc >::iterator it =
       point_tree->find(p);
     // if new node was at the beginning
     if(it == point_tree->begin()) {
-      points_right.setHead(t,(ListNode< Point2d >*)ln);
+      points_right.setHead(t,ln);
     }
     // otherwise, the new node must not be at the beginning
     else {
       // create a new head for the list
       points_right.setHead(t,points_right.getList(t-1));
       // set the next pointer on the previous node
-      PointListNode* prev = (--it)->second;
+      ListNode<Point2d>* prev = (--it)->second;
       prev->setNext(t,ln);
       ++it;
     }

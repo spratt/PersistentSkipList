@@ -263,6 +263,8 @@ namespace persistent_list {
   template <class T>
   int ListNode<T>::setNext(int t, ListNode<T>* ln) {
     assert(this != NULL);
+    if(next.size() > 0 && next[next.size()-1] == ln)
+      return 1; // already in list
     // since we have restricted point insertion to strictly increasing
     // time, we can simply push these values to the back of their
     // respective lists.
