@@ -32,7 +32,7 @@
 // int lock()                                                                //
 // vector<Point2d> PersistentList::enumerateNE(coord_t x, coord_t y)         //
 // Point2d* PersistentList::highestNE(coord_t x, coord_t y)                  //
-// ListNode<Point2d>* PersistentList::getList(int t)                         //
+// ListNode<Point2d, Point2d::yxasc >* PersistentList::getList(int t)        //
 // void PersistentList::printArray()                                         //
 // size_t PersistentList::size()                                             //
 //                                                                           //
@@ -154,41 +154,11 @@ namespace persistent_list {
   // PointPersistentList interface                                           //
   /////////////////////////////////////////////////////////////////////////////
   class PointPersistentList {
-    bool _LOCKED;
-    
     // An array of points sorted by x coordinate
     vector< Point2d > points_sorted_by_x;
 
     // A persistent list of points sorted by y coordinate
-    PersistentList< Point2d > points_right;
-
-    // A tree to speed up insertion of points
-    map< Point2d, ListNode<Point2d>*, Point2d::yxasc >* point_tree;
-
-    /////////////////////////////////////////////////////////////////////////////
-    //                                                                         //
-    // FUNCTION NAME: insertPoint                                              //
-    //                                                                         //
-    // PURPOSE:       Inserts a point into the structure, with given x and y   //
-    //                coordinates.                                             //
-    //                                                                         //
-    // SECURITY:      public                                                   //
-    //                                                                         //
-    // PARAMETERS                                                              //
-    //   Type/Name:   coord_t/x                                                //
-    //   Description: x-coordinate                                             //
-    //                                                                         //
-    //   Type/Name:   coord_t/y                                                //
-    //   Description: y-coordinate                                             //
-    //                                                                         //
-    // RETURN:                                                                 //
-    //   Type/Name:   int                                                      //
-    //   Description: 0 for success.                                           //
-    //                                                                         //
-    // NOTES:         None.                                                    //
-    //                                                                         //
-    /////////////////////////////////////////////////////////////////////////////
-    int insertPoint(const Point2d& p);
+    PersistentList< Point2d, Point2d::yxasc > points_right;
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
@@ -223,17 +193,15 @@ namespace persistent_list {
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
-    //   Type/Name:   Void.                                                  //
-    //   Description: None.                                                  //
+    //   Type/Name:   int/size                                               //
+    //   Description: The desired node size.                                 //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    PointPersistentList()
-      : _LOCKED(false), points_sorted_by_x(), points_right()
-    {
-      point_tree = new map< Point2d , ListNode<Point2d>*, Point2d::yxasc >();
-    }
+    PointPersistentList(int size)
+      : points_sorted_by_x(), points_right(size)
+    { }
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -367,13 +335,13 @@ namespace persistent_list {
     //   Description: The time (version) of the list structure.                //
     //                                                                         //
     // RETURN:                                                                 //
-    //   Type/Name:   ListNode<Point2d>                                        //
+    //   Type/Name:   ListNode<Point2d, Point2d::yxasc>                        //
     //   Description: The list at time t.                                      //
     //                                                                         //
     // NOTES:         None.                                                    //
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
-    ListNode<Point2d>* getList(int t);
+    ListNode<Point2d, Point2d::yxasc >* getList(int t);
     
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //

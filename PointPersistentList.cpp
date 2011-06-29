@@ -39,44 +39,6 @@ namespace persistent_list {
   /////////////////////////////////////////////////////////////////////////////
   // PointPersistentList implementation                                      //
   /////////////////////////////////////////////////////////////////////////////
-
-  int PointPersistentList::insertPoint(const Point2d& p) {
-    // check for duplicate
-    if(point_tree->find(p) != point_tree->end())
-      return -1;
-    // determine the time
-    int t = points_sorted_by_x.size();
-    // assume point is at a smaller x coordinate than all preceding points
-    points_sorted_by_x.push_back(p);
-    // create a new node
-    ListNode<Point2d>* ln = new ListNode<Point2d>(p);
-    // insert point into tree                  O(logn)
-    (*point_tree)[p] = ln;
-    // find previous node                      O(logn)ish
-    map<Point2d, ListNode<Point2d>*, Point2d::yxasc >::iterator it =
-      point_tree->find(p);
-    // if new node was at the beginning
-    if(it == point_tree->begin()) {
-      points_right.setHead(t,ln);
-    }
-    // otherwise, the new node must not be at the beginning
-    else {
-      // create a new head for the list
-      points_right.setHead(t,points_right.getList(t-1));
-      // set the next pointer on the previous node
-      ListNode<Point2d>* prev = (--it)->second;
-      prev->setNext(t,ln);
-      ++it;
-    }
-    // if the new node was not at the end
-    if(it != point_tree->end()) {
-      // set the next pointer on the new node
-      ln->setNext(t,(++it)->second);
-    }
-    // success
-    return 0;
-  }
-
   // assumes points_sorted_by_x is sorted in descending order
   int PointPersistentList::binarySearchX(coord_t x) {
     int index = -1;
@@ -97,24 +59,18 @@ namespace persistent_list {
 
   int PointPersistentList::insertPoints(Point2d* points, int npoints) {
     assert(npoints > 0);
-    assert(_LOCKED == false);
-    // sort the points by x coordinate           O(nlogn)
+    // sort the points by x coordinate             O(nlogn)
     sort::heap_sort(points,0,npoints-1);
     // for each point
-    for(int i = npoints-1; i >= 0; --i) { //     O(n)
+    for(int i = npoints-1; i >= 0; --i) { //       O(n)
       // insert into structure
-      insertPoint(points[i]); //                 O(logn)
+      if(points_right.insert(points[i]) == 0) //   O(logn)
+	// if not a duplicate, add to points sorted by x
+	points_sorted_by_x.push_back(points[i]);// O(1)
     }
     // lock the structure against any more points being inserted
-    lock();
+    points_right.lock();
     // success
-    return 0;
-  }
-
-  int PointPersistentList::lock() {
-    if(_LOCKED) return -1;
-    delete point_tree;
-    _LOCKED = true;
     return 0;
   }
 
@@ -123,7 +79,7 @@ namespace persistent_list {
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
     // get the first node in this list at time index
-    ListNode<Point2d>* pln = points_right.getList(index);
+    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
     // find the first point with a y coordinate equal to or greater than y
     while(pln != NULL && pln->data.y < y)
       pln = pln->getNext(index);
@@ -138,14 +94,19 @@ namespace persistent_list {
   Point2d* PointPersistentList::highestNE(coord_t x, coord_t y) {
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    // if set of points is empty, bail out
     if(index == -1) return NULL;
+    // if we have gone too far
     if(points_sorted_by_x[index].x < x) {
+      // go back one
       --index;
+      // if we are now before the beginning, the smallest x in the set
+      // of points is larger than the x we are searching for, so bail
       if(index < 0)
 	return NULL;
     }
     // get the first node in this list at time index
-    ListNode<Point2d>* pln = points_right.getList(index);
+    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
     if(pln == NULL) return NULL;
     // since the list is sorted by y coordinate ascending, find the
@@ -168,7 +129,7 @@ namespace persistent_list {
 	return NULL;
     }
     // get the first node in this list at time index
-    ListNode<Point2d>* pln = points_right.getList(index);
+    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
     if(pln == NULL) return NULL;
     // take the first point as left most for now
@@ -187,7 +148,7 @@ namespace persistent_list {
     return leftMost;
   }
   
-  ListNode<Point2d>* PointPersistentList::getList(int t) {
+  ListNode<Point2d, Point2d::yxasc >* PointPersistentList::getList(int t) {
     return points_right.getList(t);
   }
 

@@ -27,9 +27,8 @@ int main(int argv, char** argc) {
   const int MAX_POINTS_DISPLAY = 16;
   bool QUIET_MODE = false;
   time_t before, after;
-  PointPersistentList ppl;
   Point2d* p = NULL;
-  int size, n, qi, ei;
+  int size, n, qi, ei, ns;
   /////////////////////////////////////////////////////////////////////////////
   // Seed the PRNG                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -38,9 +37,9 @@ int main(int argv, char** argc) {
   // Ensure the user has entered required parameters, otherwise print        //
   // a helpful message.                                                      //
   /////////////////////////////////////////////////////////////////////////////
-  if(argv < 4) {
+  if(argv < 5) {
     cout << "Usage: test_list [number of points] [query iterations] "
-	 << "[enumerate iterations] [quiet]" << endl;
+	 << "[enumerate iterations] [node size] [quiet]" << endl;
     return 1;
   }
   // parse number of points
@@ -49,9 +48,12 @@ int main(int argv, char** argc) {
   qi = atoi(argc[2]);
   // parse query iterations
   ei = atoi(argc[3]);
+  // parse node size
+  ns = atoi(argc[4]);
   // check for quiet mode
-  if(argv > 4)
+  if(argv > 5)
     QUIET_MODE = true;
+  PointPersistentList ppl(ns);
   /////////////////////////////////////////////////////////////////////////////
   // Create points                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -71,7 +73,7 @@ int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
   // Build Persistent List                                                   //
   /////////////////////////////////////////////////////////////////////////////
-  cout << "Building persistent list..." << flush;
+  cout << "Building persistent list with node size " << ns << "..." << flush;
   before = time(0);
   ppl.insertPoints(points,n);
   after = time(0);
