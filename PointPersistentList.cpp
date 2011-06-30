@@ -74,6 +74,11 @@ namespace persistent_list {
     return 0;
   }
 
+  size_t PointPersistentList::memoryUsage() {
+    return (sizeof(Point2d) * points_sorted_by_x.size()) +
+      points_right.memoryUsage();
+  }
+
   vector< Point2d > PointPersistentList::enumerateNE(coord_t x, coord_t y) {
     vector< Point2d > v;
     // determine the time at which to search by searching for the x
@@ -138,6 +143,7 @@ namespace persistent_list {
     pln = pln->getNext(index);
     // iterate over nodes in the list
     while(pln != NULL) {
+      assert(leftMost != NULL);
       // check if point is more left than current left most
       if(pln->data.x < leftMost->x)
 	leftMost = &(pln->data);

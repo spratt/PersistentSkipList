@@ -228,6 +228,27 @@ namespace persistent_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
+    // FUNCTION NAME: memoryUsage                                            //
+    //                                                                       //
+    // PURPOSE:       Returns the amount of memory used by the structure.    //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   size_t                                                 //
+    //   Description: The memory use of the structure.                       //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    size_t memoryUsage();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
     // FUNCTION NAME: lock                                                   //
     //                                                                       //
     // PURPOSE:       Locks the data structure and frees all memory          //

@@ -96,27 +96,6 @@ namespace persistent_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: ListNode                                               //
-    //                                                                       //
-    // PURPOSE:       Copy constructor                                       //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   ListNode<T, Compare>*/ln                               //
-    //   Description: The node to copy.                                      //
-    //                                                                       //
-    // NOTES:         Only copies the data and size.                         //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode(ListNode<T, Compare>* ln)
-      : _SIZE(ln->getSize()), _LAST(-1), data(ln->data), list(ln->list) {
-      time = new int[_SIZE];
-      next = new ListNode<T, Compare>*[_SIZE];
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
     // FUNCTION NAME: ~ListNode                                              //
     //                                                                       //
     // PURPOSE:       Destructor                                             //
@@ -301,16 +280,21 @@ namespace persistent_list {
     assert(t >= 0);
     int index = -1;
     int begin = 0, end = _LAST;
+    // binary search
     while(begin <= end) {
       index = (begin+end)/2;
       if(t == time[index]) {
+	// done, break out of loop
 	break;
       } else if(t < time[index]) {
+	// repeat binary search on left half
 	end = index -1;
       } else {
+	// repeat binary search on right half
 	begin = index +1;
       }
     }
+    // report final index
     return index;
   }
 
@@ -332,29 +316,41 @@ namespace persistent_list {
   ListNode<T, Compare>* ListNode<T, Compare>::getNext(int t) {
     assert(this != NULL);
     assert(t >= 0);
+    // find nearest time
     int index = getNextIndex(t);
+    // if there are no next pointers, bail
     if(index == -1) return NULL;
+    // default to NULL
     ListNode<T, Compare>* ln = NULL;
-    if(time[index] > t) { // overshot
+    // if we have overshot
+    if(time[index] > t && index > 0) {
+      // decrement if not first
       if(index > 0)
-	ln = getNextAtIndex(index-1);
-    } else {
-      ln = getNextAtIndex(index);
+	--index;
+      // if first, bail
+      else
+	return NULL;
     }
+    // find and return next pointer at nearest time less than or equal to given
+    ln = getNextAtIndex(index);
     return ln;
   }
 
   template <class T, class Compare>
   int ListNode<T, Compare>::setNext(int t, ListNode<T, Compare>* ln) {
     assert(this != NULL);
+    // since NULL is the default
     if(ln == NULL)
-      return -1; // no need to add NULL
+      return -1; // bail if trying to set next to NULL
+    // if trying to set next to previous next pointer, bail
+    // since getNext will by default return the node at the largest
+    // time before the requested time
     if(_LAST >= 0 && next[_LAST] == ln)
-      return 1; // already in list
-    // since we have restricted point insertion to strictly increasing
-    // time, we can simply push these values to the back of their
-    // respective lists.
+      return 1;
+    // check if the node has room
     if(_LAST+1 < _SIZE) { // has room
+      // since we have restricted point insertion to strictly increasing
+      // time, we can simply push these values to the back of their arrays
       ++_LAST;
       time[_LAST] = t;
       next[_LAST] = ln;
@@ -388,12 +384,12 @@ namespace persistent_list {
   int ListNode<T, Compare>::printList(int t) {
     assert(this != NULL);
     assert(t >= 0);
-    cout << data << "->";
+    cout << data << "->" << flush; // inefficient to flush every line
     ListNode<T, Compare>* ln = getNext(t);
     if(ln != NULL)
       ln->printList(t);
     else
-      cout << "NULL";
+      cout << "NULL" << flush;
     // success
     return 0;
   }
@@ -405,8 +401,10 @@ namespace persistent_list {
   class PersistentList {
     vector< ListNode<T, Compare>* > lists;
     map< T, ListNode<T, Compare>*, Compare >* build_tree;
+    vector< ListNode<T, Compare>* > all_nodes;
     int _NODE_SIZE;
     bool _LOCKED;
+    int nNodes;
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -450,7 +448,7 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     PersistentList(int size)
-      : lists(), _NODE_SIZE(size), _LOCKED(false)
+      : lists(), all_nodes(), _NODE_SIZE(size), _LOCKED(false), nNodes(0)
     {
       build_tree = new map< T, ListNode<T, Compare>*, Compare >();
     }
@@ -475,6 +473,8 @@ namespace persistent_list {
     virtual ~PersistentList() {
       if(!_LOCKED)
 	lock();
+      for(int i = 0; i < (int)all_nodes.size(); ++i)
+	delete all_nodes[i];
     }
     
     ///////////////////////////////////////////////////////////////////////////
@@ -627,6 +627,27 @@ namespace persistent_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     size_t size();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: memoryUsage                                            //
+    //                                                                       //
+    // PURPOSE:       Returns the amount of memory used by the structure.    //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   size_t                                                 //
+    //   Description: The amount of memory used by the structure.            //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    size_t memoryUsage();
   };
   
   /////////////////////////////////////////////////////////////////////////////
@@ -651,7 +672,9 @@ namespace persistent_list {
     if(it == build_tree->begin()) {
       // set head to new node
       setHead(t,ln);
+      // if this isn't the first node
       if(t > 0)
+	// set next on the node to the previous head
 	ln->setNext(t,getList(t-1));
     }
     // otherwise, the new node must not be at the beginning
@@ -665,9 +688,7 @@ namespace persistent_list {
       // put the iterator back into its initial state
       ++it;
       // if the new node was not at the end
-      if(it != build_tree->end()) {
-	// next node
-	++it;
+      if(++it != build_tree->end()) {
 	// set the next pointer on the new node
 	ln->setNext(t,it->second);
       }
@@ -705,7 +726,10 @@ namespace persistent_list {
 
   template <class T, class Compare>
   ListNode<T, Compare>* PersistentList<T, Compare>::createNode(const T& data) {
-    return new ListNode<T, Compare>(data,(int)_NODE_SIZE,this);
+    ++nNodes;
+    ListNode<T, Compare>* ln = new ListNode<T, Compare>(data,(int)_NODE_SIZE,this);
+    all_nodes.push_back(ln);
+    return ln;
   }
   
   template <class T, class Compare>
@@ -728,6 +752,14 @@ namespace persistent_list {
   template <class T, class Compare>
   size_t PersistentList<T, Compare>::size() {
     return lists.size();
+  }
+
+  template <class T, class Compare>
+  size_t PersistentList<T, Compare>::memoryUsage() {
+    size_t s = nNodes * sizeof(ListNode<T, Compare>);
+    if(!_LOCKED)
+      s += nNodes * (sizeof(T) + sizeof(ListNode<T, Compare>));
+    return s;
   }
 }
 
