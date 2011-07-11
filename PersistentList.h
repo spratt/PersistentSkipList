@@ -294,6 +294,7 @@ namespace persistent_list {
 	begin = index +1;
       }
     }
+    assert(index <= t);
     // report final index
     return index;
   }
@@ -322,13 +323,12 @@ namespace persistent_list {
     if(index == -1) return NULL;
     // default to NULL
     ListNode<T, Compare>* ln = NULL;
-    // if we have overshot
-    if(time[index] > t && index > 0) {
+    // while the time at index is greater than the desired time
+    while(time[index] > t) {
       // decrement if not first
-      if(index > 0)
-	--index;
+      --index;
       // if first, bail
-      else
+      if(index < 0)
 	return NULL;
     }
     // find and return next pointer at nearest time less than or equal to given
@@ -342,6 +342,7 @@ namespace persistent_list {
     // since NULL is the default
     if(ln == NULL)
       return -1; // bail if trying to set next to NULL
+    
     // if trying to set next to previous next pointer, bail
     // since getNext will by default return the node at the largest
     // time before the requested time

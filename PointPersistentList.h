@@ -102,6 +102,14 @@ namespace persistent_list {
 	return a.y < b.y;
       }
     };
+
+    struct yxdesc {
+      bool operator()(const Point2d& a, const Point2d& b) const {
+	if(a.y == b.y)
+	  return a.x > b.x;
+	return a.y > b.y;
+      }
+    };
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -158,7 +166,7 @@ namespace persistent_list {
     vector< Point2d > points_sorted_by_x;
 
     // A persistent list of points sorted by y coordinate
-    PersistentList< Point2d, Point2d::yxasc > points_right;
+    PersistentList< Point2d, Point2d::yxdesc > points_right;
 
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //
@@ -356,13 +364,13 @@ namespace persistent_list {
     //   Description: The time (version) of the list structure.                //
     //                                                                         //
     // RETURN:                                                                 //
-    //   Type/Name:   ListNode<Point2d, Point2d::yxasc>                        //
+    //   Type/Name:   ListNode<Point2d, Point2d::yxdesc>                       //
     //   Description: The list at time t.                                      //
     //                                                                         //
     // NOTES:         None.                                                    //
     //                                                                         //
     /////////////////////////////////////////////////////////////////////////////
-    ListNode<Point2d, Point2d::yxasc >* getList(int t);
+    ListNode<Point2d, Point2d::yxdesc >* getList(int t);
     
     /////////////////////////////////////////////////////////////////////////////
     //                                                                         //

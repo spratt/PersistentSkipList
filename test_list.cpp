@@ -27,8 +27,8 @@ const int MAX_POINTS_DISPLAY = 16;
 
 void test_list(Point2d* points, int nPoints, int queryIterations,
 	       int enumIterations, int nodeSize) {
-  Point2d* p = NULL;
   time_t before, after;
+  Point2d* p;
   PointPersistentList ppl(nodeSize);
   /////////////////////////////////////////////////////////////////////////////
   // Build Persistent List                                                   //
@@ -47,6 +47,8 @@ void test_list(Point2d* points, int nPoints, int queryIterations,
   // Print the structure if the number of points is small                    //
   /////////////////////////////////////////////////////////////////////////////
   if(nPoints <= MAX_POINTS_DISPLAY) {
+    cout << "Array: " << flush;
+    ppl.printArray();
     for(int i = 0; i < (int)ppl.size(); i++) {
       cout << i << ": ";
       if(ppl.getList(i) == NULL)
@@ -62,18 +64,40 @@ void test_list(Point2d* points, int nPoints, int queryIterations,
   cout << queryIterations << " iterations of leftMostNE..." << flush;
   before = time(0);
   for(int i = 0; i < queryIterations; i++)
-    p = ppl.leftMostNE(rand() % nPoints, rand() % nPoints);
+    ppl.leftMostNE(rand() % nPoints, rand() % nPoints);
   after = time(0);
   cout << "took: " << (after-before) << endl;
+  if(nPoints <= MAX_POINTS_DISPLAY) {
+    int max_x = rand() % nPoints;
+    int max_y = rand() % nPoints;
+    cout << "leftMostNE(" << max_x << "," << max_y << "): " << flush;
+    p = ppl.leftMostNE(max_x, max_y);
+    if(p == NULL)
+      cout << "NULL";
+    else
+      cout << *p;
+    cout << endl;
+  }
   /////////////////////////////////////////////////////////////////////////////
   // highestNE                                                               //
   /////////////////////////////////////////////////////////////////////////////
   cout << queryIterations << " iterations of highestNE..." << flush;
   before = time(0);
   for(int i = 0; i < queryIterations; i++)
-    p = ppl.highestNE(rand() % nPoints, rand() % nPoints);
+    ppl.highestNE(rand() % nPoints, rand() % nPoints);
   after = time(0);
   cout << "took: " << (after-before) << endl;
+  if(nPoints <= MAX_POINTS_DISPLAY) {
+    int max_x = rand() % nPoints;
+    int max_y = rand() % nPoints;
+    cout << "highestNE(" << max_x << "," << max_y << "): " << flush;
+    p = ppl.highestNE(max_x, max_y);
+    if(p == NULL)
+      cout << "NULL";
+    else
+      cout << *p;
+    cout << endl;
+  }
   /////////////////////////////////////////////////////////////////////////////
   // enumerateNE                                                             //
   /////////////////////////////////////////////////////////////////////////////
@@ -81,11 +105,17 @@ void test_list(Point2d* points, int nPoints, int queryIterations,
   cout << enumIterations << " iterations of enumerateNE..." << flush;
   before = time(0);
   for(int i = 0; i < enumIterations; i++) {
-    int x = rand() % nPoints, y = rand() % nPoints;
-    v = ppl.enumerateNE(x,y);
+    ppl.enumerateNE(rand() % nPoints, rand() % nPoints);
   }
   after = time(0);
   cout << "took: " << (after-before) << endl;
+  if(nPoints <= MAX_POINTS_DISPLAY) {
+    int max_x = rand() % nPoints;
+    int max_y = rand() % nPoints;
+    cout << "enumerateNE(" << max_x << "," << max_y << "): ";
+    v = ppl.enumerateNE(max_x,max_y);
+    print(vectorToArray(v),v.size());
+  }
 }
 
 int main(int argv, char** argc) {
@@ -97,9 +127,9 @@ int main(int argv, char** argc) {
   // Ensure the user has entered required parameters, otherwise print        //
   // a helpful message.                                                      //
   /////////////////////////////////////////////////////////////////////////////
-  if(argv < 5) {
+  if(argv < 6) {
     cout << "Usage: test_list [number of points] [query iterations] "
-	 << "[enumerate iterations] [max node size]" << endl;
+	 << "[enumerate iterations] [min node size] [max node size]" << endl;
     return 1;
   }
   // parse number of points
@@ -112,8 +142,8 @@ int main(int argv, char** argc) {
   int ei = atoi(argc[3]);
   assert(ei >= 0);
   // parse node size
-  int ns = atoi(argc[4]);
-  assert(ns >= 2);
+  int min_ns = atoi(argc[4]);
+  int max_ns = atoi(argc[5]);
   /////////////////////////////////////////////////////////////////////////////
   // Create points                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -131,7 +161,7 @@ int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
   // Run tests                                                               //
   /////////////////////////////////////////////////////////////////////////////
-  for(int i = 2; i <= ns; ++i) {
+  for(int i = min_ns; i <= max_ns; ++i) {
     cout << "============================================================"
 	 << endl;
     test_list(points,n,qi,ei,i);

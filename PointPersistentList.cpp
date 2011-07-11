@@ -46,11 +46,18 @@ namespace persistent_list {
     while(begin <= end) {
       index = (begin+end)/2;
       Point2d p = points_sorted_by_x[index];
+      // found the point
       if(p.x == x) {
 	break;
-      } else if(p.x < x) { // descending
+      }
+      // current point is smaller than desired
+      // since the array is sorted descending, we know that the
+      // desired point must lie in the preceding portion
+      else if(p.x < x) {
+	// search the preceding portion of the array
 	end = index -1;
       } else {
+	// otherwise, search the following portion of the array
 	begin = index +1;
       }
     }
@@ -60,6 +67,7 @@ namespace persistent_list {
   int PointPersistentList::insertPoints(Point2d* points, int npoints) {
     assert(npoints > 0);
     // sort the points by x coordinate             O(nlogn)
+    // descending
     sort::heap_sort(points,0,npoints-1);
     // for each point
     for(int i = npoints-1; i >= 0; --i) { //       O(n)
@@ -83,14 +91,26 @@ namespace persistent_list {
     vector< Point2d > v;
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    // if set of points is empty, bail out
+    if(index == -1) return v;
+    // while the closest point is too small
+    while(points_sorted_by_x[index].x < x) {
+      // check the previous point, which should be larger since the
+      // array is sorted by x descending
+      --index;
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
+      if(index < 0)
+	return v;
+    }
     // get the first node in this list at time index
-    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
-    // find the first point with a y coordinate equal to or greater than y
-    while(pln != NULL && pln->data.y < y)
-      pln = pln->getNext(index);
-    // return all points with y coordinate higher than that point
-    while(pln != NULL) {
+    ListNode<Point2d, Point2d::yxdesc >* pln = points_right.getList(index);
+    // while the current point is not null and has a greater or equal
+    // y than the query
+    while(pln != NULL && pln->data.y >= y) {
+      // push the point onto the list to be returned
       v.push_back(pln->data);
+      // move on to next point
       pln = pln->getNext(index);
     }
     return v;
@@ -101,25 +121,22 @@ namespace persistent_list {
     int index = binarySearchX(x);
     // if set of points is empty, bail out
     if(index == -1) return NULL;
-    // if we have gone too far
-    if(points_sorted_by_x[index].x < x) {
-      // go back one
+    // while the closest point is too small
+    while(points_sorted_by_x[index].x < x) {
+      // check the previous point, which should be larger since the
+      // array is sorted by x descending
       --index;
-      // if we are now before the beginning, the smallest x in the set
-      // of points is larger than the x we are searching for, so bail
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
       if(index < 0)
 	return NULL;
     }
     // get the first node in this list at time index
-    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
+    ListNode<Point2d, Point2d::yxdesc >* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
-    if(pln == NULL) return NULL;
-    // since the list is sorted by y coordinate ascending, find the
-    // last node in the list
-    while(pln->getNext(index) != NULL) pln = pln->getNext(index);
-    // return the address of the point contained in the last node
-    // which must be the highest y if the invariant of sorted by
-    // y coordinate ascending is upheld
+    if(pln == NULL || pln->data.y < y) return NULL;
+    // since the list is sorted by y coordinate descending, the first
+    // node is the highest
     return &(pln->data);
   }
 
@@ -127,23 +144,31 @@ namespace persistent_list {
     Point2d* leftMost = NULL;
     // determine the time at which to search by searching for the x
     int index = binarySearchX(x);
+    // if set of points is empty, bail out
     if(index == -1) return NULL;
-    if(points_sorted_by_x[index].x < x) {
+    // while the closest point is too small
+    while(points_sorted_by_x[index].x < x) {
+      // check the previous point, which should be larger since the
+      // array is sorted by x descending
       --index;
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
       if(index < 0)
 	return NULL;
     }
     // get the first node in this list at time index
-    ListNode<Point2d, Point2d::yxasc >* pln = points_right.getList(index);
+    ListNode<Point2d, Point2d::yxdesc >* pln = points_right.getList(index);
     // if there are no points NE of the given point, return null
-    if(pln == NULL) return NULL;
+    if(pln == NULL || pln->data.y < y) return NULL;
     // take the first point as left most for now
     leftMost = &(pln->data);
     // set pln to its next pointer
     pln = pln->getNext(index);
-    // iterate over nodes in the list
-    while(pln != NULL) {
-      assert(leftMost != NULL);
+    // iterate over nodes in the list until:
+    //  - we reach the end
+    // OR
+    //  - the points are no longer NE of the query point
+    while(pln != NULL && pln->data.y >= y) {
       // check if point is more left than current left most
       if(pln->data.x < leftMost->x)
 	leftMost = &(pln->data);
@@ -154,7 +179,7 @@ namespace persistent_list {
     return leftMost;
   }
   
-  ListNode<Point2d, Point2d::yxasc >* PointPersistentList::getList(int t) {
+  ListNode<Point2d, Point2d::yxdesc >* PointPersistentList::getList(int t) {
     return points_right.getList(t);
   }
 
