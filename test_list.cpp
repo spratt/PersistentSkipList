@@ -25,14 +25,16 @@ using namespace persistent_list;
 
 const int MAX_POINTS_DISPLAY = 16;
 
-void test_list(Point2d* points, int nPoints, int queryIterations, int enumIterations, int nodeSize) {
+void test_list(Point2d* points, int nPoints, int queryIterations,
+	       int enumIterations, int nodeSize) {
   Point2d* p = NULL;
   time_t before, after;
   PointPersistentList ppl(nodeSize);
   /////////////////////////////////////////////////////////////////////////////
   // Build Persistent List                                                   //
   /////////////////////////////////////////////////////////////////////////////
-  cout << "Building persistent list with node size " << nodeSize << "..." << flush;
+  cout << "Building persistent list with node size " << nodeSize
+       << "..." << flush;
   before = time(0);
   ppl.insertPoints(points,nPoints);
   after = time(0);
@@ -130,7 +132,8 @@ int main(int argv, char** argc) {
   // Run tests                                                               //
   /////////////////////////////////////////////////////////////////////////////
   for(int i = 2; i <= ns; ++i) {
-    cout << "============================================================" << endl;
+    cout << "============================================================"
+	 << endl;
     test_list(points,n,qi,ei,i);
   }
   return 0;
