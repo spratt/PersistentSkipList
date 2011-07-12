@@ -1,5 +1,5 @@
-PERSISTENT LIST
+PERSISTENT SKIP LIST
 
-Uses a persistent linked list to solve problems in computation geometry.
+Uses a persistent skip list to solve problems in computational geometry.
 
 For license information, see file: LICENSE
