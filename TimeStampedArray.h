@@ -14,10 +14,23 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
 // Public Variable:                     Description:                         //
 // ----------------                     ------------                         //
+// TimeStampedArray<T>                  An array with an associated          //
+//                                      timestamp.                           //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-//                             Public Methods:                               //
+// 
+//                             Public Methods:
+// 
+// lock()            - locks the structure
+// isLocked()        - returns true if structure is locked
+// getTime()         - returns the timestamp of the structure
+// getSize()         - returns the size of the structure
+// getElement(int)   - returns the element at the given 0 <= index < size
+// setElement(int,T) - sets the element at the given 0 <= index < size
+// 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef TIMESTAMPEDARRAY_H
 #define TIMESTAMPEDARRAY_H
@@ -37,6 +50,24 @@ namespace timestamped_array {
     T* data;
     
   public:
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: TimeStampedArray                                       //
+    //                                                                       //
+    // PURPOSE:       Basic constructor which takes a time and size.         //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The timestamp to associate with the array.             //
+    //                                                                       //
+    //   Type/Name:   int/s                                                  //
+    //   Description: The size of the array.                                 //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
     TimeStampedArray(int t, int s)
       : _LOCKED(false),
 	time(t),
@@ -44,6 +75,27 @@ namespace timestamped_array {
 	data(new T[size]) 
     {
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: TimeStampedArray                                       //
+    //                                                                       //
+    // PURPOSE:       Modified copy constructor which takes a                //
+    //                timestamp and an existing TSA to copy.                 //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The timestamp to associate with the array.             //
+    //                                                                       //
+    //   Type/Name:   TimeStampedArray<T>/old_tsa                            //
+    //   Description: The existing TSA to copy.  Copies everything but       //
+    //                timestamp, does not modify original.                   //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
     TimeStampedArray(int t, TimeStampedArray<T>& old_tsa)
       : _LOCKED(false),
 	time(t),
@@ -54,6 +106,7 @@ namespace timestamped_array {
       for(int i = 0; i < size; ++i)
 	setElement(i,old_tsa.getElement(i));
     }
+    
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: lock                                                   //
@@ -206,6 +259,7 @@ namespace timestamped_array {
 
   template<class T>
   int TimeStampedArray<T>::setElement(int i, T datum) {
+    assert(! _LOCKED);
     assert(i >= 0);
     assert(i < size);
     data[i] = datum;
