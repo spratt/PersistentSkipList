@@ -19,6 +19,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             Public Methods:                               //
 ///////////////////////////////////////////////////////////////////////////////
+#ifndef TIMESTAMPEDARRAY_H
+#define TIMESTAMPEDARRAY_H
+
+#include <assert.h>
 
 namespace timestamped_array {
     /////////////////////////////////////////////////////////////////////////////
@@ -31,12 +35,21 @@ namespace timestamped_array {
     int time;
     int size;
     T* data;
+    
   public:
     TimeStampedArray(int t, int s)
-      : time(t), size(s), _LOCKED(false), data(new T[size]) {
+      : _LOCKED(false),
+	time(t),
+	size(s),
+	data(new T[size]) 
+    {
     }
-    TimeStampedArray(int t, TimeStampedArray<T> old_tsa) :
-      : time(t), size(old_tsa.getSize()), data(new T[old_tsa.getSize()]) {
+    TimeStampedArray(int t, TimeStampedArray<T>& old_tsa)
+      : _LOCKED(false),
+	time(t),
+	size(old_tsa.getSize()),
+	data(new T[old_tsa.getSize()]) 
+    {
       // copy the old data
       for(int i = 0; i < size; ++i)
 	setElement(i,old_tsa.getElement(i));
@@ -61,23 +74,43 @@ namespace timestamped_array {
     void lock();
 
     ///////////////////////////////////////////////////////////////////////////
-    // 
-    // FUNCTION NAME: getTime
-    // 
-    // PURPOSE:       Returns the timestamp of this array.
-    // 
-    // SECURITY:      public
-    // 
-    // PARAMETERS
-    //   Type/Name:   Void.
-    //   Description: None.
-    // 
-    // RETURN:
-    //   Type/Name:   int
-    //   Description: The timestamp of the array.
-    // 
-    // NOTES:         None.
-    // 
+    //                                                                       //
+    // FUNCTION NAME: isLocked                                               //
+    //                                                                       //
+    // PURPOSE:       Returns true if the structure is locked.               //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:        true if the structure is locked,                       //
+    //                false otherwise.                                       //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    bool isLocked();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getTime                                                //
+    //                                                                       //
+    // PURPOSE:       Returns the timestamp of this array.                   //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   int                                                    //
+    //   Description: The timestamp of the array.                            //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int getTime();
 
@@ -150,6 +183,11 @@ namespace timestamped_array {
   }
 
   template<class T>
+  bool TimeStampedArray<T>::isLocked() {
+    return _LOCKED;
+  }
+
+  template<class T>
   int TimeStampedArray<T>::getTime() {
     return time;
   }
@@ -160,18 +198,20 @@ namespace timestamped_array {
   }
 
   template<class T>
-  void TimeStampedArray<T>::getElement(int i) {
-    assert(i > 0);
+  T TimeStampedArray<T>::getElement(int i) {
+    assert(i >= 0);
     assert(i < size);
     return data[i];
   }
 
   template<class T>
   int TimeStampedArray<T>::setElement(int i, T datum) {
-    assert(i > 0);
+    assert(i >= 0);
     assert(i < size);
     data[i] = datum;
     // success
     return 0;
   }
 }
+
+#endif
