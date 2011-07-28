@@ -21,16 +21,23 @@
 //                                      timestamp.                           //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-// 
-//                             Public Methods:
-// 
-// lock()            - locks the structure
-// isLocked()        - returns true if structure is locked
-// getTime()         - returns the timestamp of the structure
-// getSize()         - returns the size of the structure
-// getElement(int)   - returns the element at the given 0 <= index < size
-// setElement(int,T) - sets the element at the given 0 <= index < size
-// 
+//                                                                           //
+//                             Constructors:                                 //
+//                                                                           //
+// TimeStampedArray(int t, int s)             - t is the timestamp           //
+//                                              s is the size                //
+// TimeStampedArray(int t, TimeStampedArray&) - t is the timestamp           //
+//                                              the reference is copied      //
+//                                                                           //
+//                             Public Methods:                               //
+//                                                                           //
+// lock()            - locks the structure                                   //
+// isLocked()        - returns true if structure is locked                   //
+// getTime()         - returns the timestamp of the structure                //
+// getSize()         - returns the size of the structure                     //
+// getElement(int)   - returns the element at the given 0 <= index < size    //
+// setElement(int,T) - sets the element at the given 0 <= index < size       //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef TIMESTAMPEDARRAY_H
 #define TIMESTAMPEDARRAY_H
@@ -38,7 +45,7 @@
 #include <assert.h>
 
 namespace timestamped_array {
-    /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // TimeStampedArray interface                                              //
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
