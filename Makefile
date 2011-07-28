@@ -7,7 +7,7 @@ else
 endif
 
 #begin actual makefile stuff
-all: test_list
+all: test_timestamped_array test_persistent_skiplist
 
 # executables
 test_persistent_skiplist: PersistentSkipList.o test_persistent_skiplist.cpp

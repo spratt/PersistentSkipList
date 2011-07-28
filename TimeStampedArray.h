@@ -103,7 +103,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TimeStampedArray(int t, TimeStampedArray<T>& old_tsa)
+    TimeStampedArray(int t, const TimeStampedArray<T>& old_tsa)
       : _LOCKED(false),
 	time(t),
 	size(old_tsa.getSize()),
@@ -112,6 +112,27 @@ namespace timestamped_array {
       // copy the old data
       for(int i = 0; i < size; ++i)
 	setElement(i,old_tsa.getElement(i));
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: ~TimeStampedArray                                      //
+    //                                                                       //
+    // PURPOSE:       Destructor.                                            //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:        Void.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    ~TimeStampedArray() {
+      delete[] data;
     }
     
     ///////////////////////////////////////////////////////////////////////////
@@ -151,7 +172,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    bool isLocked();
+    bool isLocked() const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -172,7 +193,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int getTime();
+    int getTime() const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -191,7 +212,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int getSize();
+    int getSize() const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -212,7 +233,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    T getElement(int i);
+    T getElement(int i) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -243,22 +264,22 @@ namespace timestamped_array {
   }
 
   template<class T>
-  bool TimeStampedArray<T>::isLocked() {
+  bool TimeStampedArray<T>::isLocked() const {
     return _LOCKED;
   }
 
   template<class T>
-  int TimeStampedArray<T>::getTime() {
+  int TimeStampedArray<T>::getTime() const {
     return time;
   }
 
   template<class T>
-  int TimeStampedArray<T>::getSize() {
+  int TimeStampedArray<T>::getSize() const {
     return size;
   }
 
   template<class T>
-  T TimeStampedArray<T>::getElement(int i) {
+  T TimeStampedArray<T>::getElement(int i) const {
     assert(i >= 0);
     assert(i < size);
     return data[i];
