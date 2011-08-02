@@ -25,6 +25,8 @@
 //          }                                                                //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+#ifndef TEMPLATECONSTRAINTS_H
+#define TEMPLATECONSTRAINTS_H
 
 template<class T, class B> struct Derived_from {
   static void constraints(T* p) { B* pb = p; }
@@ -45,3 +47,5 @@ template<class T1, class T2, class T3 = T1> struct Can_multiply {
   static void constraints(T1 a, T2 b, T3 c) { c = a*b; }
   Can_multiply() { void(*p)(T1,T2,T3) = constraints; }
 };
+
+#endif
