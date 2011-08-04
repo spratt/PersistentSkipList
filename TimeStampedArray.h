@@ -96,6 +96,9 @@ namespace timestamped_array {
     //   Type/Name:   int/t                                                  //
     //   Description: The timestamp to associate with the array.             //
     //                                                                       //
+    //   Type/Name:   int/s                                                  //
+    //   Description: The size of the new array.                             //
+    //                                                                       //
     //   Type/Name:   TimeStampedArray<T>/old_tsa                            //
     //   Description: The existing TSA to copy.  Copies everything but       //
     //                timestamp, does not modify original.                   //
@@ -103,14 +106,14 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TimeStampedArray(int t, const TimeStampedArray<T>& old_tsa)
+    TimeStampedArray(int t, int s, const TimeStampedArray<T>& old_tsa)
       : _LOCKED(false),
 	time(t),
-	size(old_tsa.getSize()),
-	data(new T[old_tsa.getSize()]) 
+	size(s),
+	data(new T[s])
     {
       // copy the old data
-      for(int i = 0; i < size; ++i)
+      for(int i = 0; i < old_tsa.getSize(); ++i)
 	setElement(i,old_tsa.getElement(i));
     }
 

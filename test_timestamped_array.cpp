@@ -52,7 +52,7 @@ int main(int argv, char** argc) {
   testTSA(tsa);
 
   // Create a TSA copy
-  TimeStampedArray<int>* tsa_copy = new TimeStampedArray<int>(1, tsa);
+  TimeStampedArray<int>* tsa_copy = new TimeStampedArray<int>(1, 3, tsa);
   cout << "Structure copied successfully." << endl;
   tsa_copy->setElement(1, 3);
   tsa_copy->lock();

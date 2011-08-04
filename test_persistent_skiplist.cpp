@@ -25,7 +25,7 @@ int main(int argv, char** argc) {
   cout << "======================================================================\n"
        << "| Testing ListNode                                                   |\n"
        << "======================================================================\n";
-  ListNode<int>* ln = new ListNode<int>(2);
+  ListNode<int>* ln = ListNode<int>::create(2);
   cout << "Structure successfully allocated on heap." << endl
        << "Data: " << ln->getData() << endl
        << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl
@@ -39,7 +39,7 @@ int main(int argv, char** argc) {
 
   TimeStampedArray<ListNode<int>*>* tsa = new TimeStampedArray<ListNode<int>*>(0,1);
   tsa->setElement(0,ln);
-  ln->setNext(tsa);
+  ln->addNext(tsa);
   cout << "Successfully added an array of next pointers." << endl
        << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
 
@@ -65,6 +65,7 @@ int main(int argv, char** argc) {
     cout << "Structure successfully deleted." << endl;
   else
     assert(false);
+  ln = NULL;
   
   /////////////////////////////////////////////////////////////////////////////
   // SkipList tests                                                          //
@@ -72,8 +73,15 @@ int main(int argv, char** argc) {
   cout << "======================================================================\n"
        << "| Testing SkipList                                                   |\n"
        << "======================================================================\n";
-  //PersistentSkipList psl();
-
+  PersistentSkipList<int> psl;
+  cout << "SkipList successfully allocated on stack." << endl;
+  tsa = psl.getHead(0);
+  cout << "Successfully got the head of the skip list." << endl;
+  psl.insert(42);
+  cout << "Successfully inserted value 42 into the skip list." << endl;
+  tsa = psl.getHead(0);
+  int value = tsa->getElement(0)->getData();
+  cout << "Found: " << value << endl;
   // success
   return 0;
 }
