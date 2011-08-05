@@ -26,6 +26,9 @@
 #ifndef PERSISTENTSKIPLIST_H
 #define PERSISTENTSKIPLIST_H
 
+// Set the following variable to 1 in order to receive debug info, 0 otherwise
+#define PSL_DEBUG_MODE 1
+
 // C++ libraries
 #include <vector>
 #include <set>
@@ -44,6 +47,7 @@ using namespace std;
 using namespace timestamped_array;
 
 namespace persistent_skip_list {
+  
   /////////////////////////////////////////////////////////////////////////////
   // ListNode interface                                                      //
   /////////////////////////////////////////////////////////////////////////////
@@ -55,6 +59,20 @@ namespace persistent_skip_list {
     ListNode<T>** in_nodes;
     T data;
     int references;
+    static bool _SEEDED; // must be initialized to false
+
+    static void seed() {
+      if(_SEEDED)
+	return;
+      _SEEDED = true;
+      time_t seed = (time_t)1312564825;
+      seed = time(0); // comment this for non-random seeding
+      srand( seed );
+      #if PSL_DEBUG_MODE
+      clog << "Seeding with value " << seed << endl;
+      #endif
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -74,8 +92,8 @@ namespace persistent_skip_list {
     ListNode(const T& original_data)
       : next(), data(original_data), references(0)
     {
+      seed();
       // pick height, modified from Pat Morin's Open Data Structures
-      srand( time(0) );
       height = 1;
       int bitCheck = 1;
       int r = rand();
@@ -116,7 +134,15 @@ namespace persistent_skip_list {
     ~ListNode() {
       // clean up next
       for(int i = 0; i < (int)next.size(); ++i) {
-	delete next[i];      // delete timestamped array
+	TimeStampedArray<ListNode<T>*>* tsa = next[i];
+	if(tsa != NULL) {
+	  for(int j = 0; j < tsa->getSize(); ++j) {
+	    ListNode<T>* ln = tsa->getElement(j);
+	    if(ln != NULL)
+	      ln->removeReference();
+	  }
+	  delete tsa;      // delete timestamped array
+	}
       }
       delete[] in_nodes;
     }
@@ -443,6 +469,8 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     int removeReference();
   };
+  template<class T>
+  bool ListNode<T>::_SEEDED = false;
 
   /////////////////////////////////////////////////////////////////////////////
   // ListNode implementation                                                 //
@@ -543,10 +571,17 @@ namespace persistent_skip_list {
     if(tsa == NULL)
       return -1; // bail if trying to set next to NULL
     // make sure time is strictly increasing
-    if(((int)next.size())-1 >= 0)
-      assert(tsa->getTime() > next[next.size()-1]->getTime());
+    int lastIndex = (int)next.size()-1;
+    if(lastIndex >= 0)
+      assert(tsa->getTime() > next[lastIndex]->getTime());
     // finally, save the new set of next pointers
     next.push_back(tsa);
+    // make sure to count the references
+    for(int i = 0; i < tsa->getSize(); ++i) {
+      ListNode<T>* ln = tsa->getElement(i);
+      if(ln != NULL)
+	ln->addReference();
+    }
     // success
     return 0;
   }
@@ -597,8 +632,15 @@ namespace persistent_skip_list {
     assert(this != NULL);
     assert(references > 0);
     int toReturn = --references;
-    if(references == 0)
+#if PSL_DEBUG_MODE
+    clog << "Node " << data << " has " << references << " references." << endl;
+#endif
+    if(references == 0) {
+#if PSL_DEBUG_MODE
+      clog << "Deleting " << data << "..." << endl;
+#endif
       delete this;
+    }
     return toReturn;
   }
 
@@ -652,6 +694,9 @@ namespace persistent_skip_list {
     PersistentSkipList()
       : height(0), head(), data_set()
     {
+#if PSL_DEBUG_MODE
+      clog << "PSL " << this << " created." << endl;
+#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -674,12 +719,21 @@ namespace persistent_skip_list {
     virtual ~PersistentSkipList() {
       for(int i = 0; i < (int)head.size(); ++i) {
 	TimeStampedArray<ListNode<T>*>* tsa = head[i];
+#if PSL_DEBUG_MODE
+	clog << "Deleting head at time " << i << endl;
+#endif
 	for(int j = 0; j < tsa->getSize(); ++j) {
 	  ListNode<T>* ln = tsa->getElement(j);
+#if PSL_DEBUG_MODE
+	  clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
+#endif
 	  ln->removeReference();
 	}
 	delete tsa;
       }
+#if PSL_DEBUG_MODE
+      clog << "PSL " << this << " deleted." << endl;
+#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -790,7 +844,7 @@ namespace persistent_skip_list {
   template <class T>
   int PersistentSkipList<T>::getPresent() {
     assert(this != NULL);
-    return data_set.size();
+    return data_set.size()-1;
   }
 
   template <class T>
@@ -802,6 +856,8 @@ namespace persistent_skip_list {
   template <class T>
   void PersistentSkipList<T>::draw(int t) {
     assert(this != NULL);
+    assert(t >= 0);
+    cout << "Getting skip list at time " << t << "..." << endl;
     TimeStampedArray<ListNode<T>*>* head = getHead(t);
     if(head == NULL) {
       cout << "NULL" << endl;
@@ -819,11 +875,12 @@ namespace persistent_skip_list {
       data.push_back(ln->getData());
       ln = ln->getNext(t,0);
     }
+    --max_height;
     while(max_height >= 0) {
       cout << max_height << ": ";
       for(int i = 0; i < (int)heights.size(); ++i) {
 	cout << setw(3);
-	if(heights[i] >= max_height) {
+	if(heights[i] > max_height) {
 	  cout << data[i];
 	} else {
 	  cout << "   ";
@@ -839,7 +896,14 @@ namespace persistent_skip_list {
   int PersistentSkipList<T>::addHead(TimeStampedArray<ListNode<T>*>* tsa) {
     assert(this != NULL);
     assert(tsa != NULL);
+    // save the new head
     head.push_back(tsa);
+    // make sure to count the references
+    for(int i = 0; i < tsa->getSize(); ++i) {
+      ListNode<T>* ln = tsa->getElement(i);
+      if(ln != NULL)
+	ln->addReference();
+    }
     // success
     return 0;
   }
@@ -874,113 +938,125 @@ namespace persistent_skip_list {
     return head[index];
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // INSERT METHOD                                                           //
+  /////////////////////////////////////////////////////////////////////////////
   template <class T>
   int PersistentSkipList<T>::insert(const T& data) {
     assert(this != NULL);
     TimeStampedArray<ListNode<T>*>* new_head = NULL;
+    // check if data exists already
+    if(data_set.count(data)>0)
+      return 1;
+    // otherwise, create node
+    ListNode<T>* new_ln = ListNode<T>::create(data);
+    int height = new_ln->getHeight();
+#if PSL_DEBUG_MODE
+    clog << "New node (" << data << ") height: " << height << endl;
+#endif
+    ///////////////////////////////////////////////////////////////////////////
+    // FIRST ELEMENT CASE                                                    //
+    ///////////////////////////////////////////////////////////////////////////
     if(data_set.empty()) {
-      // first element
-      // create node
-      ListNode<T>* new_ln = ListNode<T>::create(data);
-      int height = new_ln->getHeight();
       // initialize head
       new_head = new TimeStampedArray<ListNode<T>*>(0, height);
       // make the new node the head at all heights
       for(int i = 0; i < height; ++i) {
 	new_head->setElement(i,new_ln);
-	new_ln->addReference();
       }
-    } else {
-      // not first element
-      // check if data exists already
-      if(data_set.count(data)>0)
-	return 1;
-      // otherwise, create a new node
-      ListNode<T>* new_ln = ListNode<T>::create(data);
-      int height = new_ln->getHeight();
+    }
+    ///////////////////////////////////////////////////////////////////////////
+    // NOT FIRST ELEMENT CASE                                                //
+    ///////////////////////////////////////////////////////////////////////////
+    else {
       // add node to list
-      int t = getPresent();
-      TimeStampedArray<ListNode<T>*>* old_head = getHead(t);
+      int last_time = getPresent();
+      int new_time = last_time +1;
+      TimeStampedArray<ListNode<T>*>* old_head = getHead(last_time);
       int start = height-1;
-      // if new node is taller than old head, need to increase size of head
+      /////////////////////////////////////////////////////////////////////////
+      // TALLER THAN OLD HEAD                                                //
+      /////////////////////////////////////////////////////////////////////////
       if(height > old_head->getSize()) {
-	new_head = new TimeStampedArray<ListNode<T>*>(t,height,*old_head);
-	for(int i = 0; i < height; ++i)
-	  new_head->getElement(i)->addReference();
+#if PSL_DEBUG_MODE
+	clog << "Node " << data << " is taller than old head." << endl;
+#endif
+	new_head = new TimeStampedArray<ListNode<T>*>(new_time,height,*old_head);
 	// make the new node the head at all heights exceeding the size of
 	// the old head
-	start = old_head->getSize()-1;
-	for(int i = start+1; i < height; ++i) {
-	  new_head->setElement(i,new_ln);
-	  new_ln->addReference();
+	while(start >= old_head->getSize()) {
+#if PSL_DEBUG_MODE
+	  clog << "Creating head pointers for old node at height: "
+	       << start << endl;
+#endif
+	  new_head->setElement(start,new_ln);
+	  --start;
 	}
-      } else {
-	// determine if we need to make a new head
-	if(new_ln->getData() < old_head->getElement(height-1)->getData()) {
-	  // copy the old head
-	  int head_size = old_head->getSize();
-	  new_head = new TimeStampedArray<ListNode<T>*>(t,head_size,*old_head);
-	  for(int i = 0; i < height; ++i) {
-	    new_head->getElement(i)->addReference();
-	  }
-	}
+      }
+      /////////////////////////////////////////////////////////////////////////
+      // NOT TALLER THAN OLD HEAD                                            //
+      /////////////////////////////////////////////////////////////////////////
+      else {
+	// copy the old head
+	int head_size = old_head->getSize();
+	new_head =
+	  new TimeStampedArray<ListNode<T>*>(new_time,head_size,*old_head);
       }
       TimeStampedArray<ListNode<T>*>* new_node_next =
-	new TimeStampedArray<ListNode<T>*>(t,height);
-      if(new_head != NULL) {
-	// travel down the heads, adding the new node until we find a head
-	// node which precedes the new node
-	ListNode<T>* old_ln = old_head->getElement(start);
-	while(new_ln->getData() < old_ln->getData()) {
-	  old_ln->addIncomingNode(start,new_ln);
-	  new_node_next->setElement(start,old_ln);
-	  new_head->setElement(start,new_ln);
-	  new_ln->addReference();
-	  --start;
-	  if(start < 0)
-	    break;
-	  old_ln = old_head->getElement(start);
-	}
+	new TimeStampedArray<ListNode<T>*>(new_time,height);
+      /////////////////////////////////////////////////////////////////////////
+      // ADD TO HEAD IF NEEDED                                               //
+      /////////////////////////////////////////////////////////////////////////
+      ListNode<T>* old_ln = old_head->getElement(start);
+      // travel down the heads, adding the new node until we find a head
+      // node which precedes the new node
+      while(data < old_ln->getData()) {
+#if PSL_DEBUG_MODE
+	clog << "Linking new to old at height " << start << endl;
+#endif
+	old_ln->addIncomingNode(start,new_ln);
+	new_node_next->setElement(start,old_ln);
+	new_head->setElement(start,new_ln);
+	--start;
+	if(start < 0)
+	  break;
+	old_ln = old_head->getElement(start);
       }
-      // if there is more skip list to traverse
-      // traverse the skip list, adding the new node into its proper
-      // position at each height
+      /////////////////////////////////////////////////////////////////////////
+      // ADD TO REST OF LIST IF NEEDED                                       //
+      /////////////////////////////////////////////////////////////////////////
       if(start >= 0) {
 	int search_height = start;
 	// guaranteed not NULL
 	ListNode<T>* old_ln = old_head->getElement(search_height);
 	while(search_height >= 0) {
 	  // might be NULL
-	  ListNode<T>* next_ln = old_ln->getNext(t,search_height);
+	  ListNode<T>* next_ln = old_ln->getNext(last_time,search_height);
 	  while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
 	    old_ln = next_ln;
-	    next_ln = old_ln->getNext(t,search_height);
+	    next_ln = old_ln->getNext(last_time,search_height);
 	  }
 	  // add node to preceding node
 	  TimeStampedArray<ListNode<T>*>* old_ln_next =
-	    old_ln->getNext(t);  // <- this could be NULL
+	    old_ln->getNext(last_time);  // <- this could be NULL
 	  int old_ln_height = old_ln->getHeight();
 	  if(old_ln_next == NULL) {
-	    old_ln_next = new TimeStampedArray<ListNode<T>*>(t,old_ln_height);
+	    old_ln_next =
+	      new TimeStampedArray<ListNode<T>*>(new_time,old_ln_height);
 	  } else {
 	    old_ln_next =
-	      new TimeStampedArray<ListNode<T>*>(t,old_ln_height,*old_ln_next);
-	    for(int i = 0; i < old_ln_next->getSize(); ++i) {
-	      ListNode<T>* temp_ln = old_ln_next->getElement(i);
-	      if(temp_ln != NULL)
-		temp_ln->addReference();
-	    }
+	      new TimeStampedArray<ListNode<T>*>(new_time,
+						 old_ln_height,
+						 *old_ln_next);
 	  }
 	  while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	    // point the new node to the old next node
 	    if(next_ln != NULL) {
-	      next_ln->addReference();
 	      next_ln->removeIncomingNode(search_height);
 	      next_ln->addIncomingNode(search_height,new_ln);
 	      new_node_next->setElement(search_height,next_ln);
 	    }
 	    // point the old node to the new node
-	    new_ln->addReference();
 	    new_ln->removeIncomingNode(search_height);
 	    new_ln->addIncomingNode(search_height,old_ln);
 	    old_ln_next->setElement(search_height,new_ln);
@@ -999,12 +1075,14 @@ namespace persistent_skip_list {
 	  old_ln = next_ln;
 	}
       }
+      new_ln->addNext(new_node_next);
     }
-    // if we created a new head, lock it then add it to the array of heads
-    if(new_head != NULL) {
-      new_head->lock();
-      addHead(new_head);
-    }
+    ///////////////////////////////////////////////////////////////////////////
+    // COMMON TO BOTH FIRST AND REST CASES                                   //
+    ///////////////////////////////////////////////////////////////////////////
+    // since we created a new head, lock it then add it to the array of heads
+    new_head->lock();
+    addHead(new_head);
     // prevent duplicates by registering this datum
     data_set.insert(data);
     // success

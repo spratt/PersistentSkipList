@@ -61,6 +61,7 @@ int main(int argv, char** argc) {
   
   // destructor test
   tsa->setElement(0,NULL); // can't delete while a pointer to it exists
+  ln->removeReference();
   if(ln->removeReference() == 0)
     cout << "Structure successfully deleted." << endl;
   else
@@ -80,9 +81,11 @@ int main(int argv, char** argc) {
   psl.insert(42);
   cout << "Successfully inserted one value into the skip list." << endl;
   psl.insert(8);
-  cout << "Successfully inserted several values into the skip list." << endl
-       << "Drawing present skip list:" << endl;
-  psl.drawPresent();
+  psl.insert(69);
+  psl.insert(25);
+  cout << "Successfully inserted several values into the skip list." << endl;
+  for(int i = 0; i <= psl.getPresent(); ++i)
+    psl.draw(i);
   // success
   return 0;
 }
