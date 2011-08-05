@@ -78,10 +78,11 @@ int main(int argv, char** argc) {
   tsa = psl.getHead(0);
   cout << "Successfully got the head of the skip list." << endl;
   psl.insert(42);
-  cout << "Successfully inserted value 42 into the skip list." << endl;
-  tsa = psl.getHead(0);
-  int value = tsa->getElement(0)->getData();
-  cout << "Found: " << value << endl;
+  cout << "Successfully inserted one value into the skip list." << endl;
+  psl.insert(8);
+  cout << "Successfully inserted several values into the skip list." << endl
+       << "Drawing present skip list:" << endl;
+  psl.drawPresent();
   // success
   return 0;
 }

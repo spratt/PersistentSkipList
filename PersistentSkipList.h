@@ -29,6 +29,8 @@
 // C++ libraries
 #include <vector>
 #include <set>
+#include <iostream>
+#include <iomanip>
 
 // C libraries
 #include <assert.h>
@@ -90,6 +92,8 @@ namespace persistent_skip_list {
 
       // We know that the number of incoming pointers will be at most height
       in_nodes = new ListNode<T>*[height];
+      for(int i = 0; i < height; ++i)
+	in_nodes[i] = NULL;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -526,6 +530,8 @@ namespace persistent_skip_list {
     assert(this != NULL);
     assert(t >= 0);
     TimeStampedArray<ListNode<T>*>* tsa = getNext(t);
+    if(tsa == NULL)
+      return NULL;
     assert(h < tsa->getSize());
     return tsa->getElement(h);
   }
@@ -547,6 +553,7 @@ namespace persistent_skip_list {
 
   template <class T>
   int ListNode<T>::addIncomingNode(int h, ListNode<T>* in) {
+    assert(this != NULL);
     assert(h >= 0);
     assert(h < height);
     assert(in_nodes[h] == NULL);
@@ -559,6 +566,7 @@ namespace persistent_skip_list {
 
   template <class T>
   ListNode<T>* ListNode<T>::getIncomingNode(int h) {
+    assert(this != NULL);
     assert(h >= 0);
     assert(h < height);
     return in_nodes[h];
@@ -566,6 +574,7 @@ namespace persistent_skip_list {
 
   template <class T>
   int ListNode<T>::removeIncomingNode(int h) {
+    assert(this != NULL);
     assert(h >= 0);
     assert(h < height);
     if(in_nodes[h] != NULL) {
@@ -579,11 +588,14 @@ namespace persistent_skip_list {
 
   template <class T>
   int ListNode<T>::addReference() {
+    assert(this != NULL);
     return ++references;
   }
 
   template <class T>
   int ListNode<T>::removeReference() {
+    assert(this != NULL);
+    assert(references > 0);
     int toReturn = --references;
     if(references == 0)
       delete this;
@@ -672,6 +684,65 @@ namespace persistent_skip_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
+    // FUNCTION NAME: getPresent                                             //
+    //                                                                       //
+    // PURPOSE:       Returns the latest time index of the skip list.        //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   int                                                    //
+    //   Description: The latest time index of the skip list.                //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int getPresent();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: drawPresent                                            //
+    //                                                                       //
+    // PURPOSE:       Draws the data structure at present to cout.           //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:        Void.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    void drawPresent();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: draw                                                   //
+    //                                                                       //
+    // PURPOSE:       Draws the data structure at the given time to cout.    //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to draw the structure.               //
+    //                                                                       //
+    // RETURN:        Void.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    void draw(int t);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
     // FUNCTION NAME: getHead                                                //
     //                                                                       //
     // PURPOSE:       Gets the head of the list at time t.                   //
@@ -716,6 +787,54 @@ namespace persistent_skip_list {
   /////////////////////////////////////////////////////////////////////////////
   // PersistentSkipList implementation                                       //
   /////////////////////////////////////////////////////////////////////////////
+  template <class T>
+  int PersistentSkipList<T>::getPresent() {
+    assert(this != NULL);
+    return data_set.size();
+  }
+
+  template <class T>
+  void PersistentSkipList<T>::drawPresent() {
+    assert(this != NULL);
+    draw(getPresent());
+  }
+
+  template <class T>
+  void PersistentSkipList<T>::draw(int t) {
+    assert(this != NULL);
+    TimeStampedArray<ListNode<T>*>* head = getHead(t);
+    if(head == NULL) {
+      cout << "NULL" << endl;
+      return;
+    }
+    vector<int> heights;
+    vector<T> data;
+    ListNode<T>* ln = head->getElement(0);
+    int max_height = -1;
+    while(ln != NULL) {
+      int h = ln->getHeight();
+      heights.push_back(h);
+      if(h > max_height)
+	max_height = h;
+      data.push_back(ln->getData());
+      ln = ln->getNext(t,0);
+    }
+    while(max_height >= 0) {
+      cout << max_height << ": ";
+      for(int i = 0; i < (int)heights.size(); ++i) {
+	cout << setw(3);
+	if(heights[i] >= max_height) {
+	  cout << data[i];
+	} else {
+	  cout << "   ";
+	}
+	cout << " -> ";
+      }
+      cout << "NULL" << endl;
+      --max_height;
+    }
+  }
+
   template <class T>
   int PersistentSkipList<T>::addHead(TimeStampedArray<ListNode<T>*>* tsa) {
     assert(this != NULL);
@@ -780,9 +899,9 @@ namespace persistent_skip_list {
       ListNode<T>* new_ln = ListNode<T>::create(data);
       int height = new_ln->getHeight();
       // add node to list
-      int t = data_set.size();
+      int t = getPresent();
       TimeStampedArray<ListNode<T>*>* old_head = getHead(t);
-      int start = height;
+      int start = height-1;
       // if new node is taller than old head, need to increase size of head
       if(height > old_head->getSize()) {
 	new_head = new TimeStampedArray<ListNode<T>*>(t,height,*old_head);
@@ -790,15 +909,14 @@ namespace persistent_skip_list {
 	  new_head->getElement(i)->addReference();
 	// make the new node the head at all heights exceeding the size of
 	// the old head
-	start = old_head->getSize();
-	for(int i = start; i < height; ++i) {
-	  new_head->getElement(i)->removeReference();
+	start = old_head->getSize()-1;
+	for(int i = start+1; i < height; ++i) {
 	  new_head->setElement(i,new_ln);
 	  new_ln->addReference();
 	}
       } else {
 	// determine if we need to make a new head
-	if(new_ln->getData() < old_head->getElement(height)->getData()) {
+	if(new_ln->getData() < old_head->getElement(height-1)->getData()) {
 	  // copy the old head
 	  int head_size = old_head->getSize();
 	  new_head = new TimeStampedArray<ListNode<T>*>(t,head_size,*old_head);
@@ -817,6 +935,7 @@ namespace persistent_skip_list {
 	  old_ln->addIncomingNode(start,new_ln);
 	  new_node_next->setElement(start,old_ln);
 	  new_head->setElement(start,new_ln);
+	  new_ln->addReference();
 	  --start;
 	  if(start < 0)
 	    break;
@@ -839,14 +958,31 @@ namespace persistent_skip_list {
 	  }
 	  // add node to preceding node
 	  TimeStampedArray<ListNode<T>*>* old_ln_next =
-	    old_ln->getNext(t);
-	  old_ln_next = new TimeStampedArray<ListNode<T>*>(t,height,*old_ln_next);
+	    old_ln->getNext(t);  // <- this could be NULL
+	  int old_ln_height = old_ln->getHeight();
+	  if(old_ln_next == NULL) {
+	    old_ln_next = new TimeStampedArray<ListNode<T>*>(t,old_ln_height);
+	  } else {
+	    old_ln_next =
+	      new TimeStampedArray<ListNode<T>*>(t,old_ln_height,*old_ln_next);
+	    for(int i = 0; i < old_ln_next->getSize(); ++i) {
+	      ListNode<T>* temp_ln = old_ln_next->getElement(i);
+	      if(temp_ln != NULL)
+		temp_ln->addReference();
+	    }
+	  }
 	  while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	    // point the new node to the old next node
-	    if(next_ln != NULL)
+	    if(next_ln != NULL) {
+	      next_ln->addReference();
+	      next_ln->removeIncomingNode(search_height);
+	      next_ln->addIncomingNode(search_height,new_ln);
 	      new_node_next->setElement(search_height,next_ln);
+	    }
 	    // point the old node to the new node
 	    new_ln->addReference();
+	    new_ln->removeIncomingNode(search_height);
+	    new_ln->addIncomingNode(search_height,old_ln);
 	    old_ln_next->setElement(search_height,new_ln);
 	    // move to the next height
 	    --search_height;

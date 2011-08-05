@@ -42,6 +42,7 @@
 #ifndef TIMESTAMPEDARRAY_H
 #define TIMESTAMPEDARRAY_H
 
+#include <cstddef>
 #include <assert.h>
 
 namespace timestamped_array {
@@ -263,26 +264,31 @@ namespace timestamped_array {
 
   template<class T>
   void TimeStampedArray<T>::lock() {
+    assert(this != NULL);
     _LOCKED = true;
   }
 
   template<class T>
   bool TimeStampedArray<T>::isLocked() const {
+    assert(this != NULL);
     return _LOCKED;
   }
 
   template<class T>
   int TimeStampedArray<T>::getTime() const {
+    assert(this != NULL);
     return time;
   }
 
   template<class T>
   int TimeStampedArray<T>::getSize() const {
+    assert(this != NULL);
     return size;
   }
 
   template<class T>
   T TimeStampedArray<T>::getElement(int i) const {
+    assert(this != NULL);
     assert(i >= 0);
     assert(i < size);
     return data[i];
@@ -290,6 +296,7 @@ namespace timestamped_array {
 
   template<class T>
   int TimeStampedArray<T>::setElement(int i, T datum) {
+    assert(this != NULL);
     assert(! _LOCKED);
     assert(i >= 0);
     assert(i < size);
