@@ -47,6 +47,15 @@ using namespace std;
 using namespace timestamped_array;
 
 namespace persistent_skip_list {
+  /////////////////////////////////////////////////////////////////////////////
+  // Logging Object                                                          //
+  /////////////////////////////////////////////////////////////////////////////
+  struct psl_log: public ostream {
+    ostream& operator<<(const char* c) {
+      clog << c;
+      return clog;
+    }
+  };
   
   /////////////////////////////////////////////////////////////////////////////
   // ListNode interface                                                      //
@@ -68,9 +77,9 @@ namespace persistent_skip_list {
       time_t seed = (time_t)1312564825;
       seed = time(0); // comment this for non-random seeding
       srand( seed );
-      #if PSL_DEBUG_MODE
+#if PSL_DEBUG_MODE
       clog << "Seeding with value " << seed << endl;
-      #endif
+#endif
     }
 
 
@@ -137,7 +146,8 @@ namespace persistent_skip_list {
 	TimeStampedArray<ListNode<T>*>* tsa = next[i];
 	if(tsa != NULL) {
 	  for(int j = 0; j < tsa->getSize(); ++j) {
-	    ListNode<T>* ln = tsa->getElement(j);
+	    ListNode<T>* ln = NULL;
+	    ln = tsa->getElement(j);
 	    if(ln != NULL)
 	      ln->removeReference();
 	  }
@@ -594,7 +604,7 @@ namespace persistent_skip_list {
     assert(in_nodes[h] == NULL);
     in_nodes[h] = in;
     // any time a new reference to a ListNode is created, must keep track
-    in->addReference();  
+    //in->addReference();  
     // success
     return 0;
   }
@@ -614,7 +624,7 @@ namespace persistent_skip_list {
     assert(h < height);
     if(in_nodes[h] != NULL) {
       // any time a new reference to a ListNode is destroyed, must keep track
-      in_nodes[h]->removeReference();
+      //in_nodes[h]->removeReference();
       in_nodes[h] = NULL;
     }
     // success

@@ -80,8 +80,11 @@ namespace timestamped_array {
       : _LOCKED(false),
 	time(t),
 	size(s),
-	data(new T[size]) 
+	data(new T[s]) 
     {
+      for(int i = 0; i < s; ++i) {
+	data[i] = T();
+      }
     }
 
     ///////////////////////////////////////////////////////////////////////////
