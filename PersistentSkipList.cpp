@@ -12,7 +12,3 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 #include "PersistentSkipList.h"
-
-namespace persistent_skip_list {
-  struct psl_log psl_log;
-}
