@@ -21,8 +21,8 @@
 // void reverse(T* points, int begin, int end)                               //
 // void block_permute(T* points, int beginA, int endA, int endB)             //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef ARRAY_UTILITIES_H
-#define ARRAY_UTILITIES_H
+#ifndef ARRAY_UTILITIES_HPP
+#define ARRAY_UTILITIES_HPP
 #include <iostream>
 #include <vector>
 

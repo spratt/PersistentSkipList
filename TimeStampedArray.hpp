@@ -39,8 +39,8 @@
 // setElement(int,T) - sets the element at the given 0 <= index < size       //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef TIMESTAMPEDARRAY_H
-#define TIMESTAMPEDARRAY_H
+#ifndef TIMESTAMPEDARRAY_HPP
+#define TIMESTAMPEDARRAY_HPP
 
 #include <cstddef>
 #include <assert.h>

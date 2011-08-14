@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-#include "PersistentSkipList.h"
+#include "PersistentSkipList.hpp"
 
 using namespace persistent_skip_list;
 using namespace timestamped_array;

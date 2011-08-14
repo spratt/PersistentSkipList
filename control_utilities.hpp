@@ -19,8 +19,8 @@
 //                             Public Methods:                               //
 // char waitForEnter()                                                       //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef CONTROL_UTILITIES_H
-#define CONTROL_UTILITIES_H
+#ifndef CONTROL_UTILITIES_HPP
+#define CONTROL_UTILITIES_HPP
 
 namespace control_utilities {
   /////////////////////////////////////////////////////////////////////////////

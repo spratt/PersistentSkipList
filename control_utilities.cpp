@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <stdio.h>
-#include "control_utilities.h"
+#include "control_utilities.hpp"
 
 using namespace std;
 

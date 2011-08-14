@@ -5,3 +5,4 @@ core
 test_timestamped_array
 test_persistent_skiplist
 psl.log
+*.dSYM

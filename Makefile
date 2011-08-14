@@ -15,18 +15,24 @@ test_persistent_skiplist: PersistentSkipList.o test_persistent_skiplist.cpp
 test_timestamped_array: TimeStampedArray.o test_timestamped_array.cpp
 
 # object files
-PersistentSkipList.o: PersistentSkipList.h
+PersistentSkipList.o: PersistentSkipList.hpp
 
-sort/heap_sort.o: sort/heap_sort.h
+sort/heap_sort.o: sort/heap_sort.hpp
 
-array_utilities.o: array_utilities.h
+array_utilities.o: array_utilities.hpp
 
-control_utilities.o: control_utilities.h
+control_utilities.o: control_utilities.hpp
 
-TimeStampedArray.o: TimeStampedArray.h
+TimeStampedArray.o: TimeStampedArray.hpp
+
+Point2D.o: Point2D.hpp
+
+PointPersistentSkipList.o: PointPersistentSkipList.hpp
 
 # in case of emergency
 clean:
-	@if [ -f test_list ]; then rm test_list; fi
-	@rm -f *.o # remove all object files and be quiet about it
+	@if [ -f test_timestamped_array ]; then rm test_timestamped_array; fi
+	@if [ -f test_persistent_skiplist ]; then rm test_persistent_skiplist; fi
+	@rm -f *.o *.log core
+	@rm -rf *.dSYM
 

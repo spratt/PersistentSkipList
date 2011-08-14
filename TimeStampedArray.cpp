@@ -11,4 +11,4 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-#include "TimeStampedArray.h"
+#include "TimeStampedArray.hpp"

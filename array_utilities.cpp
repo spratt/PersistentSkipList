@@ -21,4 +21,4 @@
 // void reverse(T* points, int begin, int end)                               //
 // void block_permute(T* points, int beginA, int endA, int endB)             //
 ///////////////////////////////////////////////////////////////////////////////
-#include "array_utilities.h"
+#include "array_utilities.hpp"

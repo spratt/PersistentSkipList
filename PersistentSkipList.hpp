@@ -13,21 +13,17 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-// 
-// Public Variable:                     Description:
-// ----------------                     ------------
-// 
+//                                                                           //
+// Public Variable:                     Description:                         //
+// ----------------                     ------------                         //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-// 
-//                             Public Methods:
-// 
-// 
+//                                                                           //
+//                             Public Methods:                               //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef PERSISTENTSKIPLIST_H
-#define PERSISTENTSKIPLIST_H
-
-// Set the following variable to 1 in order to receive debug info, 0 otherwise
-#define PSL_DEBUG_MODE 1
+#ifndef PERSISTENTSKIPLIST_HPP
+#define PERSISTENTSKIPLIST_HPP
 
 // C++ libraries
 #include <vector>
@@ -41,12 +37,14 @@
 #include <time.h>
 
 // My libraries
-#include "TimeStampedArray.h"
+#include "TimeStampedArray.hpp"
 
 using namespace std;
 using namespace timestamped_array;
 
 namespace persistent_skip_list {
+  // Set the following variable to true in order to receive debug info
+  const bool PSL_DEBUG_MODE = false;
   /////////////////////////////////////////////////////////////////////////////
   // ListNode interface                                                      //
   /////////////////////////////////////////////////////////////////////////////
@@ -67,9 +65,9 @@ namespace persistent_skip_list {
       time_t seed = (time_t)1312564825;
       seed = time(0); // comment this for non-random seeding
       srand( seed );
-#if PSL_DEBUG_MODE
-      clog << "Seeding with value " << seed << endl;
-#endif
+      if(PSL_DEBUG_MODE) {
+	clog << "Seeding with value " << seed << endl;
+      }
     }
 
 
@@ -593,8 +591,9 @@ namespace persistent_skip_list {
     assert(h < height);
     assert(in_nodes[h] == NULL);
     in_nodes[h] = in;
-    // any time a new reference to a ListNode is created, must keep track
-    //in->addReference();  
+    // Note that incoming node references are not counted, this is on purpose.
+    // If incoming references are the only ones left, the node should
+    // be deleted.
     // success
     return 0;
   }
@@ -613,8 +612,9 @@ namespace persistent_skip_list {
     assert(h >= 0);
     assert(h < height);
     if(in_nodes[h] != NULL) {
-      // any time a new reference to a ListNode is destroyed, must keep track
-      //in_nodes[h]->removeReference();
+      // Note that incoming node references are not counted, this is on purpose.
+      // If incoming references are the only ones left, the node should
+      // be deleted.
       in_nodes[h] = NULL;
     }
     // success
@@ -632,13 +632,13 @@ namespace persistent_skip_list {
     assert(this != NULL);
     assert(references > 0);
     int toReturn = --references;
-#if PSL_DEBUG_MODE
-    clog << "Node " << data << " has " << references << " references." << endl;
-#endif
+    if(PSL_DEBUG_MODE) {
+      clog << "Node " << data << " has " << references << " references." << endl;
+    }
     if(references == 0) {
-#if PSL_DEBUG_MODE
-      clog << "Deleting " << data << "..." << endl;
-#endif
+      if(PSL_DEBUG_MODE) {
+	clog << "Deleting " << data << "..." << endl;
+      }
       delete this;
     }
     return toReturn;
@@ -694,9 +694,9 @@ namespace persistent_skip_list {
     PersistentSkipList()
       : height(0), head(), data_set()
     {
-#if PSL_DEBUG_MODE
-      clog << "PSL " << this << " created." << endl;
-#endif
+      if(PSL_DEBUG_MODE) {
+	clog << "PSL " << this << " created." << endl;
+      }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -719,21 +719,21 @@ namespace persistent_skip_list {
     virtual ~PersistentSkipList() {
       for(int i = 0; i < (int)head.size(); ++i) {
 	TimeStampedArray<ListNode<T>*>* tsa = head[i];
-#if PSL_DEBUG_MODE
-	clog << "Deleting head at time " << i << endl;
-#endif
+	if(PSL_DEBUG_MODE) {
+	  clog << "Deleting head at time " << i << endl;
+	}
 	for(int j = 0; j < tsa->getSize(); ++j) {
 	  ListNode<T>* ln = tsa->getElement(j);
-#if PSL_DEBUG_MODE
-	  clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
-#endif
+	  if(PSL_DEBUG_MODE) {
+	    clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
+	  }
 	  ln->removeReference();
 	}
 	delete tsa;
       }
-#if PSL_DEBUG_MODE
-      clog << "PSL " << this << " deleted." << endl;
-#endif
+      if(PSL_DEBUG_MODE) {
+	clog << "PSL " << this << " deleted." << endl;
+      }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -951,9 +951,9 @@ namespace persistent_skip_list {
     // otherwise, create node
     ListNode<T>* new_ln = ListNode<T>::create(data);
     int height = new_ln->getHeight();
-#if PSL_DEBUG_MODE
-    clog << "New node (" << data << ") height: " << height << endl;
-#endif
+    if(PSL_DEBUG_MODE) {
+      clog << "New node (" << data << ") height: " << height << endl;
+    }
     ///////////////////////////////////////////////////////////////////////////
     // FIRST ELEMENT CASE                                                    //
     ///////////////////////////////////////////////////////////////////////////
@@ -978,17 +978,17 @@ namespace persistent_skip_list {
       // TALLER THAN OLD HEAD                                                //
       /////////////////////////////////////////////////////////////////////////
       if(height > old_head->getSize()) {
-#if PSL_DEBUG_MODE
-	clog << "Node " << data << " is taller than old head." << endl;
-#endif
+	if(PSL_DEBUG_MODE) {
+	  clog << "Node " << data << " is taller than old head." << endl;
+	}
 	new_head = new TimeStampedArray<ListNode<T>*>(new_time,height,*old_head);
 	// make the new node the head at all heights exceeding the size of
 	// the old head
 	while(start >= old_head->getSize()) {
-#if PSL_DEBUG_MODE
-	  clog << "Creating head pointers for old node at height: "
-	       << start << endl;
-#endif
+	  if(PSL_DEBUG_MODE) {
+	    clog << "Creating head pointers for old node at height: "
+		 << start << endl;
+	  }
 	  new_head->setElement(start,new_ln);
 	  --start;
 	}
@@ -1011,9 +1011,9 @@ namespace persistent_skip_list {
       // travel down the heads, adding the new node until we find a head
       // node which precedes the new node
       while(data < old_ln->getData()) {
-#if PSL_DEBUG_MODE
-	clog << "Linking new to old at height " << start << endl;
-#endif
+	if(PSL_DEBUG_MODE) {
+	  clog << "Linking new to old at height " << start << endl;
+	}
 	old_ln->addIncomingNode(start,new_ln);
 	new_node_next->setElement(start,old_ln);
 	new_head->setElement(start,new_ln);
