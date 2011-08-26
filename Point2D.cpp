@@ -11,9 +11,10 @@
 // NOTES:   None.                                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+#include <assert.h>
 #include "Point2D.hpp"
 
-namespace Point2D {
+namespace point_2d {
   /////////////////////////////////////////////////////////////////////////////
   // Point2D implementation                                                  //
   /////////////////////////////////////////////////////////////////////////////
@@ -26,3 +27,24 @@ namespace Point2D {
     return os;
   }
 }
+namespace std {
+  /////////////////////////////////////////////////////////////////////////////
+  // Define limits for points                                                //
+  /////////////////////////////////////////////////////////////////////////////
+  point_2d::Point2D numeric_limits<point_2d::Point2D>::infinity() {
+    assert(numeric_limits<point_2d::Point2D>::has_infinity);
+    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::infinity(),
+			     numeric_limits<point_2d::coord_t>::infinity());
+  }
+  point_2d::Point2D numeric_limits<point_2d::Point2D>::max() {
+    assert(! numeric_limits<point_2d::Point2D>::has_infinity);
+    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::max(),
+			     numeric_limits<point_2d::coord_t>::max());
+  }
+  point_2d::Point2D numeric_limits<point_2d::Point2D>::min() {
+    assert(! numeric_limits<point_2d::Point2D>::has_infinity);
+    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::min(),
+			     numeric_limits<point_2d::coord_t>::min());
+  }
+}
+

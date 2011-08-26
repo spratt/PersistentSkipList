@@ -24,11 +24,12 @@
 #define POINT2D_HPP
 
 #include <fstream>
+#include <limits>
 
 using namespace std;
 
-namespace Point2D {
-    // Defines the implementation and precision of coordinates
+namespace point_2d {
+  // Defines the implementation and precision of coordinates
   typedef int coord_t;
   
   /////////////////////////////////////////////////////////////////////////////
@@ -141,5 +142,19 @@ namespace Point2D {
   //                                                                         //
   /////////////////////////////////////////////////////////////////////////////
   ostream& operator<<(ostream& os, const Point2D& p);
+}
+namespace std {
+  /////////////////////////////////////////////////////////////////////////////
+  // Numeric Limits Interface                                                //
+  /////////////////////////////////////////////////////////////////////////////
+  template <>
+  class numeric_limits<point_2d::Point2D> {
+    static const bool is_specialized = true;
+    static const bool has_infinity =
+      numeric_limits<point_2d::coord_t>::has_infinity;
+    static point_2d::Point2D infinity();
+    static point_2d::Point2D max();
+    static point_2d::Point2D min();
+  };
 }
 #endif
