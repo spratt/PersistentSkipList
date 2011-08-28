@@ -6,10 +6,10 @@ test_timestamped_array
 test_persistent_skiplist
 psl.log
 *.dSYM
-*.log 
-*.pdf 
-*.aux 
-*.out 
-*.nav 
-*.snm 
+*.log
+*.pdf
+*.aux
+*.out
+*.nav
+*.snm
 *.toc
