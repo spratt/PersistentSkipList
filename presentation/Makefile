@@ -1,7 +1,7 @@
 all:	slides.pdf clean_extras open
 
 open:	slides.pdf
-	open slides.pdf | xpdf slides.pdf
+	open slides.pdf || okular slides.pdf || xpdf slides.pdf
 
 slides.pdf:	slides.tex
 	pdflatex slides.tex
