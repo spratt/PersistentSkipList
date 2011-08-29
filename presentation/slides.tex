@@ -19,7 +19,7 @@
 
 \title{Persistent Skiplists}
 
-\subtitle{A Novel Solution to Planar Point Location}
+\subtitle{For Efficient Point Set Queries}
 
 \author{Simon Pratt}
 % - Give the names in the same order as the appear in the paper.
@@ -79,45 +79,143 @@
 
 \section{Motivation}
 
-\subsection{Planar Point Location}
+\subsection{Point Set Queries}
 
 \begin{frame}
-  \frametitle{Planar Point Location Problem}
+  \frametitle{Point Set Queries}
   % - A title should summarize the slide in an understandable fashion
   %   for anyone how does not follow everything on the slide itself.
 
   \begin{itemize}
   \item
-    Use \texttt{itemize} a lot.
+    HighestNE
   \item
-    Use very short sentences or short phrases.
+    LeftMostNE
+  \item
+    Highest3Sided
+  \item
+    Enumerate3Sided
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Applications}
+  % - A title should summarize the slide in an understandable fashion
+  %   for anyone how does not follow everything on the slide itself.
+
+  \begin{itemize}
+  \item
+    TODO applications
   \end{itemize}
 \end{frame}
 
 \subsection{Previous Work}
 
 \begin{frame}
-  \frametitle{Tarjan and Sarnak}
-
-  Planar Point Location using persistent binary search tree
+  \frametitle{In-Place Priority Search Trees}
+  \begin{itemize}
+  \item
+    Minati, Anil, Subhas, Michiel
+  \item
+    Built implementation
+  \end{itemize}
 \end{frame}
-
-\section{Our Results/Contribution}
-
-\subsection{Main Results}
 
 \begin{frame}
-  \frametitle{Persistent Skiplist}
-\end{frame}
+  \frametitle{Persistence}
 
-\subsection{Complexity}
+  \begin{itemize}
+  \item
+    Planar Point Location using Persistent Search Trees\\
+    Sarnak, Tarjan
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
-  \frametitle{Time Complexity}
+  \frametitle{Skiplists}
+
+  \begin{itemize}
+  \item
+    Skiplists
+  \end{itemize}
 \end{frame}
+
+\section{My Results/Contribution}
+
+\subsection{Algorithms}
+
+\begin{frame}
+  \frametitle{HighestNE}
+
+  \begin{itemize}
+  \item
+    Outline 
+  \item
+    Time complexity
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{LeftMostNE}
+
+  \begin{itemize}
+  \item
+    Outline 
+  \item
+    Time complexity
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Highest3Sided}
+
+  \begin{itemize}
+  \item
+    Outline 
+  \item
+    Time complexity
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Enumerate3Sided}
+
+  \begin{itemize}
+  \item
+    Outline 
+  \item
+    Time complexity
+  \end{itemize}
+\end{frame}
+
+\subsection{Persistent Skiplist Design}
+
+\begin{frame}
+  \frametitle{Persistent Skiplist Design}
+
+  \begin{itemize}
+  \item
+    Path Copying
+  \item
+    Fat Nodes
+  \item
+    Limited Path Copying with Fixed-Size Fat Nodes
+  \end{itemize}
+\end{frame}
+
+\subsection{Space Complexity}
 
 \begin{frame}
   \frametitle{Space Complexity}
+
+  \begin{itemize}
+  \item
+    Bounded by amortized space complexity
+  \item
+    Potential for operations
+  \item
+    Potential for sequences
+  \end{itemize}  
 \end{frame}
 
 \section*{Summary}
@@ -134,19 +232,7 @@
   \item
     Perhaps a \alert{third message}, but not more than that.
   \end{itemize}
-  
-  % The following outlook is optional.
-  \vskip0pt plus.5fill
-  \begin{itemize}
-  \item
-    Outlook
-    \begin{itemize}
-    \item
-      Something you haven't solved.
-    \item
-      Something else you haven't solved.
-    \end{itemize}
-  \end{itemize}
+
 \end{frame}
 
 % All of the following is optional and typically not needed. 
@@ -156,25 +242,41 @@
 
 \begin{frame}[allowframebreaks]
   \frametitle<presentation>{For Further Reading}
-    
+
   \begin{thebibliography}{10}
     
   \beamertemplatebookbibitems
   % Start with overview books.
 
-  \bibitem{Author1990}
-    A.~Author.
-    \newblock {\em Handbook of Everything}.
-    \newblock Some Press, 1990.
+  \bibitem{Morin11}
+    P. Morin
+    \newblock {\em Open Data Structures}.
+    \newblock Version 0.0 pre $\alpha$ : COMP2402 Fall 2011
     
   \beamertemplatearticlebibitems
   % Followed by interesting articles. Keep the list short. 
 
-  \bibitem{Someone2000}
-    S.~Someone.
-    \newblock On this and that.
-    \newblock {\em Journal of This and That}, 2(1):50--100,
-    2000.
+  \bibitem{DeMaheshwariNandySmid11}
+    M. De, A. Maheshwari, S. C. Nandy, M. Smid.
+    \newblock An In-Place Priority Search Tree
+    \newblock
+    {
+      \em Proceedings of the 23rd Canadian Conference on Computational Geometry
+    },
+    331--336, August 2011.
+
+  \bibitem{TarjanSarnak86}
+    N. Sarnak and R. E. Tarjan.
+    \newblock Planar Point Location Using Persistent Search Trees
+    \newblock {\em Communications of the ACM},
+    29(7):669--679, July 1986.
+
+  \bibitem{Pugh90}
+    W. Pugh.
+    \newblock Skip lists: A probabilistic alternative to balanced trees.
+    \newblock {\em Communications of the ACM},
+    33(6):668--676, 1990.
+
   \end{thebibliography}
 \end{frame}
 
