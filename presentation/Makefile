@@ -1,5 +1,8 @@
 all:	slides.pdf clean_extras open
 
+tutorial:
+	pdflatex conference-ornate-20min.en.tex && okular conference-ornate-20min.en.pdf
+
 open:	slides.pdf
 	open slides.pdf || okular slides.pdf || xpdf slides.pdf
 
