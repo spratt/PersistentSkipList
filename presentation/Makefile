@@ -1,15 +1,24 @@
 all:	slides.pdf clean_extras open
 
-template:
+template:	conference-ornate-20min.en.pdf
+	open conference-ornate-20min.en.pdf || okular conference-ornate-20min.en.pdf
+
+conference-ornate-20min.en.pdf:	conference-ornate-20min.en.tex
 	pdflatex conference-ornate-20min.en.tex && okular conference-ornate-20min.en.pdf
 	pdflatex conference-ornate-20min.en.tex && okular conference-ornate-20min.en.pdf
 
 open:	slides.pdf
-	open slides.pdf || okular slides.pdf || xpdf slides.pdf
+	open slides.pdf || okular slides.pdf
 
 slides.pdf:	slides.tex
 	pdflatex slides.tex
 	pdflatex slides.tex
+
+notes:	notes.pdf
+	open notes.pdf || okular notes.pdf
+
+notes.pdf:	notes.tex
+	pdflatex notes.tex
 
 clean:	clean_extras clean_pdf
 

@@ -56,6 +56,7 @@
 
 \begin{document}
 
+\section{Title}
 \begin{frame}
   \titlepage
 \end{frame}
@@ -83,29 +84,38 @@
 
 \begin{frame}
   \frametitle{Point Set Queries}
-  % - A title should summarize the slide in an understandable fashion
-  %   for anyone how does not follow everything on the slide itself.
 
   \begin{itemize}
   \item
-    HighestNE
+    Given a set of points in R2
   \item
-    LeftMostNE
-  \item
-    Highest3Sided
-  \item
-    Enumerate3Sided
+    Perform queries on the set of points
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Applications}
+  \frametitle{NE Queries}
   % - A title should summarize the slide in an understandable fashion
   %   for anyone how does not follow everything on the slide itself.
 
   \begin{itemize}
   \item
-    TODO applications
+    LeftMostNE
+  \item
+    HighestNE
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{3-Sided Queries}
+  % - A title should summarize the slide in an understandable fashion
+  %   for anyone how does not follow everything on the slide itself.
+
+  \begin{itemize}
+  \item
+    Enumerate3Sided
+  \item
+    Highest3Sided
   \end{itemize}
 \end{frame}
 
@@ -126,52 +136,75 @@
 
   \begin{itemize}
   \item
-    Planar Point Location using Persistent Search Trees\\
-    Sarnak, Tarjan
+    Whenever an update to the structure is made, the old version persists
+    and is queryable
+  \item
+    In general, persistence can be used to extend a solution in d to d+1
+  \item
+    Some data structures work well for queries on a point set in R
+  \item
+    Can extend such a data structure to R2 using persistence
+  \item
+    But which data structure?
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Skiplists}
+  \frametitle{Skiplists!}
 
   \begin{itemize}
   \item
-    Skiplists
+    A series of linked lists organized by height
+  \item
+    Bottom most list contains all nodes
+  \item
+    When node is created, a height is randomly chosen which determines in
+    how many lists the node occurs
   \end{itemize}
 \end{frame}
 
-\section{My Results/Contribution}
+\section{Persistent Skiplists}
+
+\subsection{Solution}
+
+\begin{frame}
+  \frametitle{Persistent Skiplist Design}
+
+  \begin{itemize}
+  \item
+    Path Copying
+  \item
+    Fat Nodes
+  \item
+    Limited Path Copying with Fixed-Size Fat Nodes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Performing Point Queries}
+
+  \begin{itemize}
+  \item
+    An array A of points sorted by y-coordinate
+  \item
+    A persistent skiplist where the timestamp of the skiplist corresponds to the
+    location of the point with lowest y-coordinate in A
+  \item
+    So the skiplist at a given timestamp corresponds to all of the points at or
+    above the point at location timestamp in A
+  \end{itemize}
+\end{frame}
 
 \subsection{Algorithms}
-
-\begin{frame}
-  \frametitle{HighestNE}
-
-  \begin{itemize}
-  \item
-    Outline 
-  \item
-    Time complexity
-  \end{itemize}
-\end{frame}
 
 \begin{frame}
   \frametitle{LeftMostNE}
 
   \begin{itemize}
   \item
-    Outline 
+    binary search on A to find lowest point higher than y bound
   \item
-    Time complexity
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Highest3Sided}
-
-  \begin{itemize}
-  \item
-    Outline 
+    skip list traversal to find left most point higher than x bound
   \item
     Time complexity
   \end{itemize}
@@ -185,21 +218,6 @@
     Outline 
   \item
     Time complexity
-  \end{itemize}
-\end{frame}
-
-\subsection{Persistent Skiplist Design}
-
-\begin{frame}
-  \frametitle{Persistent Skiplist Design}
-
-  \begin{itemize}
-  \item
-    Path Copying
-  \item
-    Fat Nodes
-  \item
-    Limited Path Copying with Fixed-Size Fat Nodes
   \end{itemize}
 \end{frame}
 
@@ -235,13 +253,19 @@
 
 \end{frame}
 
-% All of the following is optional and typically not needed. 
-\appendix
-\section<presentation>*{\appendixname}
-\subsection<presentation>*{For Further Reading}
+\begin{frame}
+  \begin{center}
+    {\bf Questions?}
+  \end{center}
+\end{frame}
 
-\begin{frame}[allowframebreaks]
-  \frametitle<presentation>{For Further Reading}
+% All of the following is optional and typically not needed. 
+\section*{Appendix}
+
+\subsection*{For Further Reading}
+
+\begin{frame}
+  \frametitle<presentation>{Bibliography}
 
   \begin{thebibliography}{10}
     

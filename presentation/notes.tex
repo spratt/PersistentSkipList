@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\begin{document}
+
+{\bf\em In-Place Priority Search Trees}
+
+\begin{itemize}
+\item
+  root of subtree is highest y-coordinate in subtree
+\item
+  some x coordinate is chosen as a pivot
+\item
+  left child subtree is left of pivot
+\item
+  right child subtree is right of pivot
+\item
+  optional:building\\
+\begin{verbatim}
+	                o
+	            /       \ 
+	          o           o
+	  ------/---\-------/---\------ already built above here
+	       o     o     o     o
+	      / \   / \   /
+	     o   o o   o o           <- note: unbalanced
+	    |  k1 | k1  | k2  | k3  |
+\end{verbatim}
+\end{itemize}
+
+{\bf\em Persistence}
+
+\begin{itemize}
+\item
+  persistent binary search tree
+\item
+  the old version of a node's pointer is saved at every change
+\item
+  used to solve planar point location problem
+\end{itemize}
+
+{\bf\em Skiplists}
+
+\begin{itemize}
+\item
+  linked list with randomized pointers to further in the list
+\item
+  random node ``height'', height determines number of forward pointers
+  to next node of at least the ``height'' of the pointer
+\end{itemize}
+
+{\bf\em Solution}
+
+\begin{itemize}
+\item
+  An array A of points sorted by y-coordinate
+\item
+  A persistent skiplist where the timestamp of the skiplist corresponds to the
+  location of the point with lowest y-coordinate in A
+\item
+  So the skiplist at a given timestamp corresponds to all of the points at or
+  above the point at location timestamp in A
+\end{itemize}
+
+{\bf\em LeftMostNE Algorithm}
+
+\begin{itemize}
+\item
+  binary search on A to find lowest point higher than y bound
+\item
+  skip list traversal to find left most point higher than x bound
+\end{itemize}
+
+\end{document}
