@@ -87,34 +87,34 @@
 
   \begin{itemize}
   \item
-    Given a set of points in R2
+    Given a set of points in $\Re^2$
   \item
     Perform efficient 2 and 3 sided queries on the set of points
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{2-Sided Queries}
+  \frametitle{Example 2-Sided Query}
   % - A title should summarize the slide in an understandable fashion
   %   for anyone how does not follow everything on the slide itself.
 
+  LeftMostNE
+
   \begin{itemize}
   \item
-    LeftMostNE
-  \item
-    HighestNE
+    Return the left most point bounded by ymin and xmin
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{3-Sided Queries}
+  \frametitle{Example 3-Sided Query}
+
+    Enumerate3Sided
 
   \begin{itemize}
   \item
-    Enumerate3Sided
-  \item
-    Highest3Sided
+    Return all points bounded by ymin, xmin and xmax
   \end{itemize}
 
 \end{frame}
@@ -143,9 +143,9 @@
   \item
     In general, persistence can be used to extend a solution in d to d+1
   \item
-    Some data structures work well for queries on a point set in R
+    Some data structures work well for queries on a point set in $\Re$
   \item
-    Can extend such a data structure to R2 using persistence
+    Can extend such a data structure to $\Re^2$ using persistence
   \item
     But which data structure?
   \end{itemize}
@@ -262,17 +262,19 @@
 \section*{Summary}
 
 \begin{frame}
-  \frametitle<presentation>{Summary}
+  \frametitle<presentation>{Summary: Persistent Skip Lists}
 
-  % Keep the summary *very short*.
-  \begin{itemize}
-  \item
-    The \alert{first main message} of your talk in one or two lines.
-  \item
-    The \alert{second main message} of your talk in one or two lines.
-  \item
-    Perhaps a \alert{third message}, but not more than that.
-  \end{itemize}
+  \begin{center}
+    % Keep the summary *very short*.
+    \begin{itemize}
+    \item
+      \alert{logarithmic} query time
+    \item
+      \alert{linear} space
+    \item
+      \alert{O(nlogn)} build time
+    \end{itemize}
+  \end{center}
 
 \end{frame}
 
@@ -283,6 +285,7 @@
 \end{frame}
 
 % All of the following is optional and typically not needed. 
+\appendix
 \section*{Appendix}
 
 \subsection*{For Further Reading}
