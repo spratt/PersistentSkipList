@@ -2,13 +2,6 @@
 
 \begin{document}
 
-{\bf\em Motivation}
-
-\begin{itemize}
-\item
-     can also use persistent skiplists to solve planar point location problem
-\end{itemize}
-
 {\bf\em In-Place Priority Search Trees}
 
 \begin{itemize}
@@ -21,7 +14,7 @@
 \item
   right child subtree is right of pivot
 \item
-  optional:building\\
+  optional:building
 \begin{verbatim}
 	                o
 	            /       \ 
@@ -34,47 +27,28 @@
 \end{verbatim}
 \end{itemize}
 
-{\bf\em Persistence}
-
-\begin{itemize}
-\item
-  persistent binary search tree
-\item
-  the old version of a node's pointer is saved at every change
-\item
-  used to solve planar point location problem
-\end{itemize}
-
 {\bf\em Skiplists}
-
 \begin{itemize}
 \item
-  linked list with randomized pointers to further in the list
+  A series of linked lists organized by height
 \item
-  random node ``height'', height determines number of forward pointers
-  to next node of at least the ``height'' of the pointer
+  Bottom most list contains all nodes
+\item
+  Probability of being in the next list up is 1/2
+\item
+  Expected height of a node is $\sum\limits_{k = 1}^\infty {\frac{1}{2^k}}=2$
 \end{itemize}
 
 {\bf\em Solution}
 
 \begin{itemize}
 \item
-  An array A of points sorted by y-coordinate
+  can also use persistent skiplists to solve planar point location problem
 \item
-  A persistent skiplist where the timestamp of the skiplist corresponds to the
-  location of the point with lowest y-coordinate in A
+  partition the plane into vertical slabs positioned at the x-coordinate of
+  each point
 \item
-  So the skiplist at a given timestamp corresponds to all of the points at or
-  above the point at location timestamp in A
-\end{itemize}
-
-{\bf\em LeftMostNE Algorithm}
-
-\begin{itemize}
-\item
-  binary search on A to find lowest point higher than y bound
-\item
-  skip list traversal to find left most point higher than x bound
+  save a skiplist for each slab
 \end{itemize}
 
 \end{document}

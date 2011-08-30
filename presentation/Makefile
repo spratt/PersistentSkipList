@@ -4,14 +4,15 @@ template:	conference-ornate-20min.en.pdf
 	open conference-ornate-20min.en.pdf || okular conference-ornate-20min.en.pdf
 
 conference-ornate-20min.en.pdf:	conference-ornate-20min.en.tex
-	pdflatex conference-ornate-20min.en.tex && okular conference-ornate-20min.en.pdf
-	pdflatex conference-ornate-20min.en.tex && okular conference-ornate-20min.en.pdf
+	pdflatex conference-ornate-20min.en.tex
+	pdflatex conference-ornate-20min.en.tex
+	okular conference-ornate-20min.en.pdf
 
 open:	slides.pdf
 	open slides.pdf || okular slides.pdf
 
 slides.pdf:	slides.tex
-	pdflatex slides.tex
+	pdflatex -halt-on-error slides.tex
 	pdflatex slides.tex
 
 notes:	notes.pdf

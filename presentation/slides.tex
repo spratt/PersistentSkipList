@@ -94,7 +94,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Example 2-Sided Query}
+  \frametitle{Example Point Set Queries}
   % - A title should summarize the slide in an understandable fashion
   %   for anyone how does not follow everything on the slide itself.
 
@@ -102,19 +102,14 @@
 
   \begin{itemize}
   \item
-    Return the left most point bounded by ymin and xmin
+    Return the left most point bounded by $y_{min}$ and $x_{min}$
   \end{itemize}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Example 3-Sided Query}
 
     Enumerate3Sided
 
   \begin{itemize}
   \item
-    Return all points bounded by ymin, xmin and xmax
+    Return all points bounded by $y_{min}$, $x_{min}$ and $x_{max}$
   \end{itemize}
 
 \end{frame}
@@ -126,9 +121,14 @@
 
   \begin{itemize}
   \item
-    Minati, Anil, Subhas, Michiel
-  \item
     In-Place Data Structure which provides the same queries
+  \item
+    Binary tree
+  \item
+    Root node is highest y-coordinate
+  \item
+    Left and right subtrees are split along the median x-coordinate of
+    the rest of the points
   \end{itemize}
 
 \end{frame}
@@ -138,37 +138,19 @@
 
   \begin{itemize}
   \item
-    Whenever an update to the structure is made, the old version persists
-    and is queryable
+    A new version of the data structure is saved upon each update
   \item
-    In general, persistence can be used to extend a solution in d to d+1
+    Old versions of the data structure are queryable
   \item
     Some data structures work well for queries on a point set in $\Re$
   \item
     Can extend such a data structure to $\Re^2$ using persistence
-  \item
-    But which data structure?
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Skip Lists!}
-
-  \begin{itemize}
-  \item
-    A series of linked lists organized by height
-  \item
-    Bottom most list contains all nodes
-  \item
-    When node is created, a height is randomly chosen which determines in
-    how many lists the node occurs
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Example Skip List}
+  \frametitle{Skip List!}
 
   \begin{center}
     \includegraphics[width=300px]{figs/skiplist.pdf}
@@ -201,11 +183,23 @@
   \item
     An array A of points sorted by y-coordinate
   \item
-    A persistent skiplist where the timestamp of the skiplist corresponds to the
-    location of the point with lowest y-coordinate in A
-  \item
     So the skiplist at a given timestamp corresponds to all of the points at or
     above the point at location timestamp in A
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Build Time}
+
+  Given a randomly arranged array of unique points:
+  \begin{itemize}
+  \item
+    O(logn) to sort points by y coordinate
+  \item
+    O(logn) to insert a single point into the skiplist
+  \item
+    O(nlogn) to perform n O(logn) insertions
   \end{itemize}
 
 \end{frame}
@@ -235,9 +229,8 @@
   \item
     skip list traversal to find left most point to the right of left x bound
   \item
-    drop down to lowest level of node, and traverse linearly reporting all
-    encountered points until finding the first point to the right of the right 
-    x bound
+    traverse lowest list linearly reporting all encountered points
+    until finding the first point to the right of the right x bound
   \item
     Time complexity O(logn + k), where k is the number of points in the 
     query region
@@ -251,11 +244,14 @@
 
   \begin{itemize}
   \item
-    Bounded by amortized space complexity
+    Amortized space cost is the number of changes to the structure plus the
+    change in potential
   \item
-    Amortized number of changes to the 
+    Amortized space cost of an update is O(1)
   \item
-    Amortized space com
+    The sum of all updates have space cost of O(n)
+  \item
+    This is an upper bound to the space complexity
   \end{itemize}  
 \end{frame}
 
