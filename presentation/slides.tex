@@ -17,7 +17,7 @@
   % or whatever (possibly just delete it)
 }
 
-\title{Persistent Skiplists}
+\title{Persistent Skip Lists}
 
 \subtitle{For Efficient Point Set Queries}
 
@@ -89,12 +89,12 @@
   \item
     Given a set of points in R2
   \item
-    Perform queries on the set of points
+    Perform efficient 2 and 3 sided queries on the set of points
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{NE Queries}
+  \frametitle{2-Sided Queries}
   % - A title should summarize the slide in an understandable fashion
   %   for anyone how does not follow everything on the slide itself.
 
@@ -104,12 +104,11 @@
   \item
     HighestNE
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}
   \frametitle{3-Sided Queries}
-  % - A title should summarize the slide in an understandable fashion
-  %   for anyone how does not follow everything on the slide itself.
 
   \begin{itemize}
   \item
@@ -117,18 +116,21 @@
   \item
     Highest3Sided
   \end{itemize}
+
 \end{frame}
 
 \subsection{Previous Work}
 
 \begin{frame}
   \frametitle{In-Place Priority Search Trees}
+
   \begin{itemize}
   \item
     Minati, Anil, Subhas, Michiel
   \item
-    Built implementation
+    In-Place Data Structure which provides the same queries
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}
@@ -147,10 +149,11 @@
   \item
     But which data structure?
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}
-  \frametitle{Skiplists!}
+  \frametitle{Skip Lists!}
 
   \begin{itemize}
   \item
@@ -161,14 +164,24 @@
     When node is created, a height is randomly chosen which determines in
     how many lists the node occurs
   \end{itemize}
+
 \end{frame}
 
-\section{Persistent Skiplists}
+\begin{frame}
+  \frametitle{Example Skip List}
+
+  \begin{center}
+    \includegraphics[width=300px]{figs/skiplist.pdf}
+  \end{center}
+
+\end{frame}
+
+\section{Persistent Skip Lists}
 
 \subsection{Solution}
 
 \begin{frame}
-  \frametitle{Persistent Skiplist Design}
+  \frametitle{Persistent Skip List Design}
 
   \begin{itemize}
   \item
@@ -178,6 +191,7 @@
   \item
     Limited Path Copying with Fixed-Size Fat Nodes
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}
@@ -193,6 +207,7 @@
     So the skiplist at a given timestamp corresponds to all of the points at or
     above the point at location timestamp in A
   \end{itemize}
+
 \end{frame}
 
 \subsection{Algorithms}
@@ -204,10 +219,11 @@
   \item
     binary search on A to find lowest point higher than y bound
   \item
-    skip list traversal to find left most point higher than x bound
+    skip list traversal to find left most point to the right of x bound
   \item
-    Time complexity
+    Time complexity: O(logn)
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}
@@ -215,9 +231,16 @@
 
   \begin{itemize}
   \item
-    Outline 
+    binary search on A to find lowest point higher than y bound
   \item
-    Time complexity
+    skip list traversal to find left most point to the right of left x bound
+  \item
+    drop down to lowest level of node, and traverse linearly reporting all
+    encountered points until finding the first point to the right of the right 
+    x bound
+  \item
+    Time complexity O(logn + k), where k is the number of points in the 
+    query region
   \end{itemize}
 \end{frame}
 
@@ -230,9 +253,9 @@
   \item
     Bounded by amortized space complexity
   \item
-    Potential for operations
+    Amortized number of changes to the 
   \item
-    Potential for sequences
+    Amortized space com
   \end{itemize}  
 \end{frame}
 

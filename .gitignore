@@ -13,3 +13,4 @@ psl.log
 *.nav
 *.snm
 *.toc
+!/presentation/figs/skiplist.pdf
