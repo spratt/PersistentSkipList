@@ -121,6 +121,28 @@ namespace point_2d {
 
   /////////////////////////////////////////////////////////////////////////////
   //                                                                         //
+  // FUNCTION NAME: operator<                                                //
+  //                                                                         //
+  // PURPOSE:       Compares two Point2D objects based on their x coordinate.//
+  //                                                                         //
+  // SECURITY:      public                                                   //
+  //                                                                         //
+  // PARAMETERS                                                              //
+  //   Type/Name:   Point2D/a                                                //
+  //   Description: The first point to compare.                              //
+  //                                                                         //
+  //   Type/Name:   Point2D/b                                                //
+  //   Description: The second point to compare.                             //
+  //                                                                         //
+  // RETURN:        True if a is less than b, false otherwise.               //
+  //                                                                         //
+  // NOTES:         None.                                                    //
+  //                                                                         //
+  /////////////////////////////////////////////////////////////////////////////
+  bool operator<(const Point2D& a, const Point2D& b);
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                                                                         //
   // FUNCTION NAME: operator<<                                               //
   //                                                                         //
   // PURPOSE:       Formats a Point2D nicely for an ostream.                 //

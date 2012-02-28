@@ -21,6 +21,10 @@ namespace point_2d {
   bool operator>(const Point2D& a, const Point2D& b) {
     return a.x > b.x;
   }
+
+  bool operator<(const Point2D& a, const Point2D& b) {
+    return a.x < b.x;
+  }
   
   ostream& operator<<(ostream& os, const Point2D& p) {
     os << "(" << p.x << "," << p.y << ")";
