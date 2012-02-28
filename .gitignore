@@ -15,3 +15,4 @@ psl.log
 *.toc
 !/presentation/figs/skiplist.pdf
 test_point_persistent_skiplist
+test_polygonal_subdivision

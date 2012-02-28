@@ -29,16 +29,19 @@ endif
 
 TEST_TSA	= test_timestamped_array
 TEST_PSL	= test_persistent_skiplist
+TEST_PS		= test_polygonal_subdivision
 
-EXECUTABLES 	= ${TEST_TSA} ${TEST_PSL}
+EXECUTABLES 	= ${TEST_TSA} ${TEST_PSL} ${TEST_PS}
 
 #begin actual makefile stuff
 all: ${EXECUTABLES}
 
 # specify required libraries
-${TEST_TSA}: PersistentSkipList.o
+${TEST_TSA}: TimeStampedArray.o
 
-${TEST_PSL}: TimeStampedArray.o
+${TEST_PSL}: PersistentSkipList.o
+
+${TEST_PS}: PersistentSkipList.o Point2D.o
 
 # tidy up generated files
 clean:
