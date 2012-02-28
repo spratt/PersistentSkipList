@@ -117,7 +117,7 @@ void test_list(Point2D* points, int nPoints, int queryIterations,
   }
 }
 
-int main(int argv, char** argc) {
+int main(int argc, char** argv) {
   /////////////////////////////////////////////////////////////////////////////
   // Seed the PRNG                                                           //
   /////////////////////////////////////////////////////////////////////////////
@@ -126,23 +126,23 @@ int main(int argv, char** argc) {
   // Ensure the user has entered required parameters, otherwise print        //
   // a helpful message.                                                      //
   /////////////////////////////////////////////////////////////////////////////
-  if(argv < 6) {
-    cout << "Usage: test_list [number of points] [query iterations] "
+  if(argc < 6) {
+    cout << "Usage: " << argv[0] << " [number of points] [query iterations] "
 	 << "[enumerate iterations] [min node size] [max node size]" << endl;
     return 1;
   }
   // parse number of points
-  int n = atoi(argc[1]);
+  int n = atoi(argv[1]);
   assert(n >= 0);
   // parse query iterations
-  int qi = atoi(argc[2]);
+  int qi = atoi(argv[2]);
   assert(qi >= 0);
   // parse query iterations
-  int ei = atoi(argc[3]);
+  int ei = atoi(argv[3]);
   assert(ei >= 0);
   // parse node size
-  int min_ns = atoi(argc[4]);
-  int max_ns = atoi(argc[5]);
+  int min_ns = atoi(argv[4]);
+  int max_ns = atoi(argv[5]);
   /////////////////////////////////////////////////////////////////////////////
   // Create points                                                           //
   /////////////////////////////////////////////////////////////////////////////
