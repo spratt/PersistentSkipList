@@ -28,7 +28,7 @@
 
 using namespace std;
 
-namespace point_2d {
+namespace geometry {
   // Defines the implementation and precision of coordinates
   typedef int coord_t;
   
@@ -170,13 +170,13 @@ namespace std {
   // Numeric Limits Interface                                                //
   /////////////////////////////////////////////////////////////////////////////
   template <>
-  class numeric_limits<point_2d::Point2D> {
+  class numeric_limits<geometry::Point2D> {
     static const bool is_specialized = true;
     static const bool has_infinity =
-      numeric_limits<point_2d::coord_t>::has_infinity;
-    static point_2d::Point2D infinity();
-    static point_2d::Point2D max();
-    static point_2d::Point2D min();
+      numeric_limits<geometry::coord_t>::has_infinity;
+    static geometry::Point2D infinity();
+    static geometry::Point2D max();
+    static geometry::Point2D min();
   };
 }
 #endif

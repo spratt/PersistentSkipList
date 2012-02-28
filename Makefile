@@ -41,7 +41,7 @@ ${TEST_TSA}: TimeStampedArray.o
 
 ${TEST_PSL}: PersistentSkipList.o
 
-${TEST_PS}: PersistentSkipList.o Point2D.o
+${TEST_PS}: PersistentSkipList.o Point2D.o LineSegment.o PolygonalSubdivision.o
 
 # tidy up generated files
 clean:

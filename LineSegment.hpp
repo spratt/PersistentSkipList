@@ -4,12 +4,11 @@
 //                           (All rights reserved)                           //
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// FILE:    PolygonalSubdivision.hpp                                         //
+// FILE:    LineSegment.hpp                                                  //
 //                                                                           //
-// MODULE:  Planar Point Location                                            //
+// MODULE:  Geometry                                                         //
 //                                                                           //
-// PURPOSE: Solves the planar point location problem using a                 //
-//          persistent skiplist.                                             //
+// PURPOSE: None.                                                            //
 //                                                                           //
 // NOTES:   None.                                                            //
 //                                                                           //
@@ -19,28 +18,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 //                             Public Methods:                               //
 ///////////////////////////////////////////////////////////////////////////////
+#ifndef LINESEGMENT_HPP
+#define LINESEGMENT_HPP
 
-#ifndef POLYGONALSUBDIVISION_HPP
-#define POLYGONALSUBDIVISION_HPP
-
-#include <vector>
 #include "Point2D.hpp"
-#include "LineSegment.hpp"
-#include "PersistentSkipList.hpp"
-
-using namespace persistent_skip_list;
+#include <ostream>
 
 namespace geometry {
-  class PolygonalSubdivision {
-  private:
-    vector< Point2D > sweep_points;
-    PersistentSkipList< LineSegment > line_crossings;
+  class LineSegment {
   public:
-    PolygonalSubdivision();
-    ~PolygonalSubdivision();
-    
-    LineSegment& locate_point(Point2D&);
+    LineSegment(Point2D&,Point2D&);
+    ~LineSegment();
+
+    const Point2D& getFirstEndPoint() const;
+    const Point2D& getSecondEndPoint() const;
+
+  private:
+    Point2D first, second;
   };
+
+  ostream& operator<<(ostream&,const LineSegment&);
+    
 }
 
 #endif

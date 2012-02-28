@@ -14,7 +14,7 @@
 #include <assert.h>
 #include "Point2D.hpp"
 
-namespace point_2d {
+namespace geometry {
   /////////////////////////////////////////////////////////////////////////////
   // Point2D implementation                                                  //
   /////////////////////////////////////////////////////////////////////////////
@@ -35,20 +35,20 @@ namespace std {
   /////////////////////////////////////////////////////////////////////////////
   // Define limits for points                                                //
   /////////////////////////////////////////////////////////////////////////////
-  point_2d::Point2D numeric_limits<point_2d::Point2D>::infinity() {
-    assert(numeric_limits<point_2d::Point2D>::has_infinity);
-    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::infinity(),
-			     numeric_limits<point_2d::coord_t>::infinity());
+  geometry::Point2D numeric_limits<geometry::Point2D>::infinity() {
+    assert(numeric_limits<geometry::Point2D>::has_infinity);
+    return geometry::Point2D(numeric_limits<geometry::coord_t>::infinity(),
+			     numeric_limits<geometry::coord_t>::infinity());
   }
-  point_2d::Point2D numeric_limits<point_2d::Point2D>::max() {
-    assert(! numeric_limits<point_2d::Point2D>::has_infinity);
-    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::max(),
-			     numeric_limits<point_2d::coord_t>::max());
+  geometry::Point2D numeric_limits<geometry::Point2D>::max() {
+    assert(! numeric_limits<geometry::Point2D>::has_infinity);
+    return geometry::Point2D(numeric_limits<geometry::coord_t>::max(),
+			     numeric_limits<geometry::coord_t>::max());
   }
-  point_2d::Point2D numeric_limits<point_2d::Point2D>::min() {
-    assert(! numeric_limits<point_2d::Point2D>::has_infinity);
-    return point_2d::Point2D(numeric_limits<point_2d::coord_t>::min(),
-			     numeric_limits<point_2d::coord_t>::min());
+  geometry::Point2D numeric_limits<geometry::Point2D>::min() {
+    assert(! numeric_limits<geometry::Point2D>::has_infinity);
+    return geometry::Point2D(numeric_limits<geometry::coord_t>::min(),
+			     numeric_limits<geometry::coord_t>::min());
   }
 }
 
