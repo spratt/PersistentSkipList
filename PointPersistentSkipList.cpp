@@ -61,29 +61,29 @@ namespace persistent_skip_list {
 
   vector< Point2D > PointPersistentSkipList::enumerateNE(coord_t x, coord_t y) {
     vector< Point2D > v;
-    // // determine the time at which to search by searching for the x
-    // int index = binarySearchX(x);
-    // // if set of points is empty, bail out
-    // if(index == -1) return v;
-    // // while the closest point is too large
-    // while(points_sorted_by_x[index].x > x) {
-    //   // check the previous point, which should be smaller since the
-    //   // array is sorted by x ascending
-    //   --index;
-    //   // if we have passed the beginning of the array, then there are no
-    //   // points within the query region
-    //   if(index < 0)
-    // 	return v;
-    // }
-    // // get the first node in this list at time index
-    // TimeStampedArray< ListNode<Point2D>* >* tsa = points_right.getHead(index);
-    // // if there are no points, return the empty vector
-    // if(tsa == NULL)
-    //   return v;
-    // // find the first ListNode to check
-    // //while(
-    // // while the current point is not null and has a greater or equal
-    // // y than the query
+    // determine the time at which to search by searching for the x
+    int index = binarySearchX(x);
+    // if set of points is empty, bail out
+    if(index == -1) return v;
+    // while the closest point is too large
+    while(points_sorted_by_x[index].x > x) {
+      // check the previous point, which should be smaller since the
+      // array is sorted by x ascending
+      --index;
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
+      if(index < 0)
+    	return v;
+    }
+    // get the first node in this list at time index
+    TimeStampedArray< ListNode<Point2D>* >* tsa = points_right.getHead(index);
+    // if there are no points, return the empty vector
+    if(tsa == NULL)
+      return v;
+    // find the first ListNode to check
+    //while(
+    // while the current point is not null and has a greater or equal
+    // y than the query
     // while(pln != NULL && pln->data.y >= y) {
     //   // push the point onto the list to be returned
     //   v.push_back(pln->data);
@@ -94,21 +94,21 @@ namespace persistent_skip_list {
   }
 
   Point2D* PointPersistentSkipList::highestNE(coord_t x, coord_t y) {
-    // // determine the time at which to search by searching for the x
-    // int index = binarySearchX(x);
-    // // if set of points is empty, bail out
-    // if(index == -1) return NULL;
-    // // while the closest point is too small
-    // while(points_sorted_by_x[index].x < x) {
-    //   // check the previous point, which should be larger since the
-    //   // array is sorted by x descending
-    //   --index;
-    //   // if we have passed the beginning of the array, then there are no
-    //   // points within the query region
-    //   if(index < 0)
-    // 	return NULL;
-    // }
-    // // get the first node in this list at time index
+    // determine the time at which to search by searching for the x
+    int index = binarySearchX(x);
+    // if set of points is empty, bail out
+    if(index == -1) return NULL;
+    // while the closest point is too small
+    while(points_sorted_by_x[index].x < x) {
+      // check the previous point, which should be larger since the
+      // array is sorted by x descending
+      --index;
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
+      if(index < 0)
+    	return NULL;
+    }
+    // get the first node in this list at time index
     // ListNode<Point2D, Point2D::yxdesc >* pln = points_right.getList(index);
     // // if there are no points NE of the given point, return null
     // if(pln == NULL || pln->data.y < y) return NULL;
@@ -120,21 +120,21 @@ namespace persistent_skip_list {
 
   Point2D* PointPersistentSkipList::leftMostNE(coord_t x, coord_t y) {
     Point2D* leftMost = NULL;
-    // // determine the time at which to search by searching for the x
-    // int index = binarySearchX(x);
-    // // if set of points is empty, bail out
-    // if(index == -1) return NULL;
-    // // while the closest point is too small
-    // while(points_sorted_by_x[index].x < x) {
-    //   // check the previous point, which should be larger since the
-    //   // array is sorted by x descending
-    //   --index;
-    //   // if we have passed the beginning of the array, then there are no
-    //   // points within the query region
-    //   if(index < 0)
-    // 	return NULL;
-    // }
-    // // get the first node in this list at time index
+    // determine the time at which to search by searching for the x
+    int index = binarySearchX(x);
+    // if set of points is empty, bail out
+    if(index == -1) return NULL;
+    // while the closest point is too small
+    while(points_sorted_by_x[index].x < x) {
+      // check the previous point, which should be larger since the
+      // array is sorted by x descending
+      --index;
+      // if we have passed the beginning of the array, then there are no
+      // points within the query region
+      if(index < 0)
+    	return NULL;
+    }
+    // get the first node in this list at time index
     // ListNode<Point2D, Point2D::yxdesc >* pln = points_right.getList(index);
     // // if there are no points NE of the given point, return null
     // if(pln == NULL || pln->data.y < y) return NULL;
