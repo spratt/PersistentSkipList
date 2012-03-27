@@ -26,6 +26,63 @@ template<class T>
 bool ListNode<T>::_SEEDED = false;
 
 template<class T>
+void ListNode<T>::seed() {
+      if(_SEEDED)
+	return;
+      _SEEDED = true;
+      time_t seed = (time_t)1312564825;
+      seed = time(0); // comment this for non-random seeding
+      srand( seed );
+      if(PSL_DEBUG_MODE) {
+	clog << "Seeding with value " << seed << endl;
+      }
+}
+
+template<class T>
+ListNode<T>::ListNode(const T& original_data)
+  : next(), data(original_data), references(0)
+{
+  seed();
+  // pick height, modified from Pat Morin's Open Data Structures
+  height = 1;
+  int bitCheck = 1;
+  int r = rand();
+  // check each bit in the binary representation of r, from the
+  // least significant to the most significant.  The number of 1's
+  // in a row from the least significant position determines the
+  // height of the node.
+  while((r & bitCheck) != 0) {
+    // if bit is 1, increment height
+    ++height;
+    // check next bit
+    bitCheck <<= 1;
+  }
+
+  // We know that the number of incoming pointers will be at most height
+  in_nodes = new ListNode<T>*[height];
+  for(int i = 0; i < height; ++i)
+    in_nodes[i] = NULL;
+}
+
+template<class T>
+ListNode<T>::~ListNode() {
+  // clean up next
+  for(int i = 0; i < (int)next.size(); ++i) {
+    TimeStampedArray<ListNode<T>*>* tsa = next[i];
+    if(tsa != NULL) {
+      for(int j = 0; j < tsa->getSize(); ++j) {
+	ListNode<T>* ln = NULL;
+	ln = tsa->getElement(j);
+	if(ln != NULL)
+	  ln->removeReference();
+      }
+      delete tsa;      // delete timestamped array
+    }
+  }
+  delete[] in_nodes;
+}
+
+template<class T>
 ListNode<T>* ListNode<T>::create(const T& original_data) {
   return new ListNode<T>(original_data);
 }
@@ -199,6 +256,36 @@ int ListNode<T>::removeReference() {
 ///////////////////////////////////////////////////////////////////////////////
 // PersistentSkipList Implementation                                         //
 ///////////////////////////////////////////////////////////////////////////////
+
+template <class T>
+PersistentSkipList<T>::PersistentSkipList()
+  : height(0), head(), data_set()
+{
+  if(PSL_DEBUG_MODE) {
+    clog << "PSL " << this << " created." << endl;
+  }
+}
+
+template <class T>
+PersistentSkipList<T>::~PersistentSkipList() {
+  for(int i = 0; i < (int)head.size(); ++i) {
+    TimeStampedArray<ListNode<T>*>* tsa = head[i];
+    if(PSL_DEBUG_MODE) {
+      clog << "Deleting head at time " << i << endl;
+    }
+    for(int j = 0; j < tsa->getSize(); ++j) {
+      ListNode<T>* ln = tsa->getElement(j);
+      if(PSL_DEBUG_MODE) {
+	clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
+      }
+      ln->removeReference();
+    }
+    delete tsa;
+  }
+  if(PSL_DEBUG_MODE) {
+    clog << "PSL " << this << " deleted." << endl;
+  }
+}
 
 template <class T>
 int PersistentSkipList<T>::getPresent() {
