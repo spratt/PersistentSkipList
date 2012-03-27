@@ -3,17 +3,18 @@
 #                               Simon Pratt                                   #
 #                         (All rights reserved)                               #
 ###############################################################################
-# Makefile for the Persistent SkipList project
+# Makefile for the Persistent SkipList project                                #
 ###############################################################################
 
+# don't use built in targets
+makepp_no_builtin = 1
+
 ###############################################################################
-# Quiet Compile
+# Quiet Compile                                                               #
 ###############################################################################
 QUIET_CC	=
 # comment next line for verbose compile
 QUIET_CC	= @echo '    ' CC $@;
-
-makepp_no_builtin = 1
 
 %.o: %.cpp
 	$(QUIET_CC)$(COMPILE.cpp) $(OUTPUT_OPTION) $<
@@ -22,7 +23,7 @@ makepp_no_builtin = 1
 	$(QUIET_CC)$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 ###############################################################################
-# Global options
+# Global options                                                              #
 ###############################################################################
 
 CXX = g++
@@ -40,7 +41,7 @@ else
 endif
 
 ###############################################################################
-# Project specific options
+# Project specific options                                                    #
 ###############################################################################
 
 TEST_TSA	= test_timestamped_array
@@ -48,6 +49,12 @@ TEST_PSL	= test_persistent_skiplist
 TEST_PS		= test_polygonal_subdivision
 
 TESTS	 	= ${TEST_TSA} ${TEST_PSL} ${TEST_PS}
+
+.PHONY:	all run run_tests_mac run_tests clean lines
+
+.IGNORE: lines
+
+.SUFFIXES: .o .cpp .hpp
 
 #begin actual makefile stuff
 all: ${TESTS}
@@ -73,17 +80,11 @@ clean:
 	@rm -f *.o *.log core
 	@rm -rf *.dSYM
 
-######################################################################
-# MISC
-######################################################################
+###############################################################################
+# Miscellaneous                                                               #
+###############################################################################
 
 lines:
-	@wc -l *.c *.h *.cpp 2> /dev/null || \
+	@wc -l *.c *.h *.hpp *.cpp 2> /dev/null || \
 	sloccount *.cpp *.c *.h 2> /dev/null | grep Physical || \
-	cloc --by-file *.cpp *.c *.h 2> /dev/null
-
-.PHONY:	all run run_tests_mac run_tests clean lines
-
-.IGNORE: lines
-
-.SUFFIXES: .o .cpp .hpp
+	cloc --by-file *.cpp *.c *.hpp *.h 2> /dev/null
