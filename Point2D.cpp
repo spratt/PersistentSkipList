@@ -6,7 +6,7 @@
 //                                                                           //
 // FILE:    Point2D.cpp                                                      //
 //                                                                           //
-// MODULE:  Point2D                                                          //
+// MODULE:  Geometry                                                         //
 //                                                                           //
 // NOTES:   None.                                                            //
 //                                                                           //

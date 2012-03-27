@@ -8,7 +8,8 @@
 //                                                                           //
 // MODULE:  Geometry                                                         //
 //                                                                           //
-// PURPOSE: None.                                                            //
+// PURPOSE: Stores the information associated with a line segment in         //
+//          R2.  In other words, a pair of end points of the line segment.   //
 //                                                                           //
 // NOTES:   None.                                                            //
 //                                                                           //

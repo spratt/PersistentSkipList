@@ -6,9 +6,10 @@
 //                                                                           //
 // FILE:    Point2D.hpp                                                      //
 //                                                                           //
-// MODULE:  Point2D                                                          //
+// MODULE:  Geometry                                                         //
 //                                                                           //
-// PURPOSE: To encapsulate the data and behaviour of a point in R2           //
+// PURPOSE: Stores the information associated with a point in R2.  In        //
+//          other words a pair of coordinates                                //
 //                                                                           //
 // NOTES:   None.                                                            //
 //                                                                           //
