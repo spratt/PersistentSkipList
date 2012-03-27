@@ -24,11 +24,19 @@ namespace geometry {
   PolygonalSubdivision::~PolygonalSubdivision() {
   }
 
+  void PolygonalSubdivision::addLineSegment(LineSegment& ls) {
+    line_segments.push_back(ls);
+    sweep_points.insert(ls.getFirstEndPoint());
+    sweep_points.insert(ls.getSecondEndPoint());
+    // TODO: line crossings??
+  }
+
   LineSegment& PolygonalSubdivision::locate_point(Point2D& p) {
-    Point2D a,b;
-    LineSegment ls(a,b);
-    LineSegment& ls_ref = ls;
-    return ls_ref;
+    // basic error checking
+    if(line_segments.empty())
+      throw "No line segments";
+    // fake this for now
+    return line_segments[0];
   }
 
 }

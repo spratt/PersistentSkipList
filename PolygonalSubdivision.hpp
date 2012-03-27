@@ -23,7 +23,7 @@
 #ifndef POLYGONALSUBDIVISION_HPP
 #define POLYGONALSUBDIVISION_HPP
 
-#include <vector>
+#include <set>
 #include "Point2D.hpp"
 #include "LineSegment.hpp"
 #include "PersistentSkipList.hpp"
@@ -33,11 +33,15 @@ using namespace persistent_skip_list;
 namespace geometry {
   class PolygonalSubdivision {
   private:
-    vector< Point2D > sweep_points;
-    PersistentSkipList< LineSegment > line_crossings;
+    vector< LineSegment > line_segments;
+    set< Point2D > sweep_points;
+    set< Point2D > line_crossings;
+
   public:
     PolygonalSubdivision();
     ~PolygonalSubdivision();
+
+    void addLineSegment(LineSegment&);
     
     LineSegment& locate_point(Point2D&);
   };

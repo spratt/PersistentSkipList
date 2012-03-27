@@ -14,6 +14,9 @@
 
 #include "PolygonalSubdivision.hpp"
 
+using namespace geometry;
+
 int main(int argc, char** argv) {
+  PolygonalSubdivision ps;
   return 0;
 }
