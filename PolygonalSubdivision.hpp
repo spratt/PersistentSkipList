@@ -42,6 +42,7 @@ namespace geometry {
     ~PolygonalSubdivision();
 
     void addLineSegment(LineSegment&);
+    void addLineSegment(int ax, int ay, int bx, int by);
     
     LineSegment& locate_point(Point2D&);
   };

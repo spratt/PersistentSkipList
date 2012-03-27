@@ -16,6 +16,11 @@
 
 namespace geometry {
 
+  LineSegment::LineSegment(int ax, int ay, int bx, int by)
+    : first(ax,ay), second(bx,by)
+  {
+  }
+  
   LineSegment::LineSegment(Point2D& a, Point2D& b)
     : first(a), second(b)
   {

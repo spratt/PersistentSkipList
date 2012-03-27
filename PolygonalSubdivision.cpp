@@ -31,6 +31,11 @@ namespace geometry {
     // TODO: line crossings??
   }
 
+  void PolygonalSubdivision::addLineSegment(int ax, int ay, int bx, int by) {
+    LineSegment a(ax,ay,bx,by);
+    addLineSegment(a);
+  }
+
   LineSegment& PolygonalSubdivision::locate_point(Point2D& p) {
     // basic error checking
     if(line_segments.empty())
