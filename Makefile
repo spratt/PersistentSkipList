@@ -79,6 +79,11 @@ clean:
 
 lines:
 	@wc -l *.c *.h *.cpp 2> /dev/null || \
-	sloccount *.cpp *.c *.h 2> /dev/null | grep Physical
-	cloc *.cpp *.c *.h 2> /dev/null
+	sloccount *.cpp *.c *.h 2> /dev/null | grep Physical || \
 	cloc --by-file *.cpp *.c *.h 2> /dev/null
+
+.PHONY:	all run run_tests_mac run_tests clean lines
+
+.IGNORE: lines
+
+.SUFFIXES: .o .cpp .hpp
