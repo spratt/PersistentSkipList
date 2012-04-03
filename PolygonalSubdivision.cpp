@@ -17,7 +17,7 @@
 namespace geometry {
 
   PolygonalSubdivision::PolygonalSubdivision()
-    : sweep_points(), line_crossings()
+    : sweep_points()
   {
   }
 
@@ -28,7 +28,6 @@ namespace geometry {
     line_segments.push_back(ls);
     sweep_points.insert(ls.getFirstEndPoint());
     sweep_points.insert(ls.getSecondEndPoint());
-    // TODO: line crossings??
   }
 
   void PolygonalSubdivision::addLineSegment(int ax, int ay, int bx, int by) {
