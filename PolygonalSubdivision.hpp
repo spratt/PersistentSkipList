@@ -35,7 +35,7 @@ namespace geometry {
   private:
     vector< LineSegment > line_segments;
     set< Point2D > sweep_points;
-
+ 
   public:
     PolygonalSubdivision();
     ~PolygonalSubdivision();

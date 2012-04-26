@@ -28,6 +28,8 @@ namespace geometry {
     line_segments.push_back(ls);
     sweep_points.insert(ls.getFirstEndPoint());
     sweep_points.insert(ls.getSecondEndPoint());
+    // we don't need to sweep at line intersections because a
+    // polygonal subdivision won't have intersections
   }
 
   void PolygonalSubdivision::addLineSegment(int ax, int ay, int bx, int by) {
@@ -39,7 +41,7 @@ namespace geometry {
     // basic error checking
     if(line_segments.empty())
       throw "No line segments";
-    // fake this for now
+    
     return line_segments[0];
   }
 

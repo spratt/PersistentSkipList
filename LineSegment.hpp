@@ -35,6 +35,9 @@ namespace geometry {
     const Point2D& getFirstEndPoint() const;
     const Point2D& getSecondEndPoint() const;
 
+    bool operator<(const LineSegment&) const;
+    bool operator>(const LineSegment&) const;
+
   private:
     Point2D first, second;
   };

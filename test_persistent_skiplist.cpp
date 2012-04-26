@@ -14,9 +14,11 @@
 
 #include <iostream>
 #include "PersistentSkipList.hpp"
+#include "LineSegment.hpp"
 
 using namespace persistent_skip_list;
 using namespace timestamped_array;
+using namespace geometry;
 
 int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
@@ -86,6 +88,18 @@ int main(int argv, char** argc) {
   cout << "Successfully inserted several values into the skip list." << endl;
   for(int i = 0; i <= psl.getPresent(); ++i)
     psl.draw(i);
+  /////////////////////////////////////////////////////////////////////////////
+  // Test on advaced data type
+  /////////////////////////////////////////////////////////////////////////////
+  PersistentSkipList<LineSegment> lines;
+  cout << "SkipList<LineSegment> allocated on stack." << endl;
+  lines.insert(LineSegment(1,2,3,4));
+  cout << "Successfully inserted one structure into the skip list." << endl;
+  lines.insert(LineSegment(5,6,7,8));
+  lines.insert(LineSegment(9,10,11,12));
+  cout << "Successfully inserted several structures into the skip list." << endl;
+  for(int i = 0; i <= lines.getPresent(); ++i)
+    lines.draw(i);
   // success
   return 0;
 }

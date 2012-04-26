@@ -31,6 +31,20 @@ namespace geometry {
   const Point2D& LineSegment::getFirstEndPoint() const { return first; }
   const Point2D& LineSegment::getSecondEndPoint() const { return second; }
 
+  bool LineSegment::operator<(const LineSegment& other) const {
+    // sort by y coordinate descending
+    const int max_y       = (first.y > second.y) ?
+      first.y : second.y;
+    const int other_max_y = (other.first.y > other.second.y) ?
+      other.first.y : other.second.y;
+    // this precedes other iff this segment's y is higher
+    return max_y > other_max_y;
+  }
+
+  bool LineSegment::operator>(const LineSegment& other) const {
+    return !operator<(other);
+  }
+
   ostream& operator<<(ostream& o, const LineSegment& ls) {
     o << "(" << ls.getFirstEndPoint() << ","
       << ls.getSecondEndPoint() << ")";

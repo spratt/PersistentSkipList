@@ -59,18 +59,20 @@ TESTS	 	= ${TEST_TSA} ${TEST_PSL} ${TEST_PS}
 #begin actual makefile stuff
 all: ${TESTS}
 
-run: all run_tests
+run: run_tests_mac
+
+test: run_tests_mac run_tests
 
 run_tests_mac:	all
 	${foreach test,${TESTS},cat ${test}_input | ./${test};}
 
-run_tests:	run_tests_mac
+run_tests:	all	
 	${foreach test,${TESTS},cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 
 # specify required libraries
 ${TEST_TSA}: TimeStampedArray.o
 
-${TEST_PSL}: PersistentSkipList.o
+${TEST_PSL}: Point2D.o LineSegment.o PersistentSkipList.o
 
 ${TEST_PS}: PersistentSkipList.o Point2D.o LineSegment.o PolygonalSubdivision.o
 
