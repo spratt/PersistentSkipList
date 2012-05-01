@@ -498,11 +498,9 @@ assert(this != NULL);
   else {
     // copy the old head
     int head_size = old_head->getSize();
-    new_head =
-      new TSA(new_time,head_size,*old_head);
+    new_head = new TSA(new_time,head_size,*old_head);
   }
-  TSA* new_node_next =
-    new TSA(new_time,height);
+  TSA* new_node_next = new TSA(new_time,height);
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
@@ -544,9 +542,7 @@ assert(this != NULL);
 	  new TSA(new_time,old_ln_height);
       } else {
 	old_ln_next =
-	  new TSA(new_time,
-					     old_ln_height,
-					     *old_ln_next);
+	  new TSA(new_time,old_ln_height,*old_ln_next);
       }
       while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	// point the new node to the old next node
