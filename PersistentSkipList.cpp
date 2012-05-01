@@ -294,6 +294,12 @@ int PersistentSkipList<T>::getPresent() const {
 }
 
 template <class T>
+PersistentSkipList<T>& PersistentSkipList<T>::operator++() {
+  incTime();
+  return this;
+}
+
+template <class T>
 void PersistentSkipList<T>::incTime() {
   assert(this != NULL);
   ++present;
