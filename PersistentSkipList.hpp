@@ -631,6 +631,7 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int insert(const T& data);
+    const PersistentSkipList<T>& operator+=(const T& data);
   };
 
 }

@@ -393,6 +393,14 @@ TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
 /////////////////////////////////////////////////////////////////////////////
 // INSERT METHOD                                                           //
 /////////////////////////////////////////////////////////////////////////////
+
+template <class T>
+const PersistentSkipList<T>& PersistentSkipList<T>::operator+=(const T& data) {
+  if(insert(data) != 0) // error
+    throw "Unable to insert data!";
+  return this;
+}
+
 template <class T>
 int PersistentSkipList<T>::insert(const T& data) {
   assert(this != NULL);
