@@ -401,6 +401,26 @@ TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
 /////////////////////////////////////////////////////////////////////////////
 
 template <class T>
+int PersistentSkipList<T>::initialInsert(const T& data) {
+  TimeStampedArray<ListNode<T>*>* new_head = NULL;
+  ListNode<T>* new_ln = ListNode<T>::create(data);
+  int height = new_ln->getHeight();
+  // initialize head
+  new_head = new TimeStampedArray<ListNode<T>*>(0, height);
+  // make the new node the head at all heights
+  for(int i = 0; i < height; ++i) {
+    new_head->setElement(i,new_ln);
+  }
+  // since we created a new head, lock it then add it to the array of heads
+  new_head->lock();
+  addHead(new_head);
+  // prevent duplicates by registering this datum
+  data_set.insert(data);
+  incTime();
+  return 0;
+}
+
+template <class T>
 const PersistentSkipList<T>& PersistentSkipList<T>::operator+=(const T& data) {
   if(insert(data) != 0) // error
     throw "Unable to insert data!";
@@ -413,6 +433,9 @@ int PersistentSkipList<T>::insert(const T& data) {
   // check if data exists already
   if(data_set.count(data)>0)
     return 1;
+  // if it's the first element in the skiplist
+  if(getPresent() == 0)
+    return initialInsert(data);
   // otherwise, create node
   TimeStampedArray<ListNode<T>*>* new_head = NULL;
   ListNode<T>* new_ln = ListNode<T>::create(data);
@@ -420,129 +443,113 @@ int PersistentSkipList<T>::insert(const T& data) {
   if(PSL_DEBUG_MODE) {
     clog << "New node (" << data << ") height: " << height << endl;
   }
-  ///////////////////////////////////////////////////////////////////////////
-  // FIRST ELEMENT CASE                                                    //
-  ///////////////////////////////////////////////////////////////////////////
-  if(data_set.empty()) {
-    // initialize head
-    new_head = new TimeStampedArray<ListNode<T>*>(0, height);
-    // make the new node the head at all heights
-    for(int i = 0; i < height; ++i) {
-      new_head->setElement(i,new_ln);
+  // add node to list
+  int last_time = getPresent();
+  int new_time = last_time +1;
+  TimeStampedArray<ListNode<T>*>* old_head = getHead(last_time);
+  int start = height-1;
+  /////////////////////////////////////////////////////////////////////////
+  // TALLER THAN OLD HEAD                                                //
+  /////////////////////////////////////////////////////////////////////////
+  if(height > old_head->getSize()) {
+    if(PSL_DEBUG_MODE) {
+      clog << "Node " << data << " is taller than old head." << endl;
     }
-  }
-  ///////////////////////////////////////////////////////////////////////////
-  // NOT FIRST ELEMENT CASE                                                //
-  ///////////////////////////////////////////////////////////////////////////
-  else {
-    // add node to list
-    int last_time = getPresent();
-    int new_time = last_time +1;
-    TimeStampedArray<ListNode<T>*>* old_head = getHead(last_time);
-    int start = height-1;
-    /////////////////////////////////////////////////////////////////////////
-    // TALLER THAN OLD HEAD                                                //
-    /////////////////////////////////////////////////////////////////////////
-    if(height > old_head->getSize()) {
+    new_head = new TimeStampedArray<ListNode<T>*>(new_time,height,*old_head);
+    // make the new node the head at all heights exceeding the size of
+    // the old head
+    while(start >= old_head->getSize()) {
       if(PSL_DEBUG_MODE) {
-	clog << "Node " << data << " is taller than old head." << endl;
+	clog << "Creating head pointers for old node at height: "
+	     << start << endl;
       }
-      new_head = new TimeStampedArray<ListNode<T>*>(new_time,height,*old_head);
-      // make the new node the head at all heights exceeding the size of
-      // the old head
-      while(start >= old_head->getSize()) {
-	if(PSL_DEBUG_MODE) {
-	  clog << "Creating head pointers for old node at height: "
-	       << start << endl;
-	}
-	new_head->setElement(start,new_ln);
-	--start;
-      }
-    }
-    /////////////////////////////////////////////////////////////////////////
-    // NOT TALLER THAN OLD HEAD                                            //
-    /////////////////////////////////////////////////////////////////////////
-    else {
-      // copy the old head
-      int head_size = old_head->getSize();
-      new_head =
-	new TimeStampedArray<ListNode<T>*>(new_time,head_size,*old_head);
-    }
-    TimeStampedArray<ListNode<T>*>* new_node_next =
-      new TimeStampedArray<ListNode<T>*>(new_time,height);
-    /////////////////////////////////////////////////////////////////////////
-    // ADD TO HEAD IF NEEDED                                               //
-    /////////////////////////////////////////////////////////////////////////
-    ListNode<T>* old_ln = old_head->getElement(start);
-    // travel down the heads, adding the new node until we find a head
-    // node which precedes the new node
-    while(data < old_ln->getData()) {
-      if(PSL_DEBUG_MODE) {
-	clog << "Linking new to old at height " << start << endl;
-      }
-      old_ln->addIncomingNode(start,new_ln);
-      new_node_next->setElement(start,old_ln);
       new_head->setElement(start,new_ln);
       --start;
-      if(start < 0)
-	break;
-      old_ln = old_head->getElement(start);
     }
-    /////////////////////////////////////////////////////////////////////////
-    // ADD TO REST OF LIST IF NEEDED                                       //
-    /////////////////////////////////////////////////////////////////////////
-    if(start >= 0) {
-      int search_height = start;
-      // guaranteed not NULL
-      ListNode<T>* old_ln = old_head->getElement(search_height);
-      while(search_height >= 0) {
-	// might be NULL
-	ListNode<T>* next_ln = old_ln->getNext(last_time,search_height);
-	while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
-	  old_ln = next_ln;
-	  next_ln = old_ln->getNext(last_time,search_height);
+  }
+  /////////////////////////////////////////////////////////////////////////
+  // NOT TALLER THAN OLD HEAD                                            //
+  /////////////////////////////////////////////////////////////////////////
+  else {
+    // copy the old head
+    int head_size = old_head->getSize();
+    new_head =
+      new TimeStampedArray<ListNode<T>*>(new_time,head_size,*old_head);
+  }
+  TimeStampedArray<ListNode<T>*>* new_node_next =
+    new TimeStampedArray<ListNode<T>*>(new_time,height);
+  /////////////////////////////////////////////////////////////////////////
+  // ADD TO HEAD IF NEEDED                                               //
+  /////////////////////////////////////////////////////////////////////////
+  ListNode<T>* old_ln = old_head->getElement(start);
+  // travel down the heads, adding the new node until we find a head
+  // node which precedes the new node
+  while(data < old_ln->getData()) {
+    if(PSL_DEBUG_MODE) {
+      clog << "Linking new to old at height " << start << endl;
+    }
+    old_ln->addIncomingNode(start,new_ln);
+    new_node_next->setElement(start,old_ln);
+    new_head->setElement(start,new_ln);
+    --start;
+    if(start < 0)
+      break;
+    old_ln = old_head->getElement(start);
+  }
+  /////////////////////////////////////////////////////////////////////////
+  // ADD TO REST OF LIST IF NEEDED                                       //
+  /////////////////////////////////////////////////////////////////////////
+  if(start >= 0) {
+    int search_height = start;
+    // guaranteed not NULL
+    ListNode<T>* old_ln = old_head->getElement(search_height);
+    while(search_height >= 0) {
+      // might be NULL
+      ListNode<T>* next_ln = old_ln->getNext(last_time,search_height);
+      while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
+	old_ln = next_ln;
+	next_ln = old_ln->getNext(last_time,search_height);
+      }
+      // add node to preceding node
+      TimeStampedArray<ListNode<T>*>* old_ln_next =
+	old_ln->getNext(last_time);  // <- this could be NULL
+      int old_ln_height = old_ln->getHeight();
+      if(old_ln_next == NULL) {
+	old_ln_next =
+	  new TimeStampedArray<ListNode<T>*>(new_time,old_ln_height);
+      } else {
+	old_ln_next =
+	  new TimeStampedArray<ListNode<T>*>(new_time,
+					     old_ln_height,
+					     *old_ln_next);
+      }
+      while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
+	// point the new node to the old next node
+	if(next_ln != NULL) {
+	  next_ln->removeIncomingNode(search_height);
+	  next_ln->addIncomingNode(search_height,new_ln);
+	  new_node_next->setElement(search_height,next_ln);
 	}
-	// add node to preceding node
-	TimeStampedArray<ListNode<T>*>* old_ln_next =
-	  old_ln->getNext(last_time);  // <- this could be NULL
-	int old_ln_height = old_ln->getHeight();
-	if(old_ln_next == NULL) {
-	  old_ln_next =
-	    new TimeStampedArray<ListNode<T>*>(new_time,old_ln_height);
-	} else {
-	  old_ln_next =
-	    new TimeStampedArray<ListNode<T>*>(new_time,
-					       old_ln_height,
-					       *old_ln_next);
-	}
-	while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
-	  // point the new node to the old next node
-	  if(next_ln != NULL) {
-	    next_ln->removeIncomingNode(search_height);
-	    next_ln->addIncomingNode(search_height,new_ln);
-	    new_node_next->setElement(search_height,next_ln);
-	  }
-	  // point the old node to the new node
-	  new_ln->removeIncomingNode(search_height);
-	  new_ln->addIncomingNode(search_height,old_ln);
-	  old_ln_next->setElement(search_height,new_ln);
-	  // move to the next height
-	  --search_height;
-	  if(search_height < 0)
-	    break;
-	  next_ln = old_ln_next->getElement(search_height);
-	}
-	old_ln_next->lock();
-	old_ln->addNext(old_ln_next);
-	// move to next search height
+	// point the old node to the new node
+	new_ln->removeIncomingNode(search_height);
+	new_ln->addIncomingNode(search_height,old_ln);
+	old_ln_next->setElement(search_height,new_ln);
+	// move to the next height
+	--search_height;
 	if(search_height < 0)
 	  break;
-	// get node at new height
-	old_ln = next_ln;
+	next_ln = old_ln_next->getElement(search_height);
       }
+      old_ln_next->lock();
+      old_ln->addNext(old_ln_next);
+      // move to next search height
+      if(search_height < 0)
+	break;
+      // get node at new height
+      old_ln = next_ln;
     }
-    new_ln->addNext(new_node_next);
   }
+  new_ln->addNext(new_node_next);
   ///////////////////////////////////////////////////////////////////////////
   // COMMON TO BOTH FIRST AND REST CASES                                   //
   ///////////////////////////////////////////////////////////////////////////
