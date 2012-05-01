@@ -68,7 +68,7 @@ template<class T>
 ListNode<T>::~ListNode() {
   // clean up next
   for(int i = 0; i < (int)next.size(); ++i) {
-    TimeStampedArray<ListNode<T>*>* tsa = next[i];
+    TSA* tsa = next[i];
     if(tsa != NULL) {
       for(int j = 0; j < tsa->getSize(); ++j) {
 	ListNode<T>* ln = NULL;
@@ -147,7 +147,7 @@ TimeStampedArray<ListNode<T>*>* ListNode<T>::getNext(int t) {
   // if there are no pointers, bail
   if(index == -1) return NULL;
   // use this to store the node to be returned
-  TimeStampedArray<ListNode<T>*>* tsa = getNextAtIndex(index);
+  TSA* tsa = getNextAtIndex(index);
   // since the nearest time might be later than the desired time, we
   // go backwards in time until we reach the point which immediately
   // precedes the query time
@@ -164,7 +164,7 @@ template <class T>
 ListNode<T>* ListNode<T>::getNext(int t, int h) {
   assert(this != NULL);
   assert(t >= 0);
-  TimeStampedArray<ListNode<T>*>* tsa = getNext(t);
+  TSA* tsa = getNext(t);
   if(tsa == NULL)
     return NULL;
   assert(h < tsa->getSize());
@@ -269,7 +269,7 @@ PersistentSkipList<T>::PersistentSkipList()
 template <class T>
 PersistentSkipList<T>::~PersistentSkipList() {
   for(int i = 0; i < (int)head.size(); ++i) {
-    TimeStampedArray<ListNode<T>*>* tsa = head[i];
+    TSA* tsa = head[i];
     if(PSL_DEBUG_MODE) {
       clog << "Deleting head at time " << i << endl;
     }
@@ -317,7 +317,7 @@ void PersistentSkipList<T>::draw(int t) {
   assert(t >= 0);
   const int WIDTH = 16;
   cout << "Getting skip list at time " << t << "..." << endl;
-  TimeStampedArray<ListNode<T>*>* head = getHead(t);
+  TSA* head = getHead(t);
   if(head == NULL) {
     cout << "NULL" << endl;
     return;
@@ -402,7 +402,7 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
   assert(this != NULL);
   assert(tsa != NULL);
   // find where the head needs to be inserted
-  typename vector<TimeStampedArray<ListNode<T>*>*>::iterator iter = head.begin();
+  typename vector<TSA*>::iterator iter = head.begin();
   while( (*iter)->getTime() < tsa->getTime() ) ++iter;
   // set
   if( (*iter)->getTime() == tsa->getTime() ) {
@@ -428,11 +428,11 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
 
 template <class T>
 int PersistentSkipList<T>::initialInsert(const T& data) {
-  TimeStampedArray<ListNode<T>*>* new_head = NULL;
+  TSA* new_head = NULL;
   ListNode<T>* new_ln = ListNode<T>::create(data);
   int height = new_ln->getHeight();
   // initialize head
-  new_head = new TimeStampedArray<ListNode<T>*>(0, height);
+  new_head = new TSA(0, height);
   // make the new node the head at all heights
   for(int i = 0; i < height; ++i) {
     new_head->setElement(i,new_ln);
@@ -462,7 +462,7 @@ assert(this != NULL);
   if(getPresent() == 0)
     return initialInsert(data);
   // otherwise, create node
-  TimeStampedArray<ListNode<T>*>* new_head = NULL;
+  TSA* new_head = NULL;
   ListNode<T>* new_ln = ListNode<T>::create(data);
   int height = new_ln->getHeight();
   if(PSL_DEBUG_MODE) {
@@ -471,7 +471,7 @@ assert(this != NULL);
   // add node to list
   int last_time = getPresent();
   int new_time = last_time +1;
-  TimeStampedArray<ListNode<T>*>* old_head = getHead(last_time);
+  TSA* old_head = getHead(last_time);
   int start = height-1;
   /////////////////////////////////////////////////////////////////////////
   // TALLER THAN OLD HEAD                                                //
@@ -480,7 +480,7 @@ assert(this != NULL);
     if(PSL_DEBUG_MODE) {
       clog << "Node " << data << " is taller than old head." << endl;
     }
-    new_head = new TimeStampedArray<ListNode<T>*>(new_time,height,*old_head);
+    new_head = new TSA(new_time,height,*old_head);
     // make the new node the head at all heights exceeding the size of
     // the old head
     while(start >= old_head->getSize()) {
@@ -499,10 +499,10 @@ assert(this != NULL);
     // copy the old head
     int head_size = old_head->getSize();
     new_head =
-      new TimeStampedArray<ListNode<T>*>(new_time,head_size,*old_head);
+      new TSA(new_time,head_size,*old_head);
   }
-  TimeStampedArray<ListNode<T>*>* new_node_next =
-    new TimeStampedArray<ListNode<T>*>(new_time,height);
+  TSA* new_node_next =
+    new TSA(new_time,height);
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
@@ -536,15 +536,15 @@ assert(this != NULL);
 	next_ln = old_ln->getNext(last_time,search_height);
       }
       // add node to preceding node
-      TimeStampedArray<ListNode<T>*>* old_ln_next =
+      TSA* old_ln_next =
 	old_ln->getNext(last_time);  // <- this could be NULL
       int old_ln_height = old_ln->getHeight();
       if(old_ln_next == NULL) {
 	old_ln_next =
-	  new TimeStampedArray<ListNode<T>*>(new_time,old_ln_height);
+	  new TSA(new_time,old_ln_height);
       } else {
 	old_ln_next =
-	  new TimeStampedArray<ListNode<T>*>(new_time,
+	  new TSA(new_time,
 					     old_ln_height,
 					     *old_ln_next);
       }
