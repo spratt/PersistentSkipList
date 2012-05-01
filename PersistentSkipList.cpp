@@ -413,7 +413,6 @@ int PersistentSkipList<T>::initialInsert(const T& data) {
     new_head->setElement(i,new_ln);
   }
   // since we created a new head, lock it then add it to the array of heads
-  new_head->lock();
   addHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
@@ -541,7 +540,6 @@ int PersistentSkipList<T>::insert(const T& data) {
 	  break;
 	next_ln = old_ln_next->getElement(search_height);
       }
-      old_ln_next->lock();
       old_ln->addNext(old_ln_next);
       // move to next search height
       if(search_height < 0)
@@ -551,8 +549,6 @@ int PersistentSkipList<T>::insert(const T& data) {
     }
   }
   new_ln->addNext(new_node_next);
-  // since we created a new head, lock it then add it to the array of heads
-  new_head->lock();
   addHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
