@@ -315,6 +315,7 @@ template <class T>
 void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
+  const int WIDTH = 16;
   cout << "Getting skip list at time " << t << "..." << endl;
   TimeStampedArray<ListNode<T>*>* head = getHead(t);
   if(head == NULL) {
@@ -337,7 +338,7 @@ void PersistentSkipList<T>::draw(int t) {
   while(max_height >= 0) {
     cout << max_height << ": ";
     for(int i = 0; i < (int)heights.size(); ++i) {
-      cout << setw(3);
+      cout << setw(WIDTH);
       if(heights[i] > max_height) {
 	cout << data[i];
       } else {
@@ -550,9 +551,6 @@ int PersistentSkipList<T>::insert(const T& data) {
     }
   }
   new_ln->addNext(new_node_next);
-  ///////////////////////////////////////////////////////////////////////////
-  // COMMON TO BOTH FIRST AND REST CASES                                   //
-  ///////////////////////////////////////////////////////////////////////////
   // since we created a new head, lock it then add it to the array of heads
   new_head->lock();
   addHead(new_head);
