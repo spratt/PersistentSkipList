@@ -397,6 +397,31 @@ TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
   return head[index];
 }
 
+template <class T>
+int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
+  assert(this != NULL);
+  assert(tsa != NULL);
+  // find where the head needs to be inserted
+  typename vector<TimeStampedArray<ListNode<T>*>*>::iterator iter = head.begin();
+  while( (*iter)->getTime() < tsa->getTime() ) ++iter;
+  // set
+  if( (*iter)->getTime() == tsa->getTime() ) {
+    TSA* temp = *iter;
+    *iter = tsa;
+    delete temp;
+  }
+  // insert
+  else
+    head.insert(iter,tsa);
+  // make sure to count the references
+  for(int i = 0; i < tsa->getSize(); ++i) {
+    ListNode<T>* ln = tsa->getElement(i);
+    if(ln != NULL)
+      ln->addReference();
+  }
+  return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // INSERT METHOD                                                           //
 /////////////////////////////////////////////////////////////////////////////
@@ -429,7 +454,7 @@ const PersistentSkipList<T>& PersistentSkipList<T>::operator+=(const T& data) {
 
 template <class T>
 int PersistentSkipList<T>::insert(const T& data) {
-  assert(this != NULL);
+assert(this != NULL);
   // check if data exists already
   if(data_set.count(data)>0)
     return 1;

@@ -43,6 +43,7 @@ using namespace std;
 using namespace timestamped_array;
 
 namespace persistent_skip_list {
+
   // Set the following variable to true in order to receive debug info
   const bool PSL_DEBUG_MODE = false;
   /////////////////////////////////////////////////////////////////////////////
@@ -50,9 +51,10 @@ namespace persistent_skip_list {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class ListNode {
+    typedef TimeStampedArray<ListNode<T>*> TSA;
   private:
     int height;
-    vector<TimeStampedArray<ListNode<T>*>*> next;
+    vector<TSA*> next;
     ListNode<T>** in_nodes;
     T data;
     int references;
@@ -210,13 +212,13 @@ namespace persistent_skip_list {
     //                structure.                                             //
     //                                                                       //
     // RETURN:                                                               //
-    //   Type/Name:   TimeStampedArray<ListNode<T>*>*                        //
+    //   Type/Name:   TSA*                                                   //
     //   Description: The                                                    //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TimeStampedArray<ListNode<T>*>* getNextAtIndex(int ci);
+    TSA* getNextAtIndex(int ci);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -256,14 +258,14 @@ namespace persistent_skip_list {
     //   Description: The time at which to retrieve the pointer.             //
     //                                                                       //
     // RETURN:                                                               //
-    //   Type/Name:   TimeStampedArray<ListNode<T>*>*                        //
+    //   Type/Name:   TSA*                                                   //
     //   Description: The array of next pointers at or immediately           //
     //                preceding the given time.                              //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TimeStampedArray<ListNode<T>*>* getNext(int t);
+    TSA* getNext(int t);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -311,7 +313,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int addNext(TimeStampedArray<ListNode<T>*>* next);
+    int addNext(TSA* next);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -424,9 +426,10 @@ namespace persistent_skip_list {
   /////////////////////////////////////////////////////////////////////////////
   template < class T >
   class PersistentSkipList {
+    typedef TimeStampedArray<ListNode<T>*> TSA;
     int height;
     int present;
-    vector<TimeStampedArray<ListNode<T>*>*> head;
+    vector< TSA* > head;
     set< T > data_set;
     
     ///////////////////////////////////////////////////////////////////////////
@@ -439,7 +442,7 @@ namespace persistent_skip_list {
     // SECURITY:      private                                                //
     //                                                                       //
     // PARAMETERS                                                            //
-    //   Type/Name:   TimeStampedArray<ListNode<T>*>* /tsa                   //
+    //   Type/Name:   TSA* /tsa                                              //
     //   Description: A pointer to the node to set                           //
     //                                                                       //
     // RETURN:                                                               //
@@ -449,7 +452,29 @@ namespace persistent_skip_list {
     // NOTES:         Assumes list at time t exists or is one past the end.  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int addHead(TimeStampedArray<ListNode<T>*>* tsa);
+    int addHead(TSA* tsa);
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: setHead                                                //
+    //                                                                       //
+    // PURPOSE:       Sets a new array of pointers to the head of the        //
+    //                skiplist at each height.                               //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   TSA* /tsa                                              //
+    //   Description: A pointer to the node to set                           //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   int                                                    //
+    //   Description: A return code, 0 means success.                        //
+    //                                                                       //
+    // NOTES:         Assumes list at time t exists or is one past the end.  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int setHead(TSA* tsa);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -603,13 +628,13 @@ namespace persistent_skip_list {
     //   Description: The time at which to retrieve the head.                //
     //                                                                       //
     // RETURN:                                                               //
-    //   Type/Name:   TimeStampedArray<ListNode<T>*>*                        //
+    //   Type/Name:   TSA*                                                   //
     //   Description: The head at the given time.                            //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TimeStampedArray<ListNode<T>*>* getHead(int t);
+    TSA* getHead(int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
