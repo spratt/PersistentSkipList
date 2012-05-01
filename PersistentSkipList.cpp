@@ -259,7 +259,7 @@ int ListNode<T>::removeReference() {
 
 template <class T>
 PersistentSkipList<T>::PersistentSkipList()
-  : height(0), head(), data_set()
+  : height(0), present(0), head(), data_set()
 {
   if(PSL_DEBUG_MODE) {
     clog << "PSL " << this << " created." << endl;
@@ -288,9 +288,15 @@ PersistentSkipList<T>::~PersistentSkipList() {
 }
 
 template <class T>
-int PersistentSkipList<T>::getPresent() {
+int PersistentSkipList<T>::getPresent() const {
   assert(this != NULL);
-  return data_set.size()-1;
+  return present;
+}
+
+template <class T>
+void PersistentSkipList<T>::incTime() {
+  assert(this != NULL);
+  ++present;
 }
 
 template <class T>
@@ -390,11 +396,11 @@ TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
 template <class T>
 int PersistentSkipList<T>::insert(const T& data) {
   assert(this != NULL);
-  TimeStampedArray<ListNode<T>*>* new_head = NULL;
   // check if data exists already
   if(data_set.count(data)>0)
     return 1;
   // otherwise, create node
+  TimeStampedArray<ListNode<T>*>* new_head = NULL;
   ListNode<T>* new_ln = ListNode<T>::create(data);
   int height = new_ln->getHeight();
   if(PSL_DEBUG_MODE) {
@@ -531,6 +537,7 @@ int PersistentSkipList<T>::insert(const T& data) {
   addHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
+  incTime();
   // success
   return 0;
 }

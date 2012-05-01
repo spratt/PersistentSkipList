@@ -425,6 +425,7 @@ namespace persistent_skip_list {
   template < class T >
   class PersistentSkipList {
     int height;
+    int present;
     vector<TimeStampedArray<ListNode<T>*>*> head;
     set< T > data_set;
     
@@ -435,7 +436,7 @@ namespace persistent_skip_list {
     // PURPOSE:       Adds a new array of pointers to the head of the        //
     //                skiplist at each height.                               //
     //                                                                       //
-    // SECURITY:      public                                                 //
+    // SECURITY:      private                                                //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   TimeStampedArray<ListNode<T>*>* /tsa                   //
@@ -449,6 +450,27 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int addHead(TimeStampedArray<ListNode<T>*>* tsa);
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: initialInsert                                          //
+    //                                                                       //
+    // PURPOSE:       Inserts the first element                              //
+    //                                                                       //
+    // SECURITY:      private                                                //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   const T&/data                                          //
+    //   Description: The initial data to insert                             //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   int                                                    //
+    //   Description: A return code, 0 means success.                        //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    int initialInsert(const T& data);
     
   public:
     ///////////////////////////////////////////////////////////////////////////
@@ -506,7 +528,28 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int getPresent();
+    int getPresent() const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: incTime                                                //
+    //                                                                       //
+    // PURPOSE:       Increments the time index of the skip list.            //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    void incTime();
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -571,7 +614,8 @@ namespace persistent_skip_list {
     //                                                                       //
     // FUNCTION NAME: insert                                                 //
     //                                                                       //
-    // PURPOSE:       Inserts a data node into the structure.                //
+    // PURPOSE:       Inserts a data node into the present version of        //
+    //                the structure.                                         //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
