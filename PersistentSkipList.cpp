@@ -454,12 +454,12 @@ const PersistentSkipList<T>& PersistentSkipList<T>::operator+=(const T& data) {
 
 template <class T>
 int PersistentSkipList<T>::insert(const T& data) {
-assert(this != NULL);
+  assert(this != NULL);
   // check if data exists already
   if(data_set.count(data)>0)
     return 1;
   // if it's the first element in the skiplist
-  if(getPresent() == 0)
+  if(data_set.empty())
     return initialInsert(data);
   // otherwise, create node
   TSA* new_head = NULL;
