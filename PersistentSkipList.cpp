@@ -469,8 +469,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     clog << "New node (" << data << ") height: " << height << endl;
   }
   // add node to list
-  int last_time = getPresent();
-  TSA* old_head = getHead(last_time);
+  TSA* old_head = getHead(getPresent());
   int start = height-1;
   /////////////////////////////////////////////////////////////////////////
   // TALLER THAN OLD HEAD                                                //
@@ -479,7 +478,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     if(PSL_DEBUG_MODE) {
       clog << "Node " << data << " is taller than old head." << endl;
     }
-    new_head = new TSA(last_time+1,height,*old_head);
+    new_head = new TSA(getPresent()+1,height,*old_head);
     // make the new node the head at all heights exceeding the size of
     // the old head
     while(start >= old_head->getSize()) {
@@ -497,9 +496,9 @@ int PersistentSkipList<T>::insert(const T& data) {
   else {
     // copy the old head
     int head_size = old_head->getSize();
-    new_head = new TSA(last_time+1,head_size,*old_head);
+    new_head = new TSA(getPresent()+1,head_size,*old_head);
   }
-  TSA* new_node_next = new TSA(last_time+1,height);
+  TSA* new_node_next = new TSA(getPresent()+1,height);
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
@@ -527,21 +526,21 @@ int PersistentSkipList<T>::insert(const T& data) {
     ListNode<T>* old_ln = old_head->getElement(search_height);
     while(search_height >= 0) {
       // might be NULL
-      ListNode<T>* next_ln = old_ln->getNext(last_time,search_height);
+      ListNode<T>* next_ln = old_ln->getNext(getPresent(),search_height);
       while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
 	old_ln = next_ln;
-	next_ln = old_ln->getNext(last_time,search_height);
+	next_ln = old_ln->getNext(getPresent(),search_height);
       }
       // add node to preceding node
       TSA* old_ln_next =
-	old_ln->getNext(last_time);  // <- this could be NULL
+	old_ln->getNext(getPresent());  // <- this could be NULL
       int old_ln_height = old_ln->getHeight();
       if(old_ln_next == NULL) {
 	old_ln_next =
-	  new TSA(last_time+1,old_ln_height);
+	  new TSA(getPresent()+1,old_ln_height);
       } else {
 	old_ln_next =
-	  new TSA(last_time+1,old_ln_height,*old_ln_next);
+	  new TSA(getPresent()+1,old_ln_height,*old_ln_next);
       }
       while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	// point the new node to the old next node
