@@ -403,9 +403,11 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
   assert(tsa != NULL);
   // find where the head needs to be inserted
   typename vector<TSA*>::iterator iter = head.begin();
-  while( (*iter)->getTime() < tsa->getTime() ) ++iter;
+  // linear search
+  while( iter < head.end() && (*iter)->getTime() < tsa->getTime() )
+    ++iter;
   // set
-  if( (*iter)->getTime() == tsa->getTime() ) {
+  if( iter < head.end() && (*iter)->getTime() == tsa->getTime() ) {
     TSA* temp = *iter;
     *iter = tsa;
     delete temp;
@@ -438,7 +440,7 @@ int PersistentSkipList<T>::initialInsert(const T& data) {
     new_head->setElement(i,new_ln);
   }
   // since we created a new head, lock it then add it to the array of heads
-  addHead(new_head);
+  setHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
   incTime();
@@ -568,7 +570,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     }
   }
   new_ln->addNext(new_node_next);
-  addHead(new_head);
+  setHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
   incTime();
