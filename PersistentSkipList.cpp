@@ -470,7 +470,6 @@ int PersistentSkipList<T>::insert(const T& data) {
   }
   // add node to list
   int last_time = getPresent();
-  int new_time = last_time +1;
   TSA* old_head = getHead(last_time);
   int start = height-1;
   /////////////////////////////////////////////////////////////////////////
@@ -480,7 +479,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     if(PSL_DEBUG_MODE) {
       clog << "Node " << data << " is taller than old head." << endl;
     }
-    new_head = new TSA(new_time,height,*old_head);
+    new_head = new TSA(last_time+1,height,*old_head);
     // make the new node the head at all heights exceeding the size of
     // the old head
     while(start >= old_head->getSize()) {
@@ -498,9 +497,9 @@ int PersistentSkipList<T>::insert(const T& data) {
   else {
     // copy the old head
     int head_size = old_head->getSize();
-    new_head = new TSA(new_time,head_size,*old_head);
+    new_head = new TSA(last_time+1,head_size,*old_head);
   }
-  TSA* new_node_next = new TSA(new_time,height);
+  TSA* new_node_next = new TSA(last_time+1,height);
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
@@ -539,10 +538,10 @@ int PersistentSkipList<T>::insert(const T& data) {
       int old_ln_height = old_ln->getHeight();
       if(old_ln_next == NULL) {
 	old_ln_next =
-	  new TSA(new_time,old_ln_height);
+	  new TSA(last_time+1,old_ln_height);
       } else {
 	old_ln_next =
-	  new TSA(new_time,old_ln_height,*old_ln_next);
+	  new TSA(last_time+1,old_ln_height,*old_ln_next);
       }
       while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	// point the new node to the old next node
