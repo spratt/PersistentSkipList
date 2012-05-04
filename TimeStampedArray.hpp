@@ -42,6 +42,11 @@
 #ifndef TIMESTAMPEDARRAY_HPP
 #define TIMESTAMPEDARRAY_HPP
 
+// DEBUG
+#include <iostream>
+using namespace std;
+// END DEBUG
+
 #include <cstddef>
 #include <assert.h>
 
@@ -303,6 +308,13 @@ namespace timestamped_array {
     data[i] = datum;
     // success
     return 0;
+  }
+
+  template<class T>
+  ostream& operator<<(ostream& o, TimeStampedArray<T>& tsa) {
+    for(short unsigned int i = 0; i < tsa.getSize(); ++i)
+      o << i << ": " << tsa.getElement(i) << endl;
+    return o;
   }
 }
 

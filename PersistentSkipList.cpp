@@ -302,7 +302,11 @@ PersistentSkipList<T>& PersistentSkipList<T>::operator++() {
 template <class T>
 void PersistentSkipList<T>::incTime() {
   assert(this != NULL);
+  TSA* old_head = getHead(getPresent());
+  old_head->lock();
   ++present;
+  TSA* new_head = new TSA(getPresent(),old_head->getSize(),*old_head);
+  addHead(new_head);
 }
 
 template <class T>
@@ -413,13 +417,15 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
     delete temp;
   }
   // insert
-  else
+  else {
+    cout << "Inserting head" << endl;
     head.insert(iter,tsa);
-  // make sure to count the references
-  for(int i = 0; i < tsa->getSize(); ++i) {
-    ListNode<T>* ln = tsa->getElement(i);
-    if(ln != NULL)
-      ln->addReference();
+    // make sure to count the references
+    for(int i = 0; i < tsa->getSize(); ++i) {
+      ListNode<T>* ln = tsa->getElement(i);
+      if(ln != NULL)
+	ln->addReference();
+    }
   }
   return 0;
 }
@@ -438,12 +444,12 @@ int PersistentSkipList<T>::initialInsert(const T& data) {
   // make the new node the head at all heights
   for(int i = 0; i < height; ++i) {
     new_head->setElement(i,new_ln);
+    new_ln->addReference();
   }
   // since we created a new head, lock it then add it to the array of heads
   setHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
-  incTime();
   return 0;
 }
 
@@ -464,47 +470,36 @@ int PersistentSkipList<T>::insert(const T& data) {
   if(data_set.empty())
     return initialInsert(data);
   // otherwise, create node
-  TSA* new_head = NULL;
+  TSA* curr_head = getHead(getPresent());
   ListNode<T>* new_ln = ListNode<T>::create(data);
   int height = new_ln->getHeight();
   if(PSL_DEBUG_MODE) {
     clog << "New node (" << data << ") height: " << height << endl;
   }
   // add node to list
-  TSA* old_head = getHead(getPresent());
   int start = height-1;
   /////////////////////////////////////////////////////////////////////////
   // TALLER THAN OLD HEAD                                                //
   /////////////////////////////////////////////////////////////////////////
-  if(height > old_head->getSize()) {
+  if(height > curr_head->getSize()) {
     if(PSL_DEBUG_MODE) {
       clog << "Node " << data << " is taller than old head." << endl;
     }
-    new_head = new TSA(getPresent()+1,height,*old_head);
+    TSA* new_head = new TSA(getPresent(),height,*curr_head);
     // make the new node the head at all heights exceeding the size of
     // the old head
-    while(start >= old_head->getSize()) {
-      if(PSL_DEBUG_MODE) {
-	clog << "Creating head pointers for old node at height: "
-	     << start << endl;
-      }
+    while(start >= curr_head->getSize()) {
       new_head->setElement(start,new_ln);
       --start;
     }
+    setHead(new_head);
+    curr_head = new_head;
   }
-  /////////////////////////////////////////////////////////////////////////
-  // NOT TALLER THAN OLD HEAD                                            //
-  /////////////////////////////////////////////////////////////////////////
-  else {
-    // copy the old head
-    int head_size = old_head->getSize();
-    new_head = new TSA(getPresent()+1,head_size,*old_head);
-  }
-  TSA* new_node_next = new TSA(getPresent()+1,height);
+  TSA* new_node_next = new TSA(getPresent(),height);
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
-  ListNode<T>* old_ln = old_head->getElement(start);
+  ListNode<T>* old_ln = curr_head->getElement(start);
   // travel down the heads, adding the new node until we find a head
   // node which precedes the new node
   while(data < old_ln->getData()) {
@@ -513,25 +508,25 @@ int PersistentSkipList<T>::insert(const T& data) {
     }
     old_ln->addIncomingNode(start,new_ln);
     new_node_next->setElement(start,old_ln);
-    new_head->setElement(start,new_ln);
+    curr_head->setElement(start,new_ln);
     --start;
     if(start < 0)
       break;
-    old_ln = old_head->getElement(start);
+    old_ln = curr_head->getElement(start);
   }
   /////////////////////////////////////////////////////////////////////////
   // ADD TO REST OF LIST IF NEEDED                                       //
   /////////////////////////////////////////////////////////////////////////
   if(start >= 0) {
-    int search_height = start;
     // guaranteed not NULL
-    ListNode<T>* old_ln = old_head->getElement(search_height);
-    while(search_height >= 0) {
+    ListNode<T>* old_ln = curr_head->getElement(start);
+    while(start >= 0) {
       // might be NULL
-      ListNode<T>* next_ln = old_ln->getNext(getPresent(),search_height);
+      ListNode<T>* next_ln = old_ln->getNext(getPresent(),start);
+      // find the elements between which we should insert the new node
       while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
 	old_ln = next_ln;
-	next_ln = old_ln->getNext(getPresent(),search_height);
+	next_ln = old_ln->getNext(getPresent(),start);
       }
       // add node to preceding node
       TSA* old_ln_next =
@@ -539,41 +534,37 @@ int PersistentSkipList<T>::insert(const T& data) {
       int old_ln_height = old_ln->getHeight();
       if(old_ln_next == NULL) {
 	old_ln_next =
-	  new TSA(getPresent()+1,old_ln_height);
-      } else {
-	old_ln_next =
-	  new TSA(getPresent()+1,old_ln_height,*old_ln_next);
+	  new TSA(getPresent(),old_ln_height);
       }
       while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	// point the new node to the old next node
 	if(next_ln != NULL) {
-	  next_ln->removeIncomingNode(search_height);
-	  next_ln->addIncomingNode(search_height,new_ln);
-	  new_node_next->setElement(search_height,next_ln);
+	  next_ln->removeIncomingNode(start);
+	  next_ln->addIncomingNode(start,new_ln);
+	  new_node_next->setElement(start,next_ln);
 	}
 	// point the old node to the new node
-	new_ln->removeIncomingNode(search_height);
-	new_ln->addIncomingNode(search_height,old_ln);
-	old_ln_next->setElement(search_height,new_ln);
+	new_ln->removeIncomingNode(start);
+	new_ln->addIncomingNode(start,old_ln);
+	old_ln_next->setElement(start,new_ln);
 	// move to the next height
-	--search_height;
-	if(search_height < 0)
+	--start;
+	if(start < 0)
 	  break;
-	next_ln = old_ln_next->getElement(search_height);
+	next_ln = old_ln_next->getElement(start);
       }
-      old_ln->addNext(old_ln_next);
+      if(old_ln->getNext(getPresent()) == NULL)
+	old_ln->addNext(old_ln_next);
       // move to next search height
-      if(search_height < 0)
+      if(start < 0)
 	break;
       // get node at new height
       old_ln = next_ln;
     }
   }
   new_ln->addNext(new_node_next);
-  setHead(new_head);
   // prevent duplicates by registering this datum
   data_set.insert(data);
-  incTime();
   // success
   return 0;
 }

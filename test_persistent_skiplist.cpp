@@ -76,30 +76,76 @@ int main(int argv, char** argc) {
   cout << "======================================================================\n"
        << "| Testing SkipList                                                   |\n"
        << "======================================================================\n";
+
+  cout << "Allocating PersistentSkipList<int> on stack...";
   PersistentSkipList<int> psl;
-  cout << "SkipList successfully allocated on stack." << endl;
+  cout << "success." << endl;
+
+  cout << "Getting head...";
   tsa = psl.getHead(0);
-  cout << "Successfully got the head of the skip list." << endl;
+  cout << "success." << endl;
+
+  cout << "Inserting one value...";
   psl.insert(42);
-  cout << "Successfully inserted one value into the skip list." << endl;
+  cout << "success." << endl;
+
+  cout << "Drawing skip list at present time..." << endl;
+  psl.drawPresent();
+  cout << endl;
+  
+  cout << "Inserting several values at time 0...";
   psl.insert(8);
   psl.insert(69);
   psl.insert(25);
-  cout << "Successfully inserted several values into the skip list." << endl;
+  cout << "success." << endl;
+  psl.drawPresent();
+  
+  cout << "Incrementing time...";
+  psl.incTime();
+  cout << "success." << endl;
+
+  cout << "Inserting several values at time 1...";
+  psl.insert(53);
+  psl.insert(17);
+  cout << "success." << endl;
+
+  cout << "Drawing all times of skiplist..." << endl;
   for(int i = 0; i <= psl.getPresent(); ++i)
     psl.draw(i);
+  cout << endl;
+  
   /////////////////////////////////////////////////////////////////////////////
   // Test on advaced data type
   /////////////////////////////////////////////////////////////////////////////
+  cout << "Allocating PersistentSkipList<LineSegment> on stack...";
   PersistentSkipList<LineSegment> lines;
-  cout << "SkipList<LineSegment> allocated on stack." << endl;
+  cout << "success." << endl;
+
+  cout << "Inserting one structure into the skip list...";
   lines.insert(LineSegment(1,2,3,4));
-  cout << "Successfully inserted one structure into the skip list." << endl;
+  cout << "success." << endl;
+
+  cout << "Inserting several structures into the skip list...";
   lines.insert(LineSegment(5,6,7,8));
   lines.insert(LineSegment(9,10,11,12));
-  cout << "Successfully inserted several structures into the skip list." << endl;
+  cout << "success." << endl;
+
+  cout << "Drawing skip list at time 0..." << endl;
+  lines.drawPresent();
+
+  cout << "Incrementing time...";
+  lines.incTime();
+  cout << "success." << endl;
+
+  cout << "Inserting several structures into the skip list at time 1...";
+  lines.insert(LineSegment(13,14,15,16));
+  lines.insert(LineSegment(17,18,19,20));
+  cout << "success." << endl;
+
+  cout << "Drawing all times of skip list..." << endl;
   for(int i = 0; i <= lines.getPresent(); ++i)
     lines.draw(i);
+  
   // success
   return 0;
 }
