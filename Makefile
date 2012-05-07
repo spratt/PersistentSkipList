@@ -72,9 +72,10 @@ run_tests:	all
 # specify required libraries
 ${TEST_TSA}: TimeStampedArray.o
 
-${TEST_PSL}: Point2D.o LineSegment.o PersistentSkipList.o
+${TEST_PSL}: Point2D.o LineSegment.o PersistentSkipList.o \
+	     lib/SmartPointer/SmartPointer.o
 
-${TEST_PS}: PersistentSkipList.o Point2D.o LineSegment.o PolygonalSubdivision.o
+${TEST_PS}: Point2D.o LineSegment.o PersistentSkipList.o PolygonalSubdivision.o
 
 # tidy up generated files
 clean:
