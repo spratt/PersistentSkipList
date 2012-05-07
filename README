@@ -2,4 +2,7 @@ PERSISTENT SKIP LIST
 
 Uses a persistent skip list to solve problems in computational geometry.
 
+To build, please follow the instructions in lib/README to build the
+libraries on which this depends.
+
 For license information, see file: LICENSE
