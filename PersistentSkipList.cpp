@@ -40,7 +40,7 @@ void ListNode<T>::seed() {
 
 template<class T>
 ListNode<T>::ListNode(const T& original_data)
-  : next(), data(original_data), references(0)
+  : next(), data(original_data)
 {
   seed();
   // pick height, modified from Pat Morin's Open Data Structures
@@ -73,8 +73,6 @@ ListNode<T>::~ListNode() {
       for(int j = 0; j < tsa->getSize(); ++j) {
 	ListNode<T>* ln = NULL;
 	ln = tsa->getElement(j);
-	if(ln != NULL)
-	  ln->removeReference();
       }
       delete tsa;      // delete timestamped array
     }
@@ -183,12 +181,6 @@ int ListNode<T>::addNext(TimeStampedArray<ListNode<T>*>* tsa) {
     assert(tsa->getTime() > next[lastIndex]->getTime());
   // finally, save the new set of next pointers
   next.push_back(tsa);
-  // make sure to count the references
-  for(int i = 0; i < tsa->getSize(); ++i) {
-    ListNode<T>* ln = tsa->getElement(i);
-    if(ln != NULL)
-      ln->addReference();
-  }
   // success
   return 0;
 }
@@ -200,10 +192,6 @@ int ListNode<T>::addIncomingNode(int h, ListNode<T>* in) {
   assert(h < height);
   assert(in_nodes[h] == NULL);
   in_nodes[h] = in;
-  // Note that incoming node references are not counted, this is on purpose.
-  // If incoming references are the only ones left, the node should
-  // be deleted.
-  // success
   return 0;
 }
 
@@ -228,29 +216,6 @@ int ListNode<T>::removeIncomingNode(int h) {
   }
   // success
   return 0;
-}
-
-template <class T>
-int ListNode<T>::addReference() {
-  assert(this != NULL);
-  return ++references;
-}
-
-template <class T>
-int ListNode<T>::removeReference() {
-  assert(this != NULL);
-  assert(references > 0);
-  int toReturn = --references;
-  if(PSL_DEBUG_MODE) {
-    clog << "Node " << data << " has " << references << " references." << endl;
-  }
-  if(references == 0) {
-    if(PSL_DEBUG_MODE) {
-      clog << "Deleting " << data << "..." << endl;
-    }
-    delete this;
-  }
-  return toReturn;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -278,7 +243,6 @@ PersistentSkipList<T>::~PersistentSkipList() {
       if(PSL_DEBUG_MODE) {
 	clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
       }
-      ln->removeReference();
     }
     delete tsa;
   }
@@ -361,12 +325,6 @@ int PersistentSkipList<T>::addHead(TimeStampedArray<ListNode<T>*>* tsa) {
   assert(tsa != NULL);
   // save the new head
   head.push_back(tsa);
-  // make sure to count the references
-  for(int i = 0; i < tsa->getSize(); ++i) {
-    ListNode<T>* ln = tsa->getElement(i);
-    if(ln != NULL)
-      ln->addReference();
-  }
   // success
   return 0;
 }
@@ -420,12 +378,6 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
   else {
     cout << "Inserting head" << endl;
     head.insert(iter,tsa);
-    // make sure to count the references
-    for(int i = 0; i < tsa->getSize(); ++i) {
-      ListNode<T>* ln = tsa->getElement(i);
-      if(ln != NULL)
-	ln->addReference();
-    }
   }
   return 0;
 }
@@ -444,7 +396,6 @@ int PersistentSkipList<T>::initialInsert(const T& data) {
   // make the new node the head at all heights
   for(int i = 0; i < height; ++i) {
     new_head->setElement(i,new_ln);
-    new_ln->addReference();
   }
   // since we created a new head, lock it then add it to the array of heads
   setHead(new_head);

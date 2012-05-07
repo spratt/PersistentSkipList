@@ -30,8 +30,7 @@ int main(int argv, char** argc) {
   ListNode<int>* ln = ListNode<int>::create(2);
   cout << "Structure successfully allocated on heap." << endl
        << "Data: " << ln->getData() << endl
-       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl
-       << "Number of references to this node: " << ln->addReference() << endl;
+       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
 
   ln->addIncomingNode(0,ln);
   cout << "Structure successfully added to incoming pointers." << endl;
@@ -63,11 +62,6 @@ int main(int argv, char** argc) {
   
   // destructor test
   tsa->setElement(0,NULL); // can't delete while a pointer to it exists
-  ln->removeReference();
-  if(ln->removeReference() == 0)
-    cout << "Structure successfully deleted." << endl;
-  else
-    assert(false);
   ln = NULL;
   
   /////////////////////////////////////////////////////////////////////////////

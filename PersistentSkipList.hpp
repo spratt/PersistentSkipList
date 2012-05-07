@@ -57,7 +57,6 @@ namespace persistent_skip_list {
     vector<TSA*> next;
     ListNode<T>** in_nodes;
     T data;
-    int references;
     static bool _SEEDED; // must be initialized to false
 
     static void seed();
@@ -105,19 +104,6 @@ namespace persistent_skip_list {
     //                                                                       //
     // PURPOSE:       Guarantees the disciplined creation of ListNode        //
     //                objects.                                               //
-    //                                                                       //
-    //                The motivation for a static method rather than a       //
-    //                normal constructor is that these nodes are             //
-    //                managing themselves in memory by counting              //
-    //                references and when the reference count drops to       //
-    //                zero, deleting themselves.                             //
-    //                                                                       //
-    //                If the nodes are created using an unpredicted          //
-    //                method of allocation (such as new[]), the memory       //
-    //                management may fail and result in a memory leak.       //
-    //                                                                       //
-    //                This method guarantees that nodes will always be       //
-    //                allocated and deleted in predictable ways.             //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
@@ -376,49 +362,6 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int removeIncomingNode(int h);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: addReference                                           //
-    //                                                                       //
-    // PURPOSE:       Increments the reference counter.                      //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   Void.                                                  //
-    //   Description: None.                                                  //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: The value of the reference counter.                    //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int addReference();
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: removeReference                                        //
-    //                                                                       //
-    // PURPOSE:       Decrements the reference counter.  If the              //
-    //                counter drops to zero, it calls the destructor.        //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   Void.                                                  //
-    //   Description: None.                                                  //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: The value of the reference counter.                    //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int removeReference();
   };
 
   /////////////////////////////////////////////////////////////////////////////
