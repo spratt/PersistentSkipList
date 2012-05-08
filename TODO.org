@@ -1,9 +1,4 @@
 
-* Smart Pointers
-  already using reference counting, should decouple the reference
-  counting code from the rest of the data
-  - implemented in a separate library
-
 * Remove templates from ListNodes
   Replace with void* and let the data structure ensure type safety.
   - How can we do this and still ensure the data are sortable??
@@ -12,8 +7,3 @@
   Right now, it's possible to search through a PSL manually, but this
   should really be encapsulated so the details can be hidden from
   users.
-
-* Bug fixes
-
-** references are being lost
-   this will be fixed with smart pointers

@@ -57,11 +57,6 @@ ListNode<T>::ListNode(const T& original_data)
     // check next bit
     bitCheck <<= 1;
   }
-
-  // We know that the number of incoming pointers will be at most height
-  in_nodes = new ListNode<T>*[height];
-  for(int i = 0; i < height; ++i)
-    in_nodes[i] = NULL;
 }
 
 template<class T>
@@ -70,14 +65,9 @@ ListNode<T>::~ListNode() {
   for(int i = 0; i < (int)next.size(); ++i) {
     TSA* tsa = next[i];
     if(tsa != NULL) {
-      for(int j = 0; j < tsa->getSize(); ++j) {
-	ListNode<T>* ln = NULL;
-	ln = tsa->getElement(j);
-      }
       delete tsa;      // delete timestamped array
     }
   }
-  delete[] in_nodes;
 }
 
 template<class T>
@@ -123,7 +113,8 @@ int ListNode<T>::getNextChangeIndex(int t) {
 }
 
 template <class T>
-TimeStampedArray<ListNode<T>*>* ListNode<T>::getNextAtIndex(int ci) {
+TimeStampedArray< SmartPointer< ListNode<T> > >*
+ListNode<T>::getNextAtIndex(int ci) {
   assert(this != NULL);
   assert(ci >= 0);
   assert(ci < numberOfNextChangeIndices());
@@ -137,7 +128,8 @@ int ListNode<T>::numberOfNextChangeIndices() {
 }
   
 template <class T>
-TimeStampedArray<ListNode<T>*>* ListNode<T>::getNext(int t) {
+TimeStampedArray< SmartPointer< ListNode<T> > >*
+ListNode<T>::getNext(int t) {
   assert(this != NULL);
   assert(t >= 0);
   // find nearest time
@@ -157,20 +149,9 @@ TimeStampedArray<ListNode<T>*>* ListNode<T>::getNext(int t) {
   }
   return tsa;
 }
-  
-template <class T>
-ListNode<T>* ListNode<T>::getNext(int t, int h) {
-  assert(this != NULL);
-  assert(t >= 0);
-  TSA* tsa = getNext(t);
-  if(tsa == NULL)
-    return NULL;
-  assert(h < tsa->getSize());
-  return tsa->getElement(h);
-}
 
 template <class T>
-int ListNode<T>::addNext(TimeStampedArray<ListNode<T>*>* tsa) {
+int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
   assert(this != NULL);
   // since NULL is the default
   if(tsa == NULL)
@@ -181,39 +162,6 @@ int ListNode<T>::addNext(TimeStampedArray<ListNode<T>*>* tsa) {
     assert(tsa->getTime() > next[lastIndex]->getTime());
   // finally, save the new set of next pointers
   next.push_back(tsa);
-  // success
-  return 0;
-}
-
-template <class T>
-int ListNode<T>::addIncomingNode(int h, ListNode<T>* in) {
-  assert(this != NULL);
-  assert(h >= 0);
-  assert(h < height);
-  assert(in_nodes[h] == NULL);
-  in_nodes[h] = in;
-  return 0;
-}
-
-template <class T>
-ListNode<T>* ListNode<T>::getIncomingNode(int h) {
-  assert(this != NULL);
-  assert(h >= 0);
-  assert(h < height);
-  return in_nodes[h];
-}
-
-template <class T>
-int ListNode<T>::removeIncomingNode(int h) {
-  assert(this != NULL);
-  assert(h >= 0);
-  assert(h < height);
-  if(in_nodes[h] != NULL) {
-    // Note that incoming node references are not counted, this is on purpose.
-    // If incoming references are the only ones left, the node should
-    // be deleted.
-    in_nodes[h] = NULL;
-  }
   // success
   return 0;
 }
@@ -233,19 +181,8 @@ PersistentSkipList<T>::PersistentSkipList()
 
 template <class T>
 PersistentSkipList<T>::~PersistentSkipList() {
-  for(int i = 0; i < (int)head.size(); ++i) {
-    TSA* tsa = head[i];
-    if(PSL_DEBUG_MODE) {
-      clog << "Deleting head at time " << i << endl;
-    }
-    for(int j = 0; j < tsa->getSize(); ++j) {
-      ListNode<T>* ln = tsa->getElement(j);
-      if(PSL_DEBUG_MODE) {
-	clog << "Removing head pointer to node(" << ln->getData() << ")" << endl;
-      }
-    }
-    delete tsa;
-  }
+  for(int i = 0; i < (int)head.size(); ++i)
+    delete head[i];
   if(PSL_DEBUG_MODE) {
     clog << "PSL " << this << " deleted." << endl;
   }
@@ -292,7 +229,7 @@ void PersistentSkipList<T>::draw(int t) {
   }
   vector<int> heights;
   vector<T> data;
-  ListNode<T>* ln = head->getElement(0);
+  SmartPointer< ListNode<T> > ln = head->getElement(0);
   int max_height = -1;
   while(ln != NULL) {
     int h = ln->getHeight();
@@ -300,7 +237,11 @@ void PersistentSkipList<T>::draw(int t) {
     if(h > max_height)
       max_height = h;
     data.push_back(ln->getData());
-    ln = ln->getNext(t,0);
+    TSA* tsa = ln->getNext(t);
+    if(tsa == NULL)
+      ln = NULL;
+    else
+      ln = tsa->getElement(0);
   }
   --max_height;
   while(max_height >= 0) {
@@ -320,7 +261,8 @@ void PersistentSkipList<T>::draw(int t) {
 }
 
 template <class T>
-int PersistentSkipList<T>::addHead(TimeStampedArray<ListNode<T>*>* tsa) {
+int PersistentSkipList<T>::addHead(TimeStampedArray< SmartPointer< ListNode<T> > >*
+				   tsa) {
   assert(this != NULL);
   assert(tsa != NULL);
   // save the new head
@@ -330,7 +272,8 @@ int PersistentSkipList<T>::addHead(TimeStampedArray<ListNode<T>*>* tsa) {
 }
 
 template <class T>
-TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
+TimeStampedArray< SmartPointer< ListNode<T> > >*
+PersistentSkipList<T>::getHead(int t) {
   assert(this != NULL);
   int index = -1;
   int begin = 0, end = head.size() -1;
@@ -360,7 +303,8 @@ TimeStampedArray<ListNode<T>*>* PersistentSkipList<T>::getHead(int t) {
 }
 
 template <class T>
-int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
+int PersistentSkipList<T>::setHead(TimeStampedArray< SmartPointer<ListNode<T> > >*
+				   tsa) {
   assert(this != NULL);
   assert(tsa != NULL);
   // find where the head needs to be inserted
@@ -389,7 +333,7 @@ int PersistentSkipList<T>::setHead(TimeStampedArray<ListNode<T>*>* tsa) {
 template <class T>
 int PersistentSkipList<T>::initialInsert(const T& data) {
   TSA* new_head = NULL;
-  ListNode<T>* new_ln = ListNode<T>::create(data);
+  SmartPointer<ListNode<T> > new_ln(ListNode<T>::create(data));
   int height = new_ln->getHeight();
   // initialize head
   new_head = new TSA(0, height);
@@ -422,7 +366,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     return initialInsert(data);
   // otherwise, create node
   TSA* curr_head = getHead(getPresent());
-  ListNode<T>* new_ln = ListNode<T>::create(data);
+  SmartPointer<ListNode<T> > new_ln(ListNode<T>::create(data));
   int height = new_ln->getHeight();
   if(PSL_DEBUG_MODE) {
     clog << "New node (" << data << ") height: " << height << endl;
@@ -450,14 +394,13 @@ int PersistentSkipList<T>::insert(const T& data) {
   /////////////////////////////////////////////////////////////////////////
   // ADD TO HEAD IF NEEDED                                               //
   /////////////////////////////////////////////////////////////////////////
-  ListNode<T>* old_ln = curr_head->getElement(start);
+  SmartPointer<ListNode<T> > old_ln = curr_head->getElement(start);
   // travel down the heads, adding the new node until we find a head
   // node which precedes the new node
   while(data < old_ln->getData()) {
     if(PSL_DEBUG_MODE) {
       clog << "Linking new to old at height " << start << endl;
     }
-    old_ln->addIncomingNode(start,new_ln);
     new_node_next->setElement(start,old_ln);
     curr_head->setElement(start,new_ln);
     --start;
@@ -469,19 +412,23 @@ int PersistentSkipList<T>::insert(const T& data) {
   // ADD TO REST OF LIST IF NEEDED                                       //
   /////////////////////////////////////////////////////////////////////////
   if(start >= 0) {
-    // guaranteed not NULL
-    ListNode<T>* old_ln = curr_head->getElement(start);
     while(start >= 0) {
       // might be NULL
-      ListNode<T>* next_ln = old_ln->getNext(getPresent(),start);
+      TSA* old_ln_next =
+	old_ln->getNext(getPresent());  // <- this could be NULL
+      SmartPointer<ListNode<T> > next_ln;
+      if(old_ln_next != NULL)
+	next_ln = old_ln_next->getElement(start);
       // find the elements between which we should insert the new node
       while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
 	old_ln = next_ln;
-	next_ln = old_ln->getNext(getPresent(),start);
+	old_ln_next = old_ln->getNext(getPresent());  // <- this could be NULL
+	if(old_ln_next == NULL)
+	  next_ln = NULL;
+	else
+	  next_ln = old_ln_next->getElement(start);
       }
       // add node to preceding node
-      TSA* old_ln_next =
-	old_ln->getNext(getPresent());  // <- this could be NULL
       int old_ln_height = old_ln->getHeight();
       if(old_ln_next == NULL) {
 	old_ln_next =
@@ -490,13 +437,9 @@ int PersistentSkipList<T>::insert(const T& data) {
       while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
 	// point the new node to the old next node
 	if(next_ln != NULL) {
-	  next_ln->removeIncomingNode(start);
-	  next_ln->addIncomingNode(start,new_ln);
 	  new_node_next->setElement(start,next_ln);
 	}
 	// point the old node to the new node
-	new_ln->removeIncomingNode(start);
-	new_ln->addIncomingNode(start,old_ln);
 	old_ln_next->setElement(start,new_ln);
 	// move to the next height
 	--start;

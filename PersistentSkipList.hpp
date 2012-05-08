@@ -38,9 +38,11 @@
 
 // My libraries
 #include "TimeStampedArray.hpp"
+#include "lib/SmartPointer/SmartPointer.hpp"
 
 using namespace std;
 using namespace timestamped_array;
+using namespace smart_ptr;
 
 namespace persistent_skip_list {
 
@@ -51,11 +53,10 @@ namespace persistent_skip_list {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class ListNode {
-    typedef TimeStampedArray<ListNode<T>*> TSA;
+    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
   private:
     int height;
     vector<TSA*> next;
-    ListNode<T>** in_nodes;
     T data;
     static bool _SEEDED; // must be initialized to false
 
@@ -78,6 +79,7 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     ListNode(const T&);
 
+  public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: ~ListNode                                              //
@@ -97,7 +99,6 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     ~ListNode();
     
-  public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: create                                                 //
@@ -255,32 +256,6 @@ namespace persistent_skip_list {
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
-    // FUNCTION NAME: getNext                                                //
-    //                                                                       //
-    // PURPOSE:       Retrieves the next pointer at the given height and the //
-    //                time at or immediately preceding the given time.       //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to retrieve the pointer.             //
-    //                                                                       //
-    //   Type/Name:   int/h                                                  //
-    //   Description: The height at which to retrieve the pointer.           //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<T>*                                           //
-    //   Description: The next pointer at the given height and the time at   //
-    //                or immediately preceding the given time.               //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode<T>* getNext(int t, int h);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
     // FUNCTION NAME: addNext                                                //
     //                                                                       //
     // PURPOSE:       Set the next pointer at time t                         //
@@ -300,68 +275,6 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int addNext(TSA* next);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: addIncomingNode                                        //
-    //                                                                       //
-    // PURPOSE:       Adds a node to the list of incoming nodes.             //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/h                                                  //
-    //   Description: The height at which to add this incoming node.         //
-    //                                                                       //
-    //   Type/Name:   ListNode<T>*/in                                        //
-    //   Description: The node which now has a pointer to this node.         //
-    //                                                                       //
-    // RETURN:        int return code.  0 indicates success.                 //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int addIncomingNode(int h, ListNode<T>* in);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getIncomingNode                                        //
-    //                                                                       //
-    // PURPOSE:       Retrieves the incoming node at height h.               //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/h                                                  //
-    //   Description: The height at which to retrieve the incoming node.     //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<T>*                                           //
-    //   Description: The incoming node at height h.                         //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    ListNode<T>* getIncomingNode(int h);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: removeIncomingNode                                     //
-    //                                                                       //
-    // PURPOSE:       Removes a node from the list of incoming nodes.        //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/h                                                  //
-    //   Description: The height at which to remove the incoming node.       //
-    //                                                                       //
-    // RETURN:        int return code.  0 indicates success.                 //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int removeIncomingNode(int h);
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -369,7 +282,7 @@ namespace persistent_skip_list {
   /////////////////////////////////////////////////////////////////////////////
   template < class T >
   class PersistentSkipList {
-    typedef TimeStampedArray<ListNode<T>*> TSA;
+    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
     int height;
     int present;
     vector< TSA* > head;

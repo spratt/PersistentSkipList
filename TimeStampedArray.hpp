@@ -236,13 +236,13 @@ namespace timestamped_array {
     //   Description: The index at which to retrieve the array element.      //
     //                                                                       //
     // RETURN:                                                               //
-    //   Type/Name:   T                                                      //
+    //   Type/Name:   T&                                                     //
     //   Description: The array element at index i.                          //
     //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    T getElement(int i) const;
+    T& getElement(int i) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -292,7 +292,7 @@ namespace timestamped_array {
   }
 
   template<class T>
-  T TimeStampedArray<T>::getElement(int i) const {
+  T& TimeStampedArray<T>::getElement(int i) const {
     assert(this != NULL);
     assert(i >= 0);
     assert(i < size);
