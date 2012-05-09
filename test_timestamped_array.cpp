@@ -42,9 +42,6 @@ void testTSA(const TimeStampedArray<T>& tsa) {
 }
 
 int main(int argv, char** argc) {
-  cout << "======================================================================\n"
-       << "| Testing TimeStampedArray                                           |\n"
-       << "======================================================================\n";
   // Create an original TSA
   TimeStampedArray<int> tsa(0, 3);
   cout << "Structure created successfully." << endl;

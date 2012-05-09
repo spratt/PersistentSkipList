@@ -23,48 +23,19 @@ using namespace geometry;
 
 int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
-  // ListNode tests                                                          //
+  // Setup code                                                              //
   /////////////////////////////////////////////////////////////////////////////
-  cout << "======================================================================\n"
-       << "| Testing ListNode                                                   |\n"
-       << "======================================================================\n";
+  
   SmartPointer<ListNode<int> > ln(ListNode<int>::create(2));
-  cout << "Structure successfully allocated on heap." << endl
-       << "Data: " << ln->getData() << endl
-       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
-
   TimeStampedArray<SmartPointer<ListNode<int> > >* tsa =
     new TimeStampedArray<SmartPointer<ListNode<int> > >(0,1);
   tsa->setElement(0,ln);
   ln->addNext(tsa);
-  cout << "Successfully added an array of next pointers." << endl
-       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
 
-  int index = ln->getNextChangeIndex(1);
-  cout << "Successfully retrieved a change index." << endl;
-
-  TimeStampedArray<SmartPointer<ListNode<int> > >* change =
-    ln->getNextAtIndex(index);
-  if(change == tsa)
-    cout << "Successfully retrieved the array of next pointers from a change index."
-	 << endl;
-  else
-    assert(false);
-
-  TimeStampedArray<SmartPointer< ListNode<int> > >* change2 =
-    ln->getNext(1);
-  if(change2 == tsa)
-    cout << "Successfully retrieved the array of next pointers directly." << endl;
-  else
-    assert(false);
+  /////////////////////////////////////////////////////////////////////////////
+  // Test code                                                               //
+  /////////////////////////////////////////////////////////////////////////////
   
-  /////////////////////////////////////////////////////////////////////////////
-  // SkipList tests                                                          //
-  /////////////////////////////////////////////////////////////////////////////
-  cout << "======================================================================\n"
-       << "| Testing SkipList                                                   |\n"
-       << "======================================================================\n";
-
   cout << "Allocating PersistentSkipList<int> on stack...";
   PersistentSkipList<int> psl;
   cout << "success." << endl;

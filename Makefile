@@ -40,21 +40,26 @@ else
 	CXXFLAGS=-g -std=c++98 -pedantic-errors -Wall -Werror
 endif
 
+BAR = "======================================================================"
+
 ###############################################################################
 # Project specific options                                                    #
 ###############################################################################
 
 TEST_TSA	= test_timestamped_array
+TEST_LN		= test_psl_listnode
 TEST_PSL	= test_persistent_skiplist
 TEST_PS		= test_polygonal_subdivision
 
-TESTS	 	= ${TEST_TSA} ${TEST_PSL} ${TEST_PS}
+TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL} ${TEST_PS}
 
 .PHONY:	all run run_tests_mac run_tests clean lines
 
 .IGNORE: lines
 
 .SUFFIXES: .o .cpp .hpp
+
+.SILENT: run_tests run_tests_mac
 
 #begin actual makefile stuff
 all: ${TESTS}
@@ -64,13 +69,20 @@ run: run_tests_mac
 test: run_tests_mac run_tests
 
 run_tests_mac:	all
-	${foreach test,${TESTS},cat ${test}_input | ./${test};}
+	${foreach test,${TESTS},\
+echo ${BAR};echo "| " ${test};echo ${BAR};\
+cat ${test}_input | ./${test};}
 
 run_tests:	all	
-	${foreach test,${TESTS},cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
+	${foreach test,${TESTS},\
+echo ${BAR};echo ${test};echo ${BAR};\
+cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 
 # specify required libraries
 ${TEST_TSA}: TimeStampedArray.o
+
+${TEST_LN}:  Point2D.o LineSegment.o PersistentSkipList.o \
+	     lib/SmartPointer/SmartPointer.o
 
 ${TEST_PSL}: Point2D.o LineSegment.o PersistentSkipList.o \
 	     lib/SmartPointer/SmartPointer.o
