@@ -71,11 +71,6 @@ ListNode<T>::~ListNode() {
 }
 
 template<class T>
-ListNode<T>* ListNode<T>::create(const T& original_data) {
-  return new ListNode<T>(original_data);
-}
-
-template<class T>
 T ListNode<T>::getData() {
   assert(this != NULL);
   return data;
@@ -333,7 +328,7 @@ int PersistentSkipList<T>::setHead(TimeStampedArray< SmartPointer<ListNode<T> > 
 template <class T>
 int PersistentSkipList<T>::initialInsert(const T& data) {
   TSA* new_head = NULL;
-  SmartPointer<ListNode<T> > new_ln(ListNode<T>::create(data));
+  SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
   int height = new_ln->getHeight();
   // initialize head
   new_head = new TSA(0, height);
@@ -366,7 +361,7 @@ int PersistentSkipList<T>::insert(const T& data) {
     return initialInsert(data);
   // otherwise, create node
   TSA* curr_head = getHead(getPresent());
-  SmartPointer<ListNode<T> > new_ln(ListNode<T>::create(data));
+  SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
   int height = new_ln->getHeight();
   if(PSL_DEBUG_MODE) {
     clog << "New node (" << data << ") height: " << height << endl;

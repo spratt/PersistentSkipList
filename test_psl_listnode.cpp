@@ -22,35 +22,44 @@ using namespace timestamped_array;
 using namespace geometry;
 
 int main(int argv, char** argc) {
-  SmartPointer<ListNode<int> > ln(ListNode<int>::create(2));
-  cout << "Structure successfully allocated on heap." << endl
-       << "Data: " << ln->getData() << endl
-       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
+  
+  cout << "Allocating ListNode<int> on stack...";
+  SmartPointer<ListNode<int> > ln(new ListNode<int>(2));
+  cout << "success." << endl;
 
-  TimeStampedArray<SmartPointer<ListNode<int> > >* tsa =
-    new TimeStampedArray<SmartPointer<ListNode<int> > >(0,1);
-  tsa->setElement(0,ln);
-  ln->addNext(tsa);
-  cout << "Successfully added an array of next pointers." << endl
-       << "Number of change indices: " << ln->numberOfNextChangeIndices() << endl;
+  cout << "Number of change indices: "
+       << ln->numberOfNextChangeIndices() << endl;
 
+  cout << "Allocating TimeStampedArray<SmartPointer<ListNode<int> > > on stack...";
+  TimeStampedArray<SmartPointer<ListNode<int> > > tsa(0,1);
+  cout << "success." << endl;
+
+  cout << "Setting element at index 0 on tsa...";
+  tsa.setElement(0,ln);
+  cout << "success." << endl;
+
+  cout << "Adding next to list node...";
+  ln->addNext(&tsa);
+  cout << "success." << endl;
+
+  cout << "Number of change indices: "
+       << ln->numberOfNextChangeIndices() << endl;
+
+  cout << "Retrieving a change index...";
   int index = ln->getNextChangeIndex(1);
-  cout << "Successfully retrieved a change index." << endl;
+  cout << "success." << endl;
 
+  cout << "Getting next pointer at given index...";
   TimeStampedArray<SmartPointer<ListNode<int> > >* change =
     ln->getNextAtIndex(index);
-  if(change == tsa)
-    cout << "Successfully retrieved the array of next pointers from a change index."
-	 << endl;
-  else
-    assert(false);
+  assert(change == &tsa);
+  cout << "success." << endl;
 
+  cout << "Getting next pointer at index+1...";
   TimeStampedArray<SmartPointer< ListNode<int> > >* change2 =
     ln->getNext(1);
-  if(change2 == tsa)
-    cout << "Successfully retrieved the array of next pointers directly." << endl;
-  else
-    assert(false);
+  assert(change2 == &tsa);
+  cout << "success." << endl;
   
   // success
   return 0;

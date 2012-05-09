@@ -62,6 +62,8 @@ namespace persistent_skip_list {
 
     static void seed();
 
+  public:
+
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: ListNode                                               //
@@ -78,8 +80,7 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode(const T&);
-
-  public:
+    
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: ~ListNode                                              //
@@ -98,29 +99,6 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ~ListNode();
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: create                                                 //
-    //                                                                       //
-    // PURPOSE:       Guarantees the disciplined creation of ListNode        //
-    //                objects.                                               //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   T/original_data                                        //
-    //   Description: The value to store in the data of the ListNode         //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   ListNode<T>*                                           //
-    //   Description: A pointer to the new ListNode object, initialized with //
-    //                the given data.                                        //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    static ListNode<T>* create(const T& original_data);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

@@ -23,17 +23,7 @@ using namespace geometry;
 
 int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
-  // Setup code                                                              //
-  /////////////////////////////////////////////////////////////////////////////
-  
-  SmartPointer<ListNode<int> > ln(ListNode<int>::create(2));
-  TimeStampedArray<SmartPointer<ListNode<int> > >* tsa =
-    new TimeStampedArray<SmartPointer<ListNode<int> > >(0,1);
-  tsa->setElement(0,ln);
-  ln->addNext(tsa);
-
-  /////////////////////////////////////////////////////////////////////////////
-  // Test code                                                               //
+  // Test on int                                                             //
   /////////////////////////////////////////////////////////////////////////////
   
   cout << "Allocating PersistentSkipList<int> on stack...";
@@ -41,7 +31,7 @@ int main(int argv, char** argc) {
   cout << "success." << endl;
 
   cout << "Getting head...";
-  tsa = psl.getHead(0);
+  psl.getHead(0);
   cout << "success." << endl;
 
   cout << "Inserting one value...";
@@ -74,8 +64,9 @@ int main(int argv, char** argc) {
   cout << endl;
   
   /////////////////////////////////////////////////////////////////////////////
-  // Test on advaced data type
+  // Test on LineSegment                                                     //
   /////////////////////////////////////////////////////////////////////////////
+  
   cout << "Allocating PersistentSkipList<LineSegment> on stack...";
   PersistentSkipList<LineSegment> lines;
   cout << "success." << endl;
