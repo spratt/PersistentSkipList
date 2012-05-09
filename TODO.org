@@ -1,4 +1,12 @@
 
+* Constant Size ListNodes
+  Presently, ListNodes can have an arbitrary number of next pointers,
+  but this means logarithmic time to find the next pointer at a given
+  time.
+
+  A better design uses fixed size next pointers, and creates a new
+  node when more next pointers are needed.
+
 * Remove templates from ListNodes
   Replace with void* and let the data structure ensure type safety.
   - How can we do this and still ensure the data are sortable??
