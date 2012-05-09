@@ -1,0 +1,25 @@
+A brief description of the major design decisions in this data
+structure.
+
+* TimeStampedArray (TSA)
+  A simple array class with an associated time stamp.
+
+* SmartPointer
+  A pointer which counts references and automatically deallocated the
+  pointed-to object when the reference count drops to 0.
+
+* ListNode
+  
+** next
+   A vector of TSAs of SmartPointers to ListNodes, one for each time
+   at which the next node in the list changes.
+
+* PersistentSkipList
+
+** head
+   A vector of TSAs of SmartPointers to ListNodes, one for each time
+   at which the head of the list changes.
+
+** data_set
+   The set of all points in the data.  This prevents duplicates, but
+   adds O(logn) time complexity of overhead to insertion.
