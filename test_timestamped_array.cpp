@@ -54,7 +54,8 @@ int main(int argv, char** argc) {
   // Create a TSA copy
   TimeStampedArray<int>* tsa_copy = new TimeStampedArray<int>(1, 3, tsa);
   cout << "Structure copied successfully." << endl;
-  tsa_copy->setElement(1, 3);
+  int i = 3;
+  tsa_copy->setElement(1, i);
   tsa_copy->lock();
   testTSA(*tsa_copy);
 

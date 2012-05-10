@@ -256,7 +256,7 @@ namespace timestamped_array {
     //   Type/Name:   int/i                                                  //
     //   Description: The index in the array at which to set the element.    //
     //                                                                       //
-    //   Type/Name:   T/datum                                                //
+    //   Type/Name:   T&/datum                                               //
     //   Description: The new element to store in the array.                 //
     //                                                                       //
     // RETURN:        An integer return code.  0 indicates success.          //
@@ -264,7 +264,7 @@ namespace timestamped_array {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int setElement(int i, T datum);
+    int setElement(int i, T& datum);
   };
 
   template<class T>
@@ -300,7 +300,7 @@ namespace timestamped_array {
   }
 
   template<class T>
-  int TimeStampedArray<T>::setElement(int i, T datum) {
+  int TimeStampedArray<T>::setElement(int i, T& datum) {
     assert(this != NULL);
     assert(! _LOCKED);
     assert(i >= 0);
