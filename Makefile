@@ -46,10 +46,12 @@ BAR = "======================================================================"
 # Project specific options                                                    #
 ###############################################################################
 
-TEST_TSA	= test/test_timestamped_array
-TEST_LN		= test/test_psl_listnode
-TEST_PSL	= test/test_persistent_skiplist
-TEST_PS		= test/test_polygonal_subdivision
+TEST_DIR	= test
+
+TEST_TSA	= ${TEST_DIR}/test_timestamped_array
+TEST_LN		= ${TEST_DIR}/test_psl_listnode
+TEST_PSL	= ${TEST_DIR}/test_persistent_skiplist
+TEST_PS		= ${TEST_DIR}/test_polygonal_subdivision
 
 TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL} ${TEST_PS}
 

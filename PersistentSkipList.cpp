@@ -62,11 +62,10 @@ ListNode<T>::ListNode(const T& original_data)
 template<class T>
 ListNode<T>::~ListNode() {
   // clean up next
-  for(int i = 0; i < (int)next.size(); ++i) {
-    TSA* tsa = next[i];
-    if(tsa != NULL) {
-      delete tsa;      // delete timestamped array
-    }
+  while(! next.empty() ) {
+    TSA* back = next.back();
+    next.pop_back();
+    delete back;
   }
 }
 

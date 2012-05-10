@@ -62,8 +62,6 @@ int main(int argv, char** argc) {
     ln1->getNext(1);
   assert(change2 == tsa);
   cout << "success." << endl;
-
-  delete tsa;
   
   // success
   return 0;
