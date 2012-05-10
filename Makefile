@@ -46,10 +46,10 @@ BAR = "======================================================================"
 # Project specific options                                                    #
 ###############################################################################
 
-TEST_TSA	= test_timestamped_array
-TEST_LN		= test_psl_listnode
-TEST_PSL	= test_persistent_skiplist
-TEST_PS		= test_polygonal_subdivision
+TEST_TSA	= test/test_timestamped_array
+TEST_LN		= test/test_psl_listnode
+TEST_PSL	= test/test_persistent_skiplist
+TEST_PS		= test/test_polygonal_subdivision
 
 TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL} ${TEST_PS}
 
@@ -79,15 +79,15 @@ echo ${BAR};echo ${test};echo ${BAR};\
 cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 
 # specify required libraries
-${TEST_TSA}: TimeStampedArray.o
+${TEST_TSA}: 	TimeStampedArray.o
 
-${TEST_LN}:  Point2D.o LineSegment.o PersistentSkipList.o \
-	     lib/SmartPointer/SmartPointer.o
+${TEST_LN}:  	Point2D.o LineSegment.o PersistentSkipList.o \
+	     	lib/SmartPointer/SmartPointer.o
 
-${TEST_PSL}: Point2D.o LineSegment.o PersistentSkipList.o \
-	     lib/SmartPointer/SmartPointer.o
+${TEST_PSL}: 	Point2D.o LineSegment.o PersistentSkipList.o \
+	     	lib/SmartPointer/SmartPointer.o
 
-${TEST_PS}: Point2D.o LineSegment.o PersistentSkipList.o PolygonalSubdivision.o
+${TEST_PS}: 	Point2D.o LineSegment.o PersistentSkipList.o PolygonalSubdivision.o
 
 # tidy up generated files
 clean:

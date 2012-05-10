@@ -12,7 +12,7 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
-#include "TimeStampedArray.hpp"
+#include "../TimeStampedArray.hpp"
 
 using namespace std;
 using namespace timestamped_array;

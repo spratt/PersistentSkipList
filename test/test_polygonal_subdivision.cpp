@@ -13,9 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-#include "Point2D.hpp"
-#include "LineSegment.hpp"
-#include "PolygonalSubdivision.hpp"
+#include "../Point2D.hpp"
+#include "../LineSegment.hpp"
+#include "../PolygonalSubdivision.hpp"
 
 using namespace geometry;
 

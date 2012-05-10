@@ -13,9 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-#include "TimeStampedArray.hpp"
-#include "PersistentSkipList.hpp"
-#include "LineSegment.hpp"
+#include "../TimeStampedArray.hpp"
+#include "../PersistentSkipList.hpp"
+#include "../LineSegment.hpp"
 
 using namespace persistent_skip_list;
 using namespace timestamped_array;
