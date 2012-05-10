@@ -42,11 +42,6 @@
 #ifndef TIMESTAMPEDARRAY_HPP
 #define TIMESTAMPEDARRAY_HPP
 
-// DEBUG
-#include <iostream>
-using namespace std;
-// END DEBUG
-
 #include <cstddef>
 #include <assert.h>
 
@@ -249,8 +244,8 @@ namespace timestamped_array {
     ///////////////////////////////////////////////////////////////////////////
     int setElement(int i, T& datum);
   };
-
-  #include "TimeStampedArray.cpp"
 }
+
+#include "TimeStampedArray.cpp"
 
 #endif

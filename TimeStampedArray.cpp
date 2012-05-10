@@ -14,9 +14,11 @@
 #ifndef TIMESTAMPEDARRAY_CPP
 #define TIMESTAMPEDARRAY_CPP
 
+#include <ostream>
 #include "TimeStampedArray.hpp"
 
 using namespace timestamped_array;
+using namespace std;
 
 template<class T>
 TimeStampedArray<T>::TimeStampedArray(int t, int s)

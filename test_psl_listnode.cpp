@@ -32,15 +32,16 @@ int main(int argv, char** argc) {
        << ln1->numberOfNextChangeIndices() << endl;
 
   cout << "Allocating TimeStampedArray<SmartPointer<ListNode<int> > > on stack...";
-  TimeStampedArray<SmartPointer<ListNode<int> > > tsa(0,1);
+  TimeStampedArray<SmartPointer<ListNode<int> > >* tsa
+    = new TimeStampedArray<SmartPointer<ListNode<int> > >(0,1);
   cout << "success." << endl;
 
   cout << "Setting element at index 0 on tsa...";
-  tsa.setElement(0,ln2);
+  tsa->setElement(0,ln2);
   cout << "success." << endl;
 
   cout << "Adding next to list node...";
-  ln1->addNext(&tsa);
+  ln1->addNext(tsa);
   cout << "success." << endl;
 
   cout << "Number of change indices: "
@@ -53,14 +54,16 @@ int main(int argv, char** argc) {
   cout << "Getting next pointer at given index...";
   TimeStampedArray<SmartPointer<ListNode<int> > >* change =
     ln1->getNextAtIndex(index);
-  assert(change == &tsa);
+  assert(change == tsa);
   cout << "success." << endl;
 
   cout << "Getting next pointer at index+1...";
   TimeStampedArray<SmartPointer< ListNode<int> > >* change2 =
     ln1->getNext(1);
-  assert(change2 == &tsa);
+  assert(change2 == tsa);
   cout << "success." << endl;
+
+  delete tsa;
   
   // success
   return 0;
