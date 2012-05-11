@@ -19,148 +19,6 @@
 using namespace persistent_skip_list;
 
 ///////////////////////////////////////////////////////////////////////////////
-// ListNode Implementation                                                   //
-///////////////////////////////////////////////////////////////////////////////
-
-template<class T>
-bool ListNode<T>::_SEEDED = false;
-
-template<class T>
-void ListNode<T>::seed() {
-      if(_SEEDED)
-	return;
-      _SEEDED = true;
-      time_t seed = (time_t)1312564825;
-      seed = time(0); // comment this for non-random seeding
-      srand( seed );
-      if(PSL_DEBUG_MODE) {
-	clog << "Seeding with value " << seed << endl;
-      }
-}
-
-template<class T>
-ListNode<T>::ListNode(const T& original_data)
-  : next(), data(original_data)
-{
-  seed();
-  // pick height, modified from Pat Morin's Open Data Structures
-  height = 1;
-  int bitCheck = 1;
-  int r = rand();
-  // check each bit in the binary representation of r, from the
-  // least significant to the most significant.  The number of 1's
-  // in a row from the least significant position determines the
-  // height of the node.
-  while((r & bitCheck) != 0) {
-    // if bit is 1, increment height
-    ++height;
-    // check next bit
-    bitCheck <<= 1;
-  }
-}
-
-template<class T>
-ListNode<T>::~ListNode() {
-  // clean up next
-  while(! next.empty() ) {
-    TSA* back = next.back();
-    next.pop_back();
-    delete back;
-  }
-}
-
-template<class T>
-T ListNode<T>::getData() {
-  assert(this != NULL);
-  return data;
-}
-
-template<class T>
-int ListNode<T>::getHeight() {
-  assert(this != NULL);
-  return height;
-}
-  
-template<class T>
-int ListNode<T>::getNextChangeIndex(int t) {
-  assert(this != NULL);
-  int index = -1;
-  int begin = 0, end = numberOfNextChangeIndices() -1;
-  int timeFound = 0;
-  // binary search
-  while(begin <= end) {
-    index = (begin+end)/2;
-    timeFound = getNextAtIndex(index)->getTime();
-    if(timeFound == t) {
-      // done, break out of loop
-      break;
-    } else if(timeFound > t) {
-      // repeat binary search on left (earlier) half
-      end = index -1;
-    } else {
-      // repeat binary search on right (later) half
-      begin = index +1;
-    }
-  }
-  // report final index
-  return index;
-}
-
-template <class T>
-TimeStampedArray< SmartPointer< ListNode<T> > >*
-ListNode<T>::getNextAtIndex(int ci) {
-  assert(this != NULL);
-  assert(ci >= 0);
-  assert(ci < numberOfNextChangeIndices());
-  return next[ci];
-}
-
-template <class T>
-int ListNode<T>::numberOfNextChangeIndices() {
-  assert(this != NULL);
-  return (int)next.size();
-}
-  
-template <class T>
-TimeStampedArray< SmartPointer< ListNode<T> > >*
-ListNode<T>::getNext(int t) {
-  assert(this != NULL);
-  assert(t >= 0);
-  // find nearest time
-  int index = getNextChangeIndex(t);
-  // if there are no pointers, bail
-  if(index == -1) return NULL;
-  // use this to store the node to be returned
-  TSA* tsa = getNextAtIndex(index);
-  // since the nearest time might be later than the desired time, we
-  // go backwards in time until we reach the point which immediately
-  // precedes the query time
-  while(tsa->getTime() > t) {
-    --index;
-    if(index < 0)
-      return NULL;
-    tsa = getNextAtIndex(index);
-  }
-  return tsa;
-}
-
-template <class T>
-int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
-  assert(this != NULL);
-  // since NULL is the default
-  if(tsa == NULL)
-    return -1; // bail if trying to set next to NULL
-  // make sure time is strictly increasing
-  int lastIndex = (int)next.size()-1;
-  if(lastIndex >= 0)
-    assert(tsa->getTime() > next[lastIndex]->getTime());
-  // finally, save the new set of next pointers
-  next.push_back(tsa);
-  // success
-  return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // PersistentSkipList Implementation                                         //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -168,18 +26,12 @@ template <class T>
 PersistentSkipList<T>::PersistentSkipList()
   : height(0), present(0), head(), data_set()
 {
-  if(PSL_DEBUG_MODE) {
-    clog << "PSL " << this << " created." << endl;
-  }
 }
 
 template <class T>
 PersistentSkipList<T>::~PersistentSkipList() {
   for(int i = 0; i < (int)head.size(); ++i)
     delete head[i];
-  if(PSL_DEBUG_MODE) {
-    clog << "PSL " << this << " deleted." << endl;
-  }
 }
 
 template <class T>
@@ -362,18 +214,12 @@ int PersistentSkipList<T>::insert(const T& data) {
   TSA* curr_head = getHead(getPresent());
   SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
   int height = new_ln->getHeight();
-  if(PSL_DEBUG_MODE) {
-    clog << "New node (" << data << ") height: " << height << endl;
-  }
   // add node to list
   int start = height-1;
   /////////////////////////////////////////////////////////////////////////
   // TALLER THAN OLD HEAD                                                //
   /////////////////////////////////////////////////////////////////////////
   if(height > curr_head->getSize()) {
-    if(PSL_DEBUG_MODE) {
-      clog << "Node " << data << " is taller than old head." << endl;
-    }
     TSA* new_head = new TSA(getPresent(),height,*curr_head);
     // make the new node the head at all heights exceeding the size of
     // the old head
@@ -392,9 +238,6 @@ int PersistentSkipList<T>::insert(const T& data) {
   // travel down the heads, adding the new node until we find a head
   // node which precedes the new node
   while(data < old_ln->getData()) {
-    if(PSL_DEBUG_MODE) {
-      clog << "Linking new to old at height " << start << endl;
-    }
     new_node_next->setElement(start,old_ln);
     curr_head->setElement(start,new_ln);
     --start;

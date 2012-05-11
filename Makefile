@@ -83,13 +83,14 @@ cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 # specify required libraries
 ${TEST_TSA}: 	TimeStampedArray.o
 
-${TEST_LN}:  	Point2D.o LineSegment.o PersistentSkipList.o \
+${TEST_LN}:  	Point2D.o LineSegment.o ListNode.o \
 	     	lib/SmartPointer/SmartPointer.o
 
-${TEST_PSL}: 	Point2D.o LineSegment.o PersistentSkipList.o \
+${TEST_PSL}: 	Point2D.o LineSegment.o ListNode.o PersistentSkipList.o \
 	     	lib/SmartPointer/SmartPointer.o
 
-${TEST_PS}: 	Point2D.o LineSegment.o PersistentSkipList.o PolygonalSubdivision.o
+${TEST_PS}: 	Point2D.o LineSegment.o ListNode.o PersistentSkipList.o \
+		PolygonalSubdivision.o
 
 # tidy up generated files
 clean:
