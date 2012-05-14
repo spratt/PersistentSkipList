@@ -9,6 +9,9 @@ structure.
   pointed-to object when the reference count drops to 0.
 
 * ListNode
+  Decided to keep ListNodes templated, since it makes deallocation
+  simple.  Nodes storing a void pointer can't directly delete the
+  memory, since deletion of a void pointer is undefined.
   
 ** next
    A vector of TSAs of SmartPointers to ListNodes, one for each time

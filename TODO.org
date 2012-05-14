@@ -1,17 +1,20 @@
 
+* Dummy Nodes
+  Now: no dummy nodes.
+
+  Ideally: should use dummy nodes to reduce edge cases.
+
 * Constant Size ListNodes
-  Presently, ListNodes can have an arbitrary number of next pointers,
+  Now: ListNodes can have an arbitrary number of next pointers,
   but this means logarithmic time to find the next pointer at a given
   time.
 
-  A better design uses fixed size next pointers, and creates a new
-  node when more next pointers are needed.
-
-* Remove templates from ListNodes
-  Replace with void* and let the data structure ensure type safety.
-  - How can we do this and still ensure the data are sortable??
+  Ideally: use fixed size next pointers, and create a new node when
+  more next pointers are needed.  This gives constant time lookup for
+  next pointer at a given time.
 
 * Search
-  Right now, it's possible to search through a PSL manually, but this
-  should really be encapsulated so the details can be hidden from
-  users.
+  Now: it's possible to search through a PSL manually
+
+  Ideally: search should really be encapsulated so the details can be
+  hidden from users.
