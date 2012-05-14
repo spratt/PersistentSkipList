@@ -37,8 +37,11 @@ namespace persistent_skip_list {
     vector<TSA*> next;
     T data;
     static bool _SEEDED; // must be initialized to false
+    bool isPositiveInfinity;
+    bool isNegativeInfinity;
 
     static void seed();
+    void initializeNode();
 
   public:
 
@@ -48,7 +51,7 @@ namespace persistent_skip_list {
     //                                                                       //
     // PURPOSE:       Basic constructor                                      //
     //                                                                       //
-    // SECURITY:      private                                                //
+    // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   T/original_data                                        //
@@ -58,6 +61,24 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ListNode(const T&);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: ListNode                                               //
+    //                                                                       //
+    // PURPOSE:       Dummy node constructor                                 //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   bool/positive                                          //
+    //   Description: True for positive infinity, false for negative         //
+    //                infinity.                                              //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    ListNode(const bool positive);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -65,7 +86,7 @@ namespace persistent_skip_list {
     //                                                                       //
     // PURPOSE:       Destructor                                             //
     //                                                                       //
-    // SECURITY:      private                                                //
+    // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
     //   Type/Name:   Void.                                                  //
@@ -231,6 +252,27 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int addNext(TSA* next);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: operator<                                              //
+    //                                                                       //
+    // PURPOSE:       Compares the data at this node to the data of          //
+    //                another node to determine which should come first.     //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   ListNode<T>&/other                                     //
+    //   Description: The other ListNode to which to compare this one.       //
+    //                                                                       //
+    // RETURN:        bool -: true if this node precedes the other           //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    bool operator<(ListNode<T>& other);
+    bool operator>(ListNode<T>& other);
   };
   
 }

@@ -15,21 +15,39 @@
 #include <iostream>
 #include "../TimeStampedArray.hpp"
 #include "../PersistentSkipList.hpp"
-#include "../LineSegment.hpp"
 
 using namespace persistent_skip_list;
 using namespace timestamped_array;
-using namespace geometry;
 
 int main(int argv, char** argc) {
   
   cout << "Allocating ListNode<int> on stack...";
   SmartPointer<ListNode<int> > ln1(new ListNode<int>(1));
   SmartPointer<ListNode<int> > ln2(new ListNode<int>(2));
+  SmartPointer<ListNode<int> > lnPos(new ListNode<int>(true));
+  SmartPointer<ListNode<int> > lnNeg(new ListNode<int>(false));
   cout << "success." << endl;
 
   cout << "Number of change indices: "
        << ln1->numberOfNextChangeIndices() << endl;
+
+  cout << "Testing operator<...";
+  assert(*ln1   < *ln2);
+  assert(*ln1   < *lnPos);
+  assert(*ln2   < *lnPos);
+  assert(*lnNeg < *lnPos);
+  assert(*lnNeg < *ln1);  
+  assert(*lnNeg < *ln2);
+  cout << "success." << endl;
+
+  cout << "Testing operator>...";
+  assert(*ln2   > *ln1);
+  assert(*ln2   > *lnNeg);
+  assert(*ln1   > *lnNeg);
+  assert(*lnPos > *lnNeg);
+  assert(*lnPos > *ln1);
+  assert(*lnPos > *ln2);
+  cout << "success." << endl;
 
   cout << "Allocating TimeStampedArray<SmartPointer<ListNode<int> > > on stack...";
   TimeStampedArray<SmartPointer<ListNode<int> > >* tsa
