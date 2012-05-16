@@ -26,14 +26,11 @@
 #define PERSISTENTSKIPLIST_HPP
 
 // Standard libraries
-#include <vector>
 #include <set>
 #include <map>
 #include <iostream>
-#include <iomanip>
 #include <cassert>
-#include <cstdlib>
-#include <ctime>
+#include <cstddef>
 
 // My libraries
 #include "TimeStampedArray.hpp"
@@ -48,60 +45,6 @@ namespace persistent_skip_list {
 
   template < class T >
   class PersistentSkipList {
-    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
-    int height;
-    int present;
-    map<int,SmartPointer<ListNode<T> > > head;
-    map<int,SmartPointer<ListNode<T> > > tail;
-    set< T > data_set;
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: addHead                                                //
-    //                                                                       //
-    // PURPOSE:       Adds a head to the map of heads                        //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   ListNode<T>*/new_head                                  //
-    //   Description: The head to add to the map                             //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: A return code, 0 means success.                        //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int addHead(SmartPointer<ListNode<T> > new_head);
-    int addTail(SmartPointer<ListNode<T> > new_tail);
-    
-    SmartPointer<ListNode<T> >& getTail(int t);
-
-    void buildHeadAndTail(int height);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getHead                                                //
-    //                                                                       //
-    // PURPOSE:       Gets the head of the list at time t.                   //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to retrieve the head.                //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   TSA*                                                   //
-    //   Description: The head at the given time.                            //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    SmartPointer<ListNode<T> >& getHead(int t);
-    
   public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -242,6 +185,29 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     int insert(const T& data);
     const PersistentSkipList<T>& operator+=(const T& data);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Kindly ignore my private parts                                        //
+    ///////////////////////////////////////////////////////////////////////////
+  private:
+    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
+    int height;
+    int present;
+    map<int,SmartPointer<ListNode<T> > > head;
+    map<int,SmartPointer<ListNode<T> > > tail;
+    set< T > data_set;
+    
+    // Adds a head/tail to the map of heads/tails
+    int addHead(SmartPointer<ListNode<T> > new_head);
+    int addTail(SmartPointer<ListNode<T> > new_tail);
+
+    // Gets the head/tail from the map of heads/tails at time t
+    SmartPointer<ListNode<T> >& getHead(int t);
+    SmartPointer<ListNode<T> >& getTail(int t);
+
+    // Rebuilds current head and tail with increased height
+    void buildHeadAndTail(int height);
+    
   };
 
 }
