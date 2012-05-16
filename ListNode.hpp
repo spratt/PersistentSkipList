@@ -21,9 +21,12 @@
 #ifndef LISTNODE_HPP
 #define LISTNODE_HPP
 
+// Standard libraries
 #include <vector>
+#include <cstddef>
 #include <cstdlib>
 
+// My libraries
 #include "TimeStampedArray.hpp"
 #include "lib/SmartPointer/SmartPointer.hpp"
 
@@ -31,23 +34,9 @@ namespace persistent_skip_list {
 
   template <class T>
   class ListNode {
-    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
-  private:
-    int height;
-    vector<TSA*> next;
-    T data;
-    static bool _SEEDED; // must be initialized to false
-    bool _isPositiveInfinity;
-    bool _isNegativeInfinity;
-
-    ListNode<T>** incoming_nodes;
-
-    static void seed();
-    void initializeNode();
-
   public:
-    void setIncoming(int h, ListNode<T>* in);
-    ListNode<T>* getIncoming(int h);
+    // hereafter refered to as TSA
+    typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -297,10 +286,87 @@ namespace persistent_skip_list {
     bool operator<(ListNode<T>& other);
     bool operator>(ListNode<T>& other);
 
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: setIncoming                                            //
+    //                                                                       //
+    // PURPOSE:       Sets the pointer to the incoming node at height        //
+    //                h to ListNode in.                                      //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The height at which to set the incoming node.          //
+    //                                                                       //
+    //   Type/Name:   ListNode<T>*/in                                        //
+    //   Description: The incoming node at height h.                         //
+    //                                                                       //
+    // RETURN:        Void.                                                  //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    void setIncoming(int h, ListNode<T>* in);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getIncoming                                            //
+    //                                                                       //
+    // PURPOSE:       Gets the incoming node at height h.                    //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The height at which to get.                            //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   ListNode<T>*                                           //
+    //   Description: The node which points to this node at height h.        //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    ListNode<T>* getIncoming(int h);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: isPositiveInfinity                                     //
+    //                                                                       //
+    // PURPOSE:       Returns true if this is a dummy node indicating        //
+    //                positive infinity.                                     //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   Void.                                                  //
+    //   Description: None.                                                  //
+    //                                                                       //
+    // RETURN:        bool - true if this is a positive infinity dummy node. //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
     bool isPositiveInfinity();
-    bool isNegativeInfinity();
+    bool isNegativeInfinity();  // same but for negative infinity
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Kindly ignore my private parts                                        //
+    ///////////////////////////////////////////////////////////////////////////
+  private:
+    int height;
+    vector<TSA*> next;
+    T data;
+    static bool _SEEDED; // must be initialized to false
+    bool _isPositiveInfinity;
+    bool _isNegativeInfinity;
+
+    ListNode<T>** incoming_nodes;
+
+    static void seed();
+    void initializeNode();
   };
-  
 }
 
 #include "ListNode.cpp"

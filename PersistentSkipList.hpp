@@ -207,9 +207,7 @@ namespace persistent_skip_list {
 
     // Rebuilds current head and tail with increased height
     void buildHeadAndTail(int height);
-    
   };
-
 }
 
 // finally, include the implementation because C++ requires that class
