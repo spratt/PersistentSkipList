@@ -24,14 +24,20 @@ using namespace persistent_skip_list;
 
 template <class T>
 PersistentSkipList<T>::PersistentSkipList()
-  : height(0), present(0), head(), data_set()
+  : height(1), present(0), head(), tail(), data_set()
 {
+  SmartPointer<ListNode<T> > negInf(new ListNode<T>(false,1));
+  SmartPointer<ListNode<T> > posInf(new ListNode<T>(true,1));
+  head.insert( pair<int,SmartPointer<ListNode<T> > >(0,negInf) );
+  tail.insert( pair<int,SmartPointer<ListNode<T> > >(0,posInf) );
+  // set next on negInf to posInf
+  TSA* newNext = new TSA(0,1);
+  newNext->setElement(0,posInf);
+  negInf->addNext(newNext);
 }
 
 template <class T>
 PersistentSkipList<T>::~PersistentSkipList() {
-  for(int i = 0; i < (int)head.size(); ++i)
-    delete head[i];
 }
 
 template <class T>
@@ -49,11 +55,7 @@ PersistentSkipList<T>& PersistentSkipList<T>::operator++() {
 template <class T>
 void PersistentSkipList<T>::incTime() {
   assert(this != NULL);
-  TSA* old_head = getHead(getPresent());
-  old_head->lock();
   ++present;
-  TSA* new_head = new TSA(getPresent(),old_head->getSize(),*old_head);
-  addHead(new_head);
 }
 
 template <class T>
@@ -66,133 +68,116 @@ template <class T>
 void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
-  const int WIDTH = 16;
-  cout << "Getting skip list at time " << t << "..." << endl;
-  TSA* head = getHead(t);
-  if(head == NULL) {
-    cout << "NULL" << endl;
-    return;
-  }
-  vector<int> heights;
-  vector<T> data;
-  SmartPointer< ListNode<T> > ln = head->getElement(0);
-  int max_height = -1;
-  while(ln != NULL) {
-    int h = ln->getHeight();
-    heights.push_back(h);
-    if(h > max_height)
-      max_height = h;
-    data.push_back(ln->getData());
-    TSA* tsa = ln->getNext(t);
-    if(tsa == NULL)
-      ln = NULL;
-    else
-      ln = tsa->getElement(0);
-  }
-  --max_height;
-  while(max_height >= 0) {
-    cout << max_height << ": ";
-    for(int i = 0; i < (int)heights.size(); ++i) {
-      cout << setw(WIDTH);
-      if(heights[i] > max_height) {
-	cout << data[i];
-      } else {
-	cout << "   ";
-      }
-      cout << " -> ";
-    }
-    cout << "NULL" << endl;
-    --max_height;
+  cout << "Drawing skip list at time " << t << "..." << endl;
+  SmartPointer<ListNode<T> > next = getHead(t)->getNext(t)->getElement(0);
+  if(next == getTail(t))
+    cout << "NULL";
+  while(next != getTail(t)) {
+    cout << "Node(height=" << next->getHeight()
+	 << ", data=" << next->getData() << ")" << endl;
+    next = next->getNext(t)->getElement(0);
   }
 }
 
 template <class T>
-int PersistentSkipList<T>::addHead(TimeStampedArray< SmartPointer< ListNode<T> > >*
-				   tsa) {
+int PersistentSkipList<T>::addHead(SmartPointer<ListNode<T> > new_head) {
   assert(this != NULL);
-  assert(tsa != NULL);
+  assert(new_head != NULL);
+  // delete old head if exists
+  if(head.count(present) > 0)
+    head.erase(present); // shouldn't leak using smart pointer
   // save the new head
-  head.push_back(tsa);
+  head.insert( pair< int, SmartPointer<ListNode<T> > >(present,new_head) );
   // success
   return 0;
 }
 
 template <class T>
-TimeStampedArray< SmartPointer< ListNode<T> > >*
-PersistentSkipList<T>::getHead(int t) {
-  assert(this != NULL);
-  int index = -1;
-  int begin = 0, end = head.size() -1;
-  int timeFound = 0;
-  // binary search
-  while(begin <= end) {
-    index = (begin+end)/2;
-    timeFound = head[index]->getTime();
-    if(timeFound == t) {
-      // done, break out of loop
-      break;
-    } else if(timeFound > t) {
-      // repeat binary search on left (earlier) half
-      end = index -1;
-    } else {
-      // repeat binary search on right (later) half
-      begin = index +1;
-    }
-  }
-  // closest may be after given time
-  while(index > 0 && head[index]->getTime() > t)
-    --index;
-  if(index < 0)
-    return NULL;
-  // finally, return the found element
-  return head[index];
+SmartPointer<ListNode<T> >& PersistentSkipList<T>::getHead(int t) {
+  // reverse linear search from starting time
+  while(head.count(t) == 0)
+    --t;
+  return head[t];
 }
 
 template <class T>
-int PersistentSkipList<T>::setHead(TimeStampedArray< SmartPointer<ListNode<T> > >*
-				   tsa) {
+int PersistentSkipList<T>::addTail(SmartPointer<ListNode<T> > new_tail) {
   assert(this != NULL);
-  assert(tsa != NULL);
-  // find where the head needs to be inserted
-  typename vector<TSA*>::iterator iter = head.begin();
-  // linear search
-  while( iter < head.end() && (*iter)->getTime() < tsa->getTime() )
-    ++iter;
-  // set
-  if( iter < head.end() && (*iter)->getTime() == tsa->getTime() ) {
-    TSA* temp = *iter;
-    *iter = tsa;
-    delete temp;
-  }
-  // insert
-  else {
-    cout << "Inserting head" << endl;
-    head.insert(iter,tsa);
-  }
+  assert(new_tail != NULL);
+  // delete old head if exists
+  if(tail.count(present) > 0)
+    tail.erase(present); // shouldn't leak using smart pointer
+  // save the new head
+  tail.insert( pair< int, SmartPointer<ListNode<T> > >(present,new_tail) );
+  // success
   return 0;
+}
+
+template <class T>
+SmartPointer<ListNode<T> >& PersistentSkipList<T>::getTail(int t) {
+  // reverse linear search from starting time
+  while(tail.count(t) == 0)
+    --t;
+  return tail[t];
+}
+
+template <class T>
+void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
+  assert(new_height > this->height);
+  int present = getPresent();
+  SmartPointer<ListNode<T> > old_head = getHead(present);
+  SmartPointer<ListNode<T> > old_tail = getTail(present);
+  int old_height = old_head->getHeight();
+  assert(new_height > old_height);
+  assert(old_height == old_tail->getHeight());
+  SmartPointer<ListNode<T> > new_head(new ListNode<T>(false,new_height));
+  SmartPointer<ListNode<T> > new_tail(new ListNode<T>(true,new_height));
+  assert(new_head->getHeight() == new_tail->getHeight());
+  this->height = new_height;
+  TSA* new_next = new TSA(present,new_height);
+  // make the tail the new next above the old height
+  while(--new_height >= old_height) {
+    new_next->setElement(new_height,new_tail);
+  }
+  while(new_height >= 0) {
+    SmartPointer<ListNode<T> > next_node =
+      old_head->getNext(present)->getElement(new_height);
+    if(next_node == old_tail)
+      new_next->setElement(new_height,new_tail);
+    else
+      new_next->setElement(new_height,next_node);
+    --new_height;
+  }
+  new_head->addNext(new_next);
+  addHead(new_head);
+  // make all the nodes which pointed to the old tail point to the new tail
+  --old_height;
+  while(old_height >= 0) {
+    int end = old_height;
+    while(end > 0 &&
+	  old_tail->getIncoming(end-1) == old_tail->getIncoming(old_height))
+      --end;
+    ListNode<T>* toChange = old_tail->getIncoming(old_height);
+    if(old_head == toChange) {
+      old_height = end-1;
+      continue;
+    }
+    new_next = new TSA(present,
+		       toChange->getHeight(),
+		       *(toChange->getNext(present)));
+    while(old_height >= end) {
+      new_next->setElement(old_height,new_tail);
+      new_tail->setIncoming(old_height,toChange);
+      --old_height;
+    }
+    toChange->addNext(new_next);
+  }
+  addTail(new_tail);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // INSERT METHOD                                                           //
 /////////////////////////////////////////////////////////////////////////////
-
-template <class T>
-int PersistentSkipList<T>::initialInsert(const T& data) {
-  TSA* new_head = NULL;
-  SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
-  int height = new_ln->getHeight();
-  // initialize head
-  new_head = new TSA(0, height);
-  // make the new node the head at all heights
-  for(int i = 0; i < height; ++i) {
-    new_head->setElement(i,new_ln);
-  }
-  // since we created a new head, lock it then add it to the array of heads
-  setHead(new_head);
-  // prevent duplicates by registering this datum
-  data_set.insert(data);
-  return 0;
-}
 
 template <class T>
 const PersistentSkipList<T>& PersistentSkipList<T>::operator+=(const T& data) {
@@ -207,91 +192,45 @@ int PersistentSkipList<T>::insert(const T& data) {
   // check if data exists already
   if(data_set.count(data)>0)
     return 1;
-  // if it's the first element in the skiplist
-  if(data_set.empty())
-    return initialInsert(data);
+  int present = getPresent();
   // otherwise, create node
-  TSA* curr_head = getHead(getPresent());
   SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
   int height = new_ln->getHeight();
   // add node to list
   int start = height-1;
-  /////////////////////////////////////////////////////////////////////////
-  // TALLER THAN OLD HEAD                                                //
-  /////////////////////////////////////////////////////////////////////////
-  if(height > curr_head->getSize()) {
-    TSA* new_head = new TSA(getPresent(),height,*curr_head);
-    // make the new node the head at all heights exceeding the size of
-    // the old head
-    while(start >= curr_head->getSize()) {
-      new_head->setElement(start,new_ln);
-      --start;
+  // Taller than old head
+  if(height > this->height)
+    buildHeadAndTail(height);
+  // Add new node to list
+  SmartPointer<ListNode<T> > old_ln = getHead(present);
+  TSA* new_node_next = new TSA(present,height);
+  while(start >= 0) {
+    SmartPointer<ListNode<T> > next_ln =
+      old_ln->getNext(present)->getElement(start);
+    // find the elements between which we should insert the new node
+    while(*new_ln > *next_ln) {
+      old_ln = next_ln;
+      next_ln = old_ln->getNext(present)->getElement(start);
     }
-    setHead(new_head);
-    curr_head = new_head;
-  }
-  TSA* new_node_next = new TSA(getPresent(),height);
-  /////////////////////////////////////////////////////////////////////////
-  // ADD TO HEAD IF NEEDED                                               //
-  /////////////////////////////////////////////////////////////////////////
-  SmartPointer<ListNode<T> > old_ln = curr_head->getElement(start);
-  // travel down the heads, adding the new node until we find a head
-  // node which precedes the new node
-  while(data < old_ln->getData()) {
-    new_node_next->setElement(start,old_ln);
-    curr_head->setElement(start,new_ln);
-    --start;
-    if(start < 0)
-      break;
-    old_ln = curr_head->getElement(start);
-  }
-  /////////////////////////////////////////////////////////////////////////
-  // ADD TO REST OF LIST IF NEEDED                                       //
-  /////////////////////////////////////////////////////////////////////////
-  if(start >= 0) {
-    while(start >= 0) {
-      // might be NULL
-      TSA* old_ln_next =
-	old_ln->getNext(getPresent());  // <- this could be NULL
-      SmartPointer<ListNode<T> > next_ln;
-      if(old_ln_next != NULL)
-	next_ln = old_ln_next->getElement(start);
-      // find the elements between which we should insert the new node
-      while(next_ln != NULL && new_ln->getData() > next_ln->getData()) {
-	old_ln = next_ln;
-	old_ln_next = old_ln->getNext(getPresent());  // <- this could be NULL
-	if(old_ln_next == NULL)
-	  next_ln = NULL;
-	else
-	  next_ln = old_ln_next->getElement(start);
-      }
-      // add node to preceding node
-      int old_ln_height = old_ln->getHeight();
-      if(old_ln_next == NULL) {
-	old_ln_next =
-	  new TSA(getPresent(),old_ln_height);
-      }
-      while(next_ln == NULL || new_ln->getData() < next_ln->getData()) {
-	// point the new node to the old next node
-	if(next_ln != NULL) {
-	  new_node_next->setElement(start,next_ln);
-	}
-	// point the old node to the new node
-	old_ln_next->setElement(start,new_ln);
-	// move to the next height
-	--start;
-	if(start < 0)
-	  break;
-	next_ln = old_ln_next->getElement(start);
-      }
-      if(old_ln->getNext(getPresent()) == NULL)
-	old_ln->addNext(old_ln_next);
-      // move to next search height
+    TSA* old_ln_next = new TSA(present,
+			       old_ln->getHeight(),
+			       *(old_ln->getNext(present)));
+    while(*new_ln < *next_ln) {
+      new_node_next->setElement(start,next_ln);
+      // point the old node to the new node
+      old_ln_next->setElement(start,new_ln);
+      // move to the next height
+      --start;
       if(start < 0)
 	break;
-      // get node at new height
-      old_ln = next_ln;
+      next_ln = old_ln_next->getElement(start);
     }
+    old_ln->addNext(old_ln_next);
+    // move to next search height
+    if(start < 0)
+      break;
+    // get node at new height
+    old_ln = next_ln;
   }
   new_ln->addNext(new_node_next);
   // prevent duplicates by registering this datum

@@ -3,13 +3,13 @@
 //                                Simon Pratt                                //
 //                           (All rights reserved)                           //
 ///////////////////////////////////////////////////////////////////////////////
-// 
-// FILE:    ListNode.cpp
-// 
-// MODULE:  
-// 
-// NOTES:   None.
-// 
+//                                                                           //
+// FILE:    ListNode.cpp                                                     //
+//                                                                           //
+// MODULE:  Persistent Skip List                                             //
+//                                                                           //
+// NOTES:   None.                                                            //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef LISTNODE_CPP
 #define LISTNODE_CPP
@@ -30,16 +30,26 @@ void ListNode<T>::seed() {
       if(_SEEDED)
 	return;
       _SEEDED = true;
-      time_t seed = (time_t)1312564825;
+      time_t seed;
+      seed = (time_t)1312564825;
+      seed = (time_t)1312564820;
       seed = time(0); // comment this for non-random seeding
       srand( seed );
 }
 
 template<class T>
 void ListNode<T>::initializeNode() {
-  seed();
+  incoming_nodes = new ListNode<T>*[height];
+}
+
+template<class T>
+ListNode<T>::ListNode(const T& original_data)
+  : height(1), next(), data(original_data), 
+    _isPositiveInfinity(false), _isNegativeInfinity(false)
+{
+  if(!_SEEDED)
+    seed();
   // pick height, modified from Pat Morin's Open Data Structures
-  height = 1;
   int bitCheck = 1;
   int r = rand();
   // check each bit in the binary representation of r, from the
@@ -52,20 +62,15 @@ void ListNode<T>::initializeNode() {
     // check next bit
     bitCheck <<= 1;
   }
-}
-
-template<class T>
-ListNode<T>::ListNode(const T& original_data)
-  : next(), data(original_data), isPositiveInfinity(false), isNegativeInfinity(false)
-{
   initializeNode();
 }
 
 template<class T>
-ListNode<T>::ListNode(const bool positive)
-  : next(), data(),
-    isPositiveInfinity(positive), isNegativeInfinity(!positive)
+ListNode<T>::ListNode(const bool positive, int h=1)
+  : height(h), next(), data(),
+    _isPositiveInfinity(positive), _isNegativeInfinity(!positive)
 {
+  assert(h > 0);
   initializeNode();
 }
 
@@ -77,6 +82,7 @@ ListNode<T>::~ListNode() {
     next.pop_back();
     delete back;
   }
+  delete [] incoming_nodes;
 }
 
 template<class T>
@@ -155,6 +161,22 @@ ListNode<T>::getNext(int t) {
 }
 
 template <class T>
+void ListNode<T>::setIncoming(int h, ListNode<T>* in) {
+  assert(this != NULL);
+  assert(h >= 0);
+  assert(h < height);
+  incoming_nodes[h] = in;
+}
+
+template <class T>
+ListNode<T>* ListNode<T>::getIncoming(int h) {
+  assert(this != NULL);
+  assert(h >= 0);
+  assert(h < height);
+  return incoming_nodes[h];
+}
+
+template <class T>
 int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
   assert(this != NULL);
   // since NULL is the default
@@ -162,19 +184,26 @@ int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
     return -1; // bail if trying to set next to NULL
   // make sure time is strictly increasing
   int lastIndex = (int)next.size()-1;
-  if(lastIndex >= 0)
-    assert(tsa->getTime() > next[lastIndex]->getTime());
-  // finally, save the new set of next pointers
-  next.push_back(tsa);
+  assert(lastIndex < 0 || tsa->getTime() >= next[lastIndex]->getTime());
+  if(lastIndex >= 0 && tsa->getTime() == next[lastIndex]->getTime()) {
+    TSA* prev = next[lastIndex];
+    next[lastIndex] = tsa;
+    delete prev;
+  } else {
+    // finally, save the new set of next pointers
+    next.push_back(tsa);
+  }
+  for(int i = 0; i < height; ++i)
+    tsa->getElement(i)->setIncoming(i,this);
   // success
   return 0;
 }
 
 template <class T>
 bool ListNode<T>::operator<(ListNode<T>& other) {
-  if(this->isPositiveInfinity || other.isNegativeInfinity)
+  if(this->_isPositiveInfinity || other._isNegativeInfinity)
     return false;
-  if(this->isNegativeInfinity || other.isPositiveInfinity)
+  if(this->_isNegativeInfinity || other._isPositiveInfinity)
     return true;
   return data < other.data;
 }
@@ -182,6 +211,16 @@ bool ListNode<T>::operator<(ListNode<T>& other) {
 template <class T>
 bool ListNode<T>::operator>(ListNode<T>& other) {
   return !(operator<(other));
+}
+
+template <class T>
+bool ListNode<T>::isPositiveInfinity() {
+  return _isPositiveInfinity;
+}
+
+template <class T>
+bool ListNode<T>::isNegativeInfinity() {
+  return _isNegativeInfinity;
 }
 
 #endif

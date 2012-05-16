@@ -37,13 +37,17 @@ namespace persistent_skip_list {
     vector<TSA*> next;
     T data;
     static bool _SEEDED; // must be initialized to false
-    bool isPositiveInfinity;
-    bool isNegativeInfinity;
+    bool _isPositiveInfinity;
+    bool _isNegativeInfinity;
+
+    ListNode<T>** incoming_nodes;
 
     static void seed();
     void initializeNode();
 
   public:
+    void setIncoming(int h, ListNode<T>* in);
+    ListNode<T>* getIncoming(int h);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -75,10 +79,13 @@ namespace persistent_skip_list {
     //   Description: True for positive infinity, false for negative         //
     //                infinity.                                              //
     //                                                                       //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The height of this node.                               //
+    //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(const bool positive);
+    ListNode(const bool positive,int h);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -98,6 +105,25 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     ~ListNode();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: setHeight                                              //
+    //                                                                       //
+    // PURPOSE:       Changes the height of a dummy node.                    //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The new height of the dummy node.                      //
+    //                                                                       //
+    // RETURN:        Void.                                                  //
+    //                                                                       //
+    // NOTES:         Must be greater than previous height.                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    void setHeight(int h);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -235,14 +261,11 @@ namespace persistent_skip_list {
     //                                                                       //
     // FUNCTION NAME: addNext                                                //
     //                                                                       //
-    // PURPOSE:       Set the next pointer at time t                         //
+    // PURPOSE:       Set the next pointer                                   //
     //                                                                       //
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to set the pointer.                  //
-    //                                                                       //
     //   Type/Name:   ListNode<T>*/ln                                        //
     //   Description: The pointer to which to assign next.                   //
     //                                                                       //
@@ -273,6 +296,9 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     bool operator<(ListNode<T>& other);
     bool operator>(ListNode<T>& other);
+
+    bool isPositiveInfinity();
+    bool isNegativeInfinity();
   };
   
 }

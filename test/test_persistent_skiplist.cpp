@@ -61,7 +61,6 @@ int main(int argv, char** argc) {
   cout << "Drawing all times of skiplist..." << endl;
   for(int i = 0; i <= psl.getPresent(); ++i)
     psl.draw(i);
-  cout << endl;
   
   /////////////////////////////////////////////////////////////////////////////
   // Test on LineSegment                                                     //

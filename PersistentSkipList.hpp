@@ -28,6 +28,7 @@
 // Standard libraries
 #include <vector>
 #include <set>
+#include <map>
 #include <iostream>
 #include <iomanip>
 #include <cassert>
@@ -50,64 +51,21 @@ namespace persistent_skip_list {
     typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
     int height;
     int present;
-    vector< TSA* > head;
+    map<int,SmartPointer<ListNode<T> > > head;
+    map<int,SmartPointer<ListNode<T> > > tail;
     set< T > data_set;
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
     // FUNCTION NAME: addHead                                                //
     //                                                                       //
-    // PURPOSE:       Adds a new array of pointers to the head of the        //
-    //                skiplist at each height.                               //
+    // PURPOSE:       Adds a head to the map of heads                        //
     //                                                                       //
     // SECURITY:      private                                                //
     //                                                                       //
     // PARAMETERS                                                            //
-    //   Type/Name:   TSA* /tsa                                              //
-    //   Description: A pointer to the node to set                           //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: A return code, 0 means success.                        //
-    //                                                                       //
-    // NOTES:         Assumes list at time t exists or is one past the end.  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int addHead(TSA* tsa);
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: setHead                                                //
-    //                                                                       //
-    // PURPOSE:       Sets a new array of pointers to the head of the        //
-    //                skiplist at each height.                               //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   TSA* /tsa                                              //
-    //   Description: A pointer to the node to set                           //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   int                                                    //
-    //   Description: A return code, 0 means success.                        //
-    //                                                                       //
-    // NOTES:         Assumes list at time t exists or is one past the end.  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    int setHead(TSA* tsa);
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: initialInsert                                          //
-    //                                                                       //
-    // PURPOSE:       Inserts the first element                              //
-    //                                                                       //
-    // SECURITY:      private                                                //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   const T&/data                                          //
-    //   Description: The initial data to insert                             //
+    //   Type/Name:   ListNode<T>*/new_head                                  //
+    //   Description: The head to add to the map                             //
     //                                                                       //
     // RETURN:                                                               //
     //   Type/Name:   int                                                    //
@@ -116,7 +74,12 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int initialInsert(const T& data);
+    int addHead(SmartPointer<ListNode<T> > new_head);
+    int addTail(SmartPointer<ListNode<T> > new_tail);
+    
+    SmartPointer<ListNode<T> >& getTail(int t);
+
+    void buildHeadAndTail(int height);
     
   public:
     ///////////////////////////////////////////////////////////////////////////
@@ -255,7 +218,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    TSA* getHead(int t);
+    SmartPointer<ListNode<T> >& getHead(int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

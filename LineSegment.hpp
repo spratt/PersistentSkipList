@@ -28,7 +28,7 @@
 namespace geometry {
   class LineSegment {
   public:
-    LineSegment(int ax, int ay, int bx, int by);
+    LineSegment(int ax=0, int ay=0, int bx=0, int by=0);
     LineSegment(Point2D&,Point2D&);
     ~LineSegment();
 

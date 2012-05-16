@@ -79,6 +79,11 @@ T& TimeStampedArray<T>::getElement(int i) const {
 }
 
 template<class T>
+T& TimeStampedArray<T>::operator[](int i) const {
+  return getElement(i);
+}
+
+template<class T>
 int TimeStampedArray<T>::setElement(int i, T& datum) {
   assert(this != NULL);
   assert(! _LOCKED);
