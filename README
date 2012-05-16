@@ -1,6 +1,8 @@
-PERSISTENT SKIP LIST
+Persistent Skip List
+By Simon David Pratt
+----------------------------------------------------------------------
 
-Uses a persistent skip list to solve problems in computational geometry.
+An implementation of a persistent skip list data structure.
 
 To build, please follow the instructions in lib/README to build the
 libraries on which this depends.
