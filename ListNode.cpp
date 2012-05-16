@@ -30,11 +30,7 @@ void ListNode<T>::seed() {
       if(_SEEDED)
 	return;
       _SEEDED = true;
-      time_t seed;
-      seed = (time_t)1312564825;
-      seed = (time_t)1312564820;
-      seed = time(0); // comment this for non-random seeding
-      srand( seed );
+      srand( time(0) );
 }
 
 template<class T>

@@ -71,7 +71,7 @@ void PersistentSkipList<T>::draw(int t) {
   cout << "Drawing skip list at time " << t << "..." << endl;
   SmartPointer<ListNode<T> > next = getHead(t)->getNext(t)->getElement(0);
   if(next == getTail(t))
-    cout << "NULL";
+    cout << "NULL" << endl;
   while(next != getTail(t)) {
     cout << "Node(height=" << next->getHeight()
 	 << ", data=" << next->getData() << ")" << endl;

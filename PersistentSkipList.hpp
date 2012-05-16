@@ -80,6 +80,27 @@ namespace persistent_skip_list {
     SmartPointer<ListNode<T> >& getTail(int t);
 
     void buildHeadAndTail(int height);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: getHead                                                //
+    //                                                                       //
+    // PURPOSE:       Gets the head of the list at time t.                   //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to retrieve the head.                //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   TSA*                                                   //
+    //   Description: The head at the given time.                            //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
+    SmartPointer<ListNode<T> >& getHead(int t);
     
   public:
     ///////////////////////////////////////////////////////////////////////////
@@ -198,27 +219,6 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     void draw(int t);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // FUNCTION NAME: getHead                                                //
-    //                                                                       //
-    // PURPOSE:       Gets the head of the list at time t.                   //
-    //                                                                       //
-    // SECURITY:      public                                                 //
-    //                                                                       //
-    // PARAMETERS                                                            //
-    //   Type/Name:   int/t                                                  //
-    //   Description: The time at which to retrieve the head.                //
-    //                                                                       //
-    // RETURN:                                                               //
-    //   Type/Name:   TSA*                                                   //
-    //   Description: The head at the given time.                            //
-    //                                                                       //
-    // NOTES:         None.                                                  //
-    //                                                                       //
-    ///////////////////////////////////////////////////////////////////////////
-    SmartPointer<ListNode<T> >& getHead(int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

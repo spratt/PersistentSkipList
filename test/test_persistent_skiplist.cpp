@@ -27,18 +27,12 @@ int main(int argv, char** argc) {
   cout << "Allocating PersistentSkipList<int> on stack...";
   PersistentSkipList<int> psl;
   cout << "success." << endl;
-
-  cout << "Getting head...";
-  psl.getHead(0);
-  cout << "success." << endl;
+  psl.drawPresent();
 
   cout << "Inserting one value...";
   psl.insert(42);
   cout << "success." << endl;
-
-  cout << "Drawing skip list at present time..." << endl;
   psl.drawPresent();
-  cout << endl;
   
   cout << "Inserting several values at time 0...";
   psl.insert(8);
@@ -54,6 +48,16 @@ int main(int argv, char** argc) {
   cout << "Inserting several values at time 1...";
   psl.insert(53);
   psl.insert(17);
+  cout << "success." << endl;
+  psl.drawPresent();
+  
+  cout << "Incrementing time...";
+  psl.incTime();
+  cout << "success." << endl;
+
+  cout << "Inserting several values at time 2...";
+  psl.insert(7);
+  psl.insert(72);
   cout << "success." << endl;
 
   cout << "Drawing all times of skiplist..." << endl;
