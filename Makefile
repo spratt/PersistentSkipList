@@ -60,7 +60,7 @@ TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL}
 
 .SUFFIXES: .o .cpp .hpp
 
-.SILENT: run_tests run_tests_mac
+.SILENT: run_tests_verbose run_tests_mac run_tests
 
 #begin actual makefile stuff
 all: ${TESTS}
@@ -69,12 +69,19 @@ run: run_tests_mac
 
 test: run_tests_mac run_tests
 
+test_verbose: run_tests_mac run_tests_verbose
+
 run_tests_mac:	all
 	${foreach test,${TESTS},\
 echo ${BAR};echo "| " ${test};echo ${BAR};\
 cat ${test}_input | ./${test};}
 
 run_tests:	all	
+	${foreach test,${TESTS},\
+echo ${BAR};echo ${test};echo ${BAR};\
+cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test} 2>&1 | grep -A 1 "leaks\|SUMMARY";}
+
+run_tests_verbose:	all	
 	${foreach test,${TESTS},\
 echo ${BAR};echo ${test};echo ${BAR};\
 cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}

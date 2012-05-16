@@ -51,12 +51,6 @@ namespace timestamped_array {
   /////////////////////////////////////////////////////////////////////////////
   template <class T>
   class TimeStampedArray {
-  private:
-    bool _LOCKED;
-    int time;
-    int size;
-    T* data;
-    
   public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -244,6 +238,15 @@ namespace timestamped_array {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     int setElement(int i, T& datum);
+    
+    ///////////////////////////////////////////////////////////////////////////
+    // Kindly ignore my private parts                                        //
+    ///////////////////////////////////////////////////////////////////////////
+  private:
+    bool _LOCKED;
+    int time;
+    int size;
+    T* data;
   };
 }
 
