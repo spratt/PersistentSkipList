@@ -51,9 +51,8 @@ TEST_DIR	= test
 TEST_TSA	= ${TEST_DIR}/test_timestamped_array
 TEST_LN		= ${TEST_DIR}/test_psl_listnode
 TEST_PSL	= ${TEST_DIR}/test_persistent_skiplist
-TEST_PS		= ${TEST_DIR}/test_polygonal_subdivision
 
-TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL} ${TEST_PS}
+TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL}
 
 .PHONY:	all run run_tests_mac run_tests clean lines
 
@@ -83,14 +82,9 @@ cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 # specify required libraries
 ${TEST_TSA}: 	TimeStampedArray.o
 
-${TEST_LN}:  	Point2D.o LineSegment.o ListNode.o \
-	     	lib/SmartPointer/SmartPointer.o
+${TEST_LN}:  	ListNode.o lib/SmartPointer/SmartPointer.o
 
-${TEST_PSL}: 	Point2D.o LineSegment.o ListNode.o PersistentSkipList.o \
-	     	lib/SmartPointer/SmartPointer.o
-
-${TEST_PS}: 	Point2D.o LineSegment.o ListNode.o PersistentSkipList.o \
-		PolygonalSubdivision.o
+${TEST_PSL}: 	ListNode.o PersistentSkipList.o lib/SmartPointer/SmartPointer.o
 
 # tidy up generated files
 clean:
