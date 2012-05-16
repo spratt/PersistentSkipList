@@ -1,12 +1,12 @@
 A brief description of the major design decisions in this data
 structure.
 
-* TimeStampedArray (TSA)
-  A simple array class with an associated time stamp.
-
-* SmartPointer
+* SmartPointer (external library)
   A pointer which counts references and automatically deallocated the
   pointed-to object when the reference count drops to 0.
+
+* TimeStampedArray (TSA)
+  A simple array class with an associated time stamp.
 
 * ListNode
   Decided to keep ListNodes templated, since it makes deallocation
@@ -20,8 +20,12 @@ structure.
 * PersistentSkipList
 
 ** head
-   A vector of TSAs of SmartPointers to ListNodes, one for each time
-   at which the head of the list changes.
+   A map of dummy head nodes which contain no data, but are guaranteed
+   to precede every other node in the skip list.
+
+** tail
+   Same as the above head map, but which are dummy nodes guaranteed to
+   follow every other node in the skip list.
 
 ** data_set
    The set of all points in the data.  This prevents duplicates, but

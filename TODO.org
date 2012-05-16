@@ -1,9 +1,4 @@
 
-* Dummy Nodes
-  Now: no dummy nodes.
-
-  Ideally: should use dummy nodes to reduce edge cases.
-
 * Constant Size ListNodes
   Now: ListNodes can have an arbitrary number of next pointers,
   but this means logarithmic time to find the next pointer at a given
