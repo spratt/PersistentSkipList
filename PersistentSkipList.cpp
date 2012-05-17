@@ -69,13 +69,12 @@ void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
   cout << "Drawing skip list at time " << t << "..." << endl;
-  SmartPointer<ListNode<T> > next = getHead(t)->getNext(t)->getElement(0);
-  if(next == getTail(t))
+  PSLIterator<T> next(getHead(t),t);
+  if(next == end(t))
     cout << "NULL" << endl;
-  while(next != getTail(t)) {
-    cout << "Node(height=" << next->getHeight()
-	 << ", data=" << next->getData() << ")" << endl;
-    next = next->getNext(t)->getElement(0);
+  while(next != end(t)) {
+    cout << "Node(data=" << *next << ")" << endl;
+    ++next;
   }
 }
 
@@ -173,6 +172,11 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
     toChange->addNext(new_next);
   }
   addTail(new_tail);
+}
+
+template < class T >
+PSLIterator<T> PersistentSkipList<T>::end(int t) {
+  return PSLIterator<T>(getTail(t));
 }
 
 /////////////////////////////////////////////////////////////////////////////

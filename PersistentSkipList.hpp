@@ -36,6 +36,7 @@
 #include "TimeStampedArray.hpp"
 #include "lib/SmartPointer/SmartPointer.hpp"
 #include "ListNode.hpp"
+#include "PSLIterator.hpp"
 
 using namespace std;
 using namespace timestamped_array;
@@ -162,6 +163,8 @@ namespace persistent_skip_list {
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
     void draw(int t);
+
+    PSLIterator<T> end(int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

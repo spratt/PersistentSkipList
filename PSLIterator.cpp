@@ -16,10 +16,16 @@
 
 #include "PSLIterator.hpp"
 
+using namespace persistent_skip_list;
+
 template < class T >
-PSLIterator<T>::PSLIterator(SmartPointer<ListNode<T> >& node, int time)
-  : _node(node), _time(time)
+PSLIterator<T>::PSLIterator(SmartPointer<ListNode<T> >& node,
+			    int time,
+			    int height)
+: _node(node), _time(time), _height(height)
 {
+  assert(time >= 0);
+  assert(height >= 0);
 }
 
 template < class T >
@@ -30,7 +36,7 @@ template < class T >
 void PSLIterator<T>::getNext() {
   TimeStampedArray<SmartPointer<ListNode<T> > >* next = _node->getNext(_time);
   assert(next != NULL);
-  _node = next->getElement(0);
+  _node = next->getElement(_height);
   assert(_node != NULL);
 }
 
@@ -51,8 +57,13 @@ T PSLIterator<T>::operator*() {
 }
 
 template < class T >
-bool PSLIterator<T>::operator==(PSLIterator& other) {
+bool PSLIterator<T>::operator==(const PSLIterator<T>& other) {
   return _node == other._node;
+}
+
+template < class T >
+bool PSLIterator<T>::operator!=(const PSLIterator<T>& other) {
+  return !(operator==(other));
 }
 
 #endif

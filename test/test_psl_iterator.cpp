@@ -17,7 +17,10 @@
 #include "../PSLIterator.hpp"
 
 int main(int argc, char** argv) {
-  // build some list nodes
+  /////////////////////////////////////////////////////////////////////////////
+  // SET UP LIST NODES                                                       //
+  /////////////////////////////////////////////////////////////////////////////
+  
   SmartPointer<ListNode<int> > tallerNode(new ListNode<int>(1));
   SmartPointer<ListNode<int> > shorterNode(new ListNode<int>(2));
   if(tallerNode->getHeight() < shorterNode->getHeight()) {
@@ -32,8 +35,15 @@ int main(int argc, char** argv) {
   }
   shorterNode->addNext(tsa);
 
+  /////////////////////////////////////////////////////////////////////////////
+  // TEST ITERATORS                                                          //
+  /////////////////////////////////////////////////////////////////////////////
+  
   cout << "Creating iterator on stack...";
-  PSLIterator<int> iter(shorterNode,0);
+  PSLIterator<int> iter(shorterNode);
+  PSLIterator<int> other(tallerNode);
+  assert(iter == iter);
+  assert(iter != other);
   cout << "success." << endl;
 
   assert(*iter == 1 || *iter == 2);
@@ -41,6 +51,7 @@ int main(int argc, char** argv) {
 
   cout << "Incrementing iterator...";
   ++iter;
+  assert(iter == other);
   cout << "success." << endl;
   
   assert(*iter == 1 || *iter == 2);
