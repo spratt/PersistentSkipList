@@ -94,11 +94,4 @@ int TimeStampedArray<T>::setElement(int i, T& datum) {
   return 0;
 }
 
-template<class T>
-ostream& operator<<(ostream& o, TimeStampedArray<T>& tsa) {
-  for(short unsigned int i = 0; i < tsa.getSize(); ++i)
-    o << i << ": " << tsa.getElement(i) << endl;
-  return o;
-}
-
 #endif
