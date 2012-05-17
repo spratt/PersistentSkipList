@@ -1,15 +1,15 @@
 
 * Constant Size ListNodes
   Now: ListNodes can have an arbitrary number of next pointers,
-  but this means logarithmic time to find the next pointer at a given
-  time.
+       but this means logarithmic time to find the next pointer at a
+       given time.
 
   Ideally: use fixed size next pointers, and create a new node when
-  more next pointers are needed.  This gives constant time lookup for
-  next pointer at a given time.
+           more next pointers are needed.  This gives constant time
+           lookup for next pointer at a given time.
 
 * Search
-  Now: it's possible to search through a PSL manually
+  Now: it's possible to search linearly through a PSL using iterators.
 
-  Ideally: search should really be encapsulated so the details can be
-  hidden from users.
+  Ideally: should implement a logarithmic time search taking advantage
+           of the skip list design.
