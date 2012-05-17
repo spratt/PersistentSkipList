@@ -17,3 +17,4 @@ psl.log
 test_point_persistent_skiplist
 test_polygonal_subdivision
 test_psl_listnode
+test/test_psl_iterator

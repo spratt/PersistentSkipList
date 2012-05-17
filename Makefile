@@ -50,9 +50,10 @@ TEST_DIR	= test
 
 TEST_TSA	= ${TEST_DIR}/test_timestamped_array
 TEST_LN		= ${TEST_DIR}/test_psl_listnode
+TEST_ITER	= ${TEST_DIR}/test_psl_iterator
 TEST_PSL	= ${TEST_DIR}/test_persistent_skiplist
 
-TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_PSL}
+TESTS	 	= ${TEST_TSA} ${TEST_LN} ${TEST_ITER} ${TEST_PSL}
 
 .PHONY:	all run run_tests_mac run_tests clean lines
 
@@ -90,6 +91,8 @@ cat ${test}_input | ${VALGRIND} ${VGOPS} ./${test};}
 ${TEST_TSA}: 	TimeStampedArray.o
 
 ${TEST_LN}:  	ListNode.o lib/SmartPointer/SmartPointer.o
+
+${TEST_ITER}:  	ListNode.o lib/SmartPointer/SmartPointer.o PSLIterator.o
 
 ${TEST_PSL}: 	ListNode.o PersistentSkipList.o lib/SmartPointer/SmartPointer.o
 
