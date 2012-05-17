@@ -69,7 +69,7 @@ void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
   cout << "Drawing skip list at time " << t << "..." << endl;
-  PSLIterator<T> next(getHead(t),t);
+  PSLIterator<T> next = begin(t);
   if(next == end(t))
     cout << "NULL" << endl;
   while(next != end(t)) {
@@ -172,6 +172,11 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
     toChange->addNext(new_next);
   }
   addTail(new_tail);
+}
+
+template < class T >
+PSLIterator<T> PersistentSkipList<T>::begin(int t) {
+  return ++(PSLIterator<T>(getHead(t)));
 }
 
 template < class T >
