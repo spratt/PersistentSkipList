@@ -164,8 +164,54 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     void draw(int t);
 
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: begin                                                  //
+    //                                                                       //
+    // PURPOSE:       Returns an iterator to the first element in the        //
+    //                list at time t.                                        //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/t                                                  //
+    //   Description: The time at which to find the first element.           //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   PSLIterator<T>                                         //
+    //   Description: An iterator pointing to the first element at the       //
+    //                given time.                                            //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
     PSLIterator<T> begin(int t);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // FUNCTION NAME: end                                                    //
+    //                                                                       //
+    // PURPOSE:       Returns an iterator to the element past the end        //
+    //                of the list at time t.                                 //
+    //                                                                       //
+    // SECURITY:      public                                                 //
+    //                                                                       //
+    // PARAMETERS                                                            //
+    //   Type/Name:   int/time                                               //
+    //   Description: The time at which to return the element past the       //
+    //                end of the list.                                       //
+    //                                                                       //
+    // RETURN:                                                               //
+    //   Type/Name:   PSLIterator<T>                                         //
+    //   Description: An iterator pointing to one element past the end of    //
+    //                the list at the given time.                            //
+    //                                                                       //
+    // NOTES:         None.                                                  //
+    //                                                                       //
+    ///////////////////////////////////////////////////////////////////////////
     PSLIterator<T> end(int t);
+
+    PSLIterator<T> find(const T& toFind, int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

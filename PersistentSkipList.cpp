@@ -176,12 +176,33 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::begin(int t) {
-  return ++(PSLIterator<T>(getHead(t)));
+  return ++(PSLIterator<T>(getHead(t),t));
 }
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::end(int t) {
-  return PSLIterator<T>(getTail(t));
+  return PSLIterator<T>(getTail(t),t);
+}
+
+template < class T >
+PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
+  int height = this->height -1;
+  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,height);
+  PSLIterator<T> next = iter.getNext();
+  PSLIterator<T> end = this->end(t);
+  while( height > 0 || next != end) {
+    // loop invariant: we have already determined the value of iter
+    //                 precedes the data for which we are searching.
+    if(next == end) {
+      iter = PSLIterator<T>(getHead(t),t,--height);
+    } else if(*next < toFind) {
+      iter = next;
+    }
+    next = iter.getNext();
+    if(*iter == toFind || (height == 0 && *next > toFind))
+      return iter;
+  }
+  return iter;
 }
 
 /////////////////////////////////////////////////////////////////////////////

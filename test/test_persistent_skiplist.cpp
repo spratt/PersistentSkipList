@@ -63,6 +63,10 @@ int main(int argv, char** argc) {
   cout << "Drawing all times of skiplist..." << endl;
   for(int i = 0; i <= psl.getPresent(); ++i)
     psl.draw(i);
+
+  cout << "Querying for 72 at time 0, found: " << *(psl.find(72,0)) << endl;
+  cout << "Querying for 72 at time 1, found: " << *(psl.find(72,1)) << endl;
+  cout << "Querying for 72 at time 2, found: " << *(psl.find(72,2)) << endl;
   
   // success
   return 0;
