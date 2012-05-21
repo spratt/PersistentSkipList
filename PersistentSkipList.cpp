@@ -201,7 +201,6 @@ PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
     } else {
       return iter;
     }
-    cout << "==SEARCH== found: " << *iter << endl;
     next = iter.getNext();
   }
   return iter;
