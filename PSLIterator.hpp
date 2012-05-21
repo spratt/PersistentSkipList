@@ -35,6 +35,7 @@ namespace persistent_skip_list {
     PSLIterator<T> getNext();
     
     void next();
+    void down();
     PSLIterator<T>& operator++();
     
     T getDatum();
@@ -42,6 +43,19 @@ namespace persistent_skip_list {
 
     bool operator==(const PSLIterator<T>& other);
     bool operator!=(const PSLIterator<T>& other);
+
+    bool operator<(const PSLIterator<T>& other);
+    bool operator<=(const PSLIterator<T>& other);
+    bool operator>(const PSLIterator<T>& other);
+    bool operator>=(const PSLIterator<T>& other);
+
+    bool operator==(const T& datum);
+    bool operator!=(const T& datum);
+
+    bool operator<(const T& datum);
+    bool operator<=(const T& datum);
+    bool operator>(const T& datum);
+    bool operator>=(const T& datum);
 
     const PSLIterator<T>& operator=(PSLIterator<T>& other);
     const PSLIterator<T>& operator=(const PSLIterator<T>& other);

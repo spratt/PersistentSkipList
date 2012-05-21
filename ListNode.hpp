@@ -285,6 +285,13 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     bool operator<(ListNode<T>& other);
     bool operator>(ListNode<T>& other);
+    bool operator<=(ListNode<T>& other);
+    bool operator>=(ListNode<T>& other);
+
+    bool operator<(const T& datum);
+    bool operator>(const T& datum);
+    bool operator<=(const T& datum);
+    bool operator>=(const T& datum);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

@@ -39,6 +39,12 @@ PSLIterator<T> PSLIterator<T>::getNext() {
 }
 
 template < class T >
+void PSLIterator<T>::down() {
+  assert(_height > 0);
+  --_height;
+}
+
+template < class T >
 void PSLIterator<T>::next() {
   TimeStampedArray<SmartPointer<ListNode<T> > >* next = _node->getNext(_time);
   assert(next != NULL);
@@ -70,6 +76,48 @@ bool PSLIterator<T>::operator==(const PSLIterator<T>& other) {
 template < class T >
 bool PSLIterator<T>::operator!=(const PSLIterator<T>& other) {
   return !(operator==(other));
+}
+
+template < class T >
+bool PSLIterator<T>::operator<(const PSLIterator<T>& other) {
+  return *_node < *(other._node);
+}
+
+template < class T >
+bool PSLIterator<T>::operator>(const PSLIterator<T>& other) {
+  return *_node > *(other._node);
+}
+
+template < class T >
+bool PSLIterator<T>::operator<=(const PSLIterator<T>& other) {
+  return !(*_node > *(other._node));
+}
+
+template < class T >
+bool PSLIterator<T>::operator>=(const PSLIterator<T>& other) {
+  return !(*_node < *(other._node));
+}
+
+// datum
+
+template < class T >
+bool PSLIterator<T>::operator<(const T& datum) {
+  return *_node < datum;
+}
+
+template < class T >
+bool PSLIterator<T>::operator>(const T& datum) {
+  return *_node > datum;
+}
+
+template < class T >
+bool PSLIterator<T>::operator<=(const T& datum) {
+  return !(*_node > datum);
+}
+
+template < class T >
+bool PSLIterator<T>::operator>=(const T& datum) {
+  return !(*_node < datum);
 }
 
 template < class T >

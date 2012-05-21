@@ -197,16 +197,58 @@ int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
 
 template <class T>
 bool ListNode<T>::operator<(ListNode<T>& other) {
-  if(this->_isPositiveInfinity || other._isNegativeInfinity)
+  if(other._isNegativeInfinity)
     return false;
-  if(this->_isNegativeInfinity || other._isPositiveInfinity)
+  else if(other._isPositiveInfinity)
     return true;
-  return data < other.data;
+  return operator<(other.data);
 }
 
 template <class T>
 bool ListNode<T>::operator>(ListNode<T>& other) {
+  if(other._isNegativeInfinity)
+    return true;
+  else if(other._isPositiveInfinity)
+    return false;
+  return operator>(other.data);
+}
+
+template <class T>
+bool ListNode<T>::operator<=(ListNode<T>& other) {
+  return !(operator>(other));
+}
+
+template <class T>
+bool ListNode<T>::operator>=(ListNode<T>& other) {
   return !(operator<(other));
+}
+
+template <class T>
+bool ListNode<T>::operator<(const T& datum) {
+  if(this->_isPositiveInfinity)
+    return false;
+  if(this->_isNegativeInfinity)
+    return true;
+  return data < datum;
+}
+
+template <class T>
+bool ListNode<T>::operator>(const T& datum) {
+  if(this->_isPositiveInfinity)
+    return true;
+  if(this->_isNegativeInfinity)
+    return false;
+  return data > datum;
+}
+
+template <class T>
+bool ListNode<T>::operator<=(const T& datum) {
+  return !(operator>(datum));
+}
+
+template <class T>
+bool ListNode<T>::operator>=(const T& datum) {
+  return !(operator<(datum));
 }
 
 template <class T>

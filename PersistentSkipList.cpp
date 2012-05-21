@@ -189,18 +189,20 @@ PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
   int height = this->height -1;
   PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,height);
   PSLIterator<T> next = iter.getNext();
-  PSLIterator<T> end = this->end(t);
-  while( height > 0 || next != end) {
+  const PSLIterator<T> end = this->end(t);
+  while( height > 0 || next != end ) {
     // loop invariant: we have already determined the value of iter
     //                 precedes the data for which we are searching.
-    if(next == end) {
-      iter = PSLIterator<T>(getHead(t),t,--height);
-    } else if(*next < toFind) {
-      iter = next;
-    }
-    next = iter.getNext();
-    if(*iter == toFind || (height == 0 && *next > toFind))
+    if(next <= toFind && next != end) {
+      iter.next();
+    } else if(next > toFind && height > 0) {
+      --height;
+      iter.down();
+    } else {
       return iter;
+    }
+    cout << "==SEARCH== found: " << *iter << endl;
+    next = iter.getNext();
   }
   return iter;
 }
