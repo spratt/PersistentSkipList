@@ -39,6 +39,16 @@ PSLIterator<T> PSLIterator<T>::getNext() {
 }
 
 template < class T >
+int PSLIterator<T>::getHeight() {
+  return _node->getHeight();
+}
+
+template < class T >
+int PSLIterator<T>::getSearchHeight() {
+  return _height;
+}
+
+template < class T >
 void PSLIterator<T>::down() {
   assert(_height > 0);
   --_height;
@@ -48,8 +58,14 @@ template < class T >
 void PSLIterator<T>::next() {
   TimeStampedArray<SmartPointer<ListNode<T> > >* next = _node->getNext(_time);
   assert(next != NULL);
-  _node = next->getElement(_height);
-  assert(_node != NULL);
+  assert(_height < next->getSize());
+  SmartPointer<ListNode<T> > nextNode = next->getElement(_height);
+  assert(nextNode != NULL);
+  assert(nextNode->getHeight() > _height);
+  next = nextNode->getNext(_time);
+  if(next != NULL)
+    assert(next->getSize() == nextNode->getHeight());
+  _node = nextNode;
 }
 
 template < class T >

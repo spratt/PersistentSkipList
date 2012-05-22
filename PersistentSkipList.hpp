@@ -177,6 +177,9 @@ namespace persistent_skip_list {
     //   Type/Name:   int/t                                                  //
     //   Description: The time at which to find the first element.           //
     //                                                                       //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The height at which to find the first element.         //
+    //                                                                       //
     // RETURN:                                                               //
     //   Type/Name:   PSLIterator<T>                                         //
     //   Description: An iterator pointing to the first element at the       //
@@ -185,7 +188,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    PSLIterator<T> begin(int t);
+    PSLIterator<T> begin(int t, int h = 0);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //

@@ -69,12 +69,16 @@ void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
   cout << "Drawing skip list at time " << t << "..." << endl;
-  PSLIterator<T> next = begin(t);
-  if(next == end(t))
-    cout << "NULL" << endl;
-  while(next != end(t)) {
-    cout << "Node(data=" << *next << ")" << endl;
-    ++next;
+  for(int i = 0; i < height; ++i) {
+    PSLIterator<T> next = begin(t,i);
+    cout << "Height: " << i+1 << endl;
+    if(next == end(t))
+      cout << "NULL" << endl;
+    while(next != end(t)) {
+      cout << "Node(data=" << *next
+	   << ",height=" << next.getHeight() << ")" << endl;
+      ++next;
+    }
   }
 }
 
@@ -175,8 +179,8 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
 }
 
 template < class T >
-PSLIterator<T> PersistentSkipList<T>::begin(int t) {
-  return ++(PSLIterator<T>(getHead(t),t));
+PSLIterator<T> PersistentSkipList<T>::begin(int t, int h) {
+  return ++(PSLIterator<T>(getHead(t),t,h));
 }
 
 template < class T >
@@ -186,21 +190,22 @@ PSLIterator<T> PersistentSkipList<T>::end(int t) {
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
-  int height = this->height -1;
-  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,height);
+  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,height-1);
   PSLIterator<T> next = iter.getNext();
   const PSLIterator<T> end = this->end(t);
-  while( height > 0 || next != end ) {
+  while( iter.getSearchHeight() > 0 || next != end ) {
     // loop invariant: we have already determined the value of iter
     //                 precedes the data for which we are searching.
     if(next <= toFind && next != end) {
+      assert(iter.getSearchHeight() < next.getHeight());
       iter.next();
-    } else if(next > toFind && height > 0) {
-      --height;
+    } else if(next > toFind && iter.getSearchHeight() > 0) {
       iter.down();
     } else {
       return iter;
     }
+    cout << "==SEARCH=="
+	 << " found: " << *iter << endl;
     next = iter.getNext();
   }
   return iter;

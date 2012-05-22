@@ -33,6 +33,8 @@ namespace persistent_skip_list {
     ~PSLIterator();
 
     PSLIterator<T> getNext();
+    int getHeight();
+    int getSearchHeight();
     
     void next();
     void down();
