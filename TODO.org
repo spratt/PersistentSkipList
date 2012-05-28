@@ -7,9 +7,3 @@
   Ideally: use fixed size next pointers, and create a new node when
            more next pointers are needed.  This gives constant time
            lookup for next pointer at a given time.
-
-* Search
-  Now: it's possible to search linearly through a PSL using iterators.
-
-  Ideally: should implement a logarithmic time search taking advantage
-           of the skip list design.

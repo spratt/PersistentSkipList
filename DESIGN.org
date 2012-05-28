@@ -30,3 +30,6 @@ structure.
 ** data_set
    The set of all points in the data.  This prevents duplicates, but
    adds O(logn) time complexity of overhead to insertion.
+
+** Search
+   Logarithmic time search taking advantage of the skip list design.
