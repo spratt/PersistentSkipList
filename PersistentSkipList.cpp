@@ -24,7 +24,7 @@ using namespace persistent_skip_list;
 
 template <class T>
 PersistentSkipList<T>::PersistentSkipList()
-  : height(1), present(0), head(), tail(), data_set()
+  : present(0), head(), tail(), data_set()
 {
   SmartPointer<ListNode<T> > negInf(new ListNode<T>(false,1));
   SmartPointer<ListNode<T> > posInf(new ListNode<T>(true,1));
@@ -69,7 +69,9 @@ void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
   cout << "Drawing skip list at time " << t << "..." << endl;
-  for(int i = 0; i < height; ++i) {
+  cout << "...of height: " << getHeight(t) << endl;
+  for(int i = 0; i < getHeight(t); ++i) {
+    cout << "in loop" << endl;
     PSLIterator<T> next = begin(t,i);
     cout << "Height: " << i+1 << endl;
     if(next == end(t))
@@ -126,7 +128,7 @@ SmartPointer<ListNode<T> >& PersistentSkipList<T>::getTail(int t) {
 
 template <class T>
 void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
-  assert(new_height > this->height);
+  assert(new_height > getHeight(getPresent()));
   int present = getPresent();
   SmartPointer<ListNode<T> > old_head = getHead(present);
   SmartPointer<ListNode<T> > old_tail = getTail(present);
@@ -136,7 +138,6 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
   SmartPointer<ListNode<T> > new_head(new ListNode<T>(false,new_height));
   SmartPointer<ListNode<T> > new_tail(new ListNode<T>(true,new_height));
   assert(new_head->getHeight() == new_tail->getHeight());
-  this->height = new_height;
   TSA* new_next = new TSA(present,new_height);
   // make the tail the new next above the old height
   while(--new_height >= old_height) {
@@ -190,7 +191,7 @@ PSLIterator<T> PersistentSkipList<T>::end(int t) {
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
-  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,height-1);
+  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,getHeight(t)-1);
   PSLIterator<T> next = iter.getNext();
   const PSLIterator<T> end = this->end(t);
   while( iter.getSearchHeight() > 0 || next != end ) {
@@ -204,11 +205,14 @@ PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
     } else {
       return iter;
     }
-    cout << "==SEARCH=="
-	 << " found: " << *iter << endl;
     next = iter.getNext();
   }
   return iter;
+}
+
+template < class T >
+int PersistentSkipList<T>::getHeight(int t) {
+  return (getHead(t))->getHeight();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -235,7 +239,7 @@ int PersistentSkipList<T>::insert(const T& data) {
   // add node to list
   int start = height-1;
   // Taller than old head
-  if(height > this->height)
+  if(height > getHeight(getPresent()))
     buildHeadAndTail(height);
   // Add new node to list
   SmartPointer<ListNode<T> > old_ln = getHead(present);

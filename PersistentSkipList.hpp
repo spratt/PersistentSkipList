@@ -215,6 +215,8 @@ namespace persistent_skip_list {
     PSLIterator<T> end(int t);
 
     PSLIterator<T> find(const T& toFind, int t);
+
+    int getHeight(int t);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -244,7 +246,6 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
   private:
     typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
-    int height;
     int present;
     map<int,SmartPointer<ListNode<T> > > head;
     map<int,SmartPointer<ListNode<T> > > tail;
