@@ -18,10 +18,6 @@
 
 using namespace persistent_skip_list;
 
-// DEBUG
-#include <iostream>
-using namespace std;
-
 ///////////////////////////////////////////////////////////////////////////////
 // ListNode Implementation                                                   //
 ///////////////////////////////////////////////////////////////////////////////
@@ -289,7 +285,6 @@ void ListNode<T>::remove(int present) {
 				incoming->getHeight(),
 				*(incoming->getNext(present)));
     while(start > end) {
-      cout << "== DEBUG == start: " << start << endl;
       new_inc_next->setElement(start,
 			       this_next->getElement(start));
       --start;
