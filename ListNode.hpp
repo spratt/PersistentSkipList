@@ -53,7 +53,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(const T&);
+    ListNode(const T&, int size=3);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -64,17 +64,17 @@ namespace persistent_skip_list {
     // SECURITY:      public                                                 //
     //                                                                       //
     // PARAMETERS                                                            //
+    //   Type/Name:   int/h                                                  //
+    //   Description: The height of this node.                               //
+    //                                                                       //
     //   Type/Name:   bool/positive                                          //
     //   Description: True for positive infinity, false for negative         //
     //                infinity.                                              //
     //                                                                       //
-    //   Type/Name:   int/h                                                  //
-    //   Description: The height of this node.                               //
-    //                                                                       //
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    ListNode(const bool positive,int h);
+    ListNode(int h, const bool positive);
     
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -363,6 +363,7 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
   private:
     int height;
+    unsigned int size;
     vector<TSA*> next;
     T data;
     static bool _SEEDED; // must be initialized to false

@@ -39,8 +39,8 @@ void ListNode<T>::initializeNode() {
 }
 
 template<class T>
-ListNode<T>::ListNode(const T& original_data)
-  : height(1), next(), data(original_data), 
+ListNode<T>::ListNode(const T& original_data, int s)
+  : height(1), size(s), next(), data(original_data), 
     _isPositiveInfinity(false), _isNegativeInfinity(false)
 {
   if(!_SEEDED)
@@ -62,7 +62,7 @@ ListNode<T>::ListNode(const T& original_data)
 }
 
 template<class T>
-ListNode<T>::ListNode(const bool positive, int h=1)
+ListNode<T>::ListNode(int h, const bool positive)
   : height(h), next(), data(),
     _isPositiveInfinity(positive), _isNegativeInfinity(!positive)
 {
@@ -178,6 +178,14 @@ int ListNode<T>::addNext(TimeStampedArray< SmartPointer< ListNode<T> > >* tsa) {
   // since NULL is the default
   if(tsa == NULL)
     return -1; // bail if trying to set next to NULL
+  // if we have reached the max node size, create a new node with the new
+  // next array
+  if(next.size() >= size) {
+    // create new node
+    // add next on new node
+    // set next arrays on nodes with incoming pointers
+    //return 0;
+  }
   // make sure time is strictly increasing
   int lastIndex = (int)next.size()-1;
   assert(lastIndex < 0 || tsa->getTime() >= next[lastIndex]->getTime());

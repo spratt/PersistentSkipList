@@ -62,7 +62,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    PersistentSkipList();
+    PersistentSkipList(int nodeSize=3);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -245,6 +245,7 @@ namespace persistent_skip_list {
     // Kindly ignore my private parts                                        //
     ///////////////////////////////////////////////////////////////////////////
   private:
+    const int node_size;
     typedef TimeStampedArray< SmartPointer< ListNode<T> > > TSA;
     int present;
     map<int,SmartPointer<ListNode<T> > > head;

@@ -23,11 +23,11 @@ using namespace persistent_skip_list;
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class T>
-PersistentSkipList<T>::PersistentSkipList()
-  : present(0), head(), tail(), data_set()
+PersistentSkipList<T>::PersistentSkipList(int nodeSize)
+  : node_size(nodeSize), present(0), head(), tail(), data_set()
 {
-  SmartPointer<ListNode<T> > negInf(new ListNode<T>(false,1));
-  SmartPointer<ListNode<T> > posInf(new ListNode<T>(true,1));
+  SmartPointer<ListNode<T> > negInf(new ListNode<T>(1,false));
+  SmartPointer<ListNode<T> > posInf(new ListNode<T>(1,true));
   head.insert( pair<int,SmartPointer<ListNode<T> > >(0,negInf) );
   tail.insert( pair<int,SmartPointer<ListNode<T> > >(0,posInf) );
   // set next on negInf to posInf
@@ -135,8 +135,8 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
   int old_height = old_head->getHeight();
   assert(new_height > old_height);
   assert(old_height == old_tail->getHeight());
-  SmartPointer<ListNode<T> > new_head(new ListNode<T>(false,new_height));
-  SmartPointer<ListNode<T> > new_tail(new ListNode<T>(true,new_height));
+  SmartPointer<ListNode<T> > new_head(new ListNode<T>(new_height,false));
+  SmartPointer<ListNode<T> > new_tail(new ListNode<T>(new_height,true));
   assert(new_head->getHeight() == new_tail->getHeight());
   TSA* new_next = new TSA(present,new_height);
   // make the tail the new next above the old height
