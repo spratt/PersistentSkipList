@@ -61,6 +61,8 @@ namespace persistent_skip_list {
 
     const PSLIterator<T>& operator=(PSLIterator<T>& other);
     const PSLIterator<T>& operator=(const PSLIterator<T>& other);
+
+    void remove();
   private:
     SmartPointer<ListNode<T> > _node;
     int _time;

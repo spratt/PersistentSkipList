@@ -152,4 +152,9 @@ const PSLIterator<T>& PSLIterator<T>::operator=(const PSLIterator<T>& other) {
   return *this;
 }
 
+template < class T >
+void PSLIterator<T>::remove() {
+  this->_node->remove(_time);
+}
+
 #endif

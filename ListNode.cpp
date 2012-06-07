@@ -18,6 +18,10 @@
 
 using namespace persistent_skip_list;
 
+// DEBUG
+#include <iostream>
+using namespace std;
+
 ///////////////////////////////////////////////////////////////////////////////
 // ListNode Implementation                                                   //
 ///////////////////////////////////////////////////////////////////////////////
@@ -267,6 +271,31 @@ bool ListNode<T>::isPositiveInfinity() {
 template <class T>
 bool ListNode<T>::isNegativeInfinity() {
   return _isNegativeInfinity;
+}
+
+template < class T >
+void ListNode<T>::remove(int present) {
+  // start at the uppermost level
+  int start = height-1;
+  while(start >= 0) {
+    // determine how many levels are the same incoming node
+    int end = start;
+    while(end >= 0 && incoming_nodes[start] == incoming_nodes[end])
+      --end;
+    // set the next node on the incoming node
+    ListNode<T>* incoming = incoming_nodes[start];
+    TSA* this_next = next.back();
+    TSA* new_inc_next = new TSA(present,
+				incoming->getHeight(),
+				*(incoming->getNext(present)));
+    while(start > end) {
+      cout << "== DEBUG == start: " << start << endl;
+      new_inc_next->setElement(start,
+			       this_next->getElement(start));
+      --start;
+    }
+    incoming->addNext(new_inc_next);
+  }
 }
 
 #endif

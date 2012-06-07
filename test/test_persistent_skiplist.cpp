@@ -19,6 +19,11 @@
 using namespace persistent_skip_list;
 using namespace timestamped_array;
 
+void printBar() {
+  cout << "======================================================================"
+       << endl;
+}
+
 int main(int argv, char** argc) {
   /////////////////////////////////////////////////////////////////////////////
   // Test on int                                                             //
@@ -28,11 +33,13 @@ int main(int argv, char** argc) {
   PersistentSkipList<int> psl;
   cout << "success." << endl;
   psl.drawPresent();
+  printBar();
 
   cout << "Inserting one value...";
   psl.insert(42);
   cout << "success." << endl;
   psl.drawPresent();
+  printBar();
   
   cout << "Inserting several values at time 0...";
   psl.insert(8);
@@ -40,6 +47,7 @@ int main(int argv, char** argc) {
   psl.insert(25);
   cout << "success." << endl;
   psl.drawPresent();
+  printBar();
   
   cout << "Incrementing time...";
   psl.incTime();
@@ -50,6 +58,7 @@ int main(int argv, char** argc) {
   psl.insert(17);
   cout << "success." << endl;
   psl.drawPresent();
+  printBar();
   
   cout << "Incrementing time...";
   psl.incTime();
@@ -59,18 +68,34 @@ int main(int argv, char** argc) {
   psl.insert(7);
   psl.insert(72);
   cout << "success." << endl;
+  psl.drawPresent();
+  printBar();
+  
+  cout << "Incrementing time...";
+  psl.incTime();
+  cout << "success." << endl;
+
+  cout << "Removing a value at time 3...";
+  PSLIterator<int> found = psl.find(72,3);
+  assert(found.getDatum() == 72);
+  found.remove();
+  cout << "success." << endl;
 
   cout << "Drawing all times of skiplist..." << endl;
-  for(int i = 0; i <= psl.getPresent(); ++i)
+  for(int i = 0; i <= psl.getPresent(); ++i) {
     psl.draw(i);
+    printBar();
+  }
 
-  PSLIterator<int> found = psl.find(72,0);
+  found = psl.find(72,0);
   cout << "Querying for 72 at time 0, found: " << *found << endl;
   found = psl.find(72,1);
   cout << "Querying for 72 at time 1, found: " << *found << endl;
   found = psl.find(72,2);
   cout << "Querying for 72 at time 2, found: " << *found << endl;
-  
+  found = psl.find(72,3);
+  cout << "Querying for 72 at time 3, found: " << *found << endl;
+
   // success
   return 0;
 }

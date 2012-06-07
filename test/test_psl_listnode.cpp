@@ -85,7 +85,7 @@ int main(int argv, char** argc) {
     shorterNode->getNext(1);
   assert(change2 == tsa);
   cout << "success." << endl;
-  
+
   // success
   return 0;
 }

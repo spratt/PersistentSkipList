@@ -357,6 +357,8 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     bool isPositiveInfinity();
     bool isNegativeInfinity();  // same but for negative infinity
+
+    void remove(int);
     
     ///////////////////////////////////////////////////////////////////////////
     // Kindly ignore my private parts                                        //
