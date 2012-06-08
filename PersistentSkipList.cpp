@@ -69,13 +69,14 @@ void PersistentSkipList<T>::draw(int t) {
   assert(this != NULL);
   assert(t >= 0);
   cout << "Drawing skip list at time " << t << "..." << endl;
+  if(empty(t)) {
+    cout << "NULL" << endl;
+    return;
+  }
   for(int i = 0; i < getHeight(t); ++i) {
     PSLIterator<T> next = begin(t,i);
     
-    if(next == end(t))
-      cout << "NULL" << endl;
-    else
-      cout << "Height: " << i+1 << endl;
+    cout << "Height: " << i+1 << endl;
     
     while(next != end(t)) {
       cout << "Node(data=" << *next
@@ -218,7 +219,12 @@ int PersistentSkipList<T>::getHeight(int t) {
 
 template < class T >
 bool PersistentSkipList<T>::empty(void) {
-  return begin() == end();
+  return empty(getPresent());
+}
+
+template < class T >
+bool PersistentSkipList<T>::empty(int t) {
+  return begin(t) == end(t);
 }
 
 /////////////////////////////////////////////////////////////////////////////

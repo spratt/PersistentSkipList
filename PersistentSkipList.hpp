@@ -242,6 +242,7 @@ namespace persistent_skip_list {
     const PersistentSkipList<T>& operator+=(const T& data);
 
     bool empty(void);
+    bool empty(int t);
 
     ///////////////////////////////////////////////////////////////////////////
     // Kindly ignore my private parts                                        //
