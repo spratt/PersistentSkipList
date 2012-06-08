@@ -216,6 +216,11 @@ int PersistentSkipList<T>::getHeight(int t) {
   return (getHead(t))->getHeight();
 }
 
+template < class T >
+bool PersistentSkipList<T>::empty(void) {
+  return begin() == end();
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // INSERT METHOD                                                           //
 /////////////////////////////////////////////////////////////////////////////

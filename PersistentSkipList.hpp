@@ -81,7 +81,7 @@ namespace persistent_skip_list {
     // NOTES:         Frees all allocated memory.                            //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    virtual ~PersistentSkipList();
+    virtual ~PersistentSkipList(void);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -102,7 +102,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    int getPresent() const;
+    int getPresent(void) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -123,7 +123,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    void incTime();
+    void incTime(void);
     PersistentSkipList<T>& operator++();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ namespace persistent_skip_list {
     // NOTES:         None.                                                  //
     //                                                                       //
     ///////////////////////////////////////////////////////////////////////////
-    void drawPresent();
+    void drawPresent(void);
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -240,6 +240,8 @@ namespace persistent_skip_list {
     ///////////////////////////////////////////////////////////////////////////
     int insert(const T& data);
     const PersistentSkipList<T>& operator+=(const T& data);
+
+    bool empty(void);
 
     ///////////////////////////////////////////////////////////////////////////
     // Kindly ignore my private parts                                        //
