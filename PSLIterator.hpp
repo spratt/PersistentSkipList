@@ -30,18 +30,18 @@ namespace persistent_skip_list {
   class PSLIterator {
   public:
     PSLIterator(SmartPointer<ListNode<T> >& node, int time=0, int height=0);
-    ~PSLIterator();
+    ~PSLIterator(void);
 
-    PSLIterator<T> getNext();
-    int getHeight();
-    int getSearchHeight();
+    PSLIterator<T> getNext(void);
+    int getHeight(void);
+    int getSearchHeight(void);
     
-    void next();
-    void down();
-    PSLIterator<T>& operator++();
+    void next(void);
+    void down(void);
+    PSLIterator<T>& operator++(void);
     
-    T getDatum();
-    T operator*();
+    T getDatum(void);
+    T operator*(void);
 
     bool operator==(const PSLIterator<T>& other);
     bool operator!=(const PSLIterator<T>& other);
@@ -62,7 +62,7 @@ namespace persistent_skip_list {
     const PSLIterator<T>& operator=(PSLIterator<T>& other);
     const PSLIterator<T>& operator=(const PSLIterator<T>& other);
 
-    void remove();
+    void remove(void);
   private:
     SmartPointer<ListNode<T> > _node;
     int _time;

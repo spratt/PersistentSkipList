@@ -29,33 +29,33 @@ PSLIterator<T>::PSLIterator(SmartPointer<ListNode<T> >& node,
 }
 
 template < class T >
-PSLIterator<T>::~PSLIterator() {
+PSLIterator<T>::~PSLIterator(void) {
 }
 
 template < class T >
-PSLIterator<T> PSLIterator<T>::getNext() {
+PSLIterator<T> PSLIterator<T>::getNext(void) {
   PSLIterator<T> next(_node,_time,_height);
   return ++next;
 }
 
 template < class T >
-int PSLIterator<T>::getHeight() {
+int PSLIterator<T>::getHeight(void) {
   return _node->getHeight();
 }
 
 template < class T >
-int PSLIterator<T>::getSearchHeight() {
+int PSLIterator<T>::getSearchHeight(void) {
   return _height;
 }
 
 template < class T >
-void PSLIterator<T>::down() {
+void PSLIterator<T>::down(void) {
   assert(_height > 0);
   --_height;
 }
 
 template < class T >
-void PSLIterator<T>::next() {
+void PSLIterator<T>::next(void) {
   TimeStampedArray<SmartPointer<ListNode<T> > >* next = _node->getNext(_time);
   assert(next != NULL);
   assert(_height < next->getSize());
@@ -69,18 +69,18 @@ void PSLIterator<T>::next() {
 }
 
 template < class T >
-PSLIterator<T>& PSLIterator<T>::operator++() {
+PSLIterator<T>& PSLIterator<T>::operator++(void) {
   next();
   return *this;
 }
 
 template < class T >
-T PSLIterator<T>::getDatum() {
+T PSLIterator<T>::getDatum(void) {
   return _node->getData();
 }
 
 template < class T >
-T PSLIterator<T>::operator*() {
+T PSLIterator<T>::operator*(void) {
   return getDatum();
 }
 
@@ -153,8 +153,10 @@ const PSLIterator<T>& PSLIterator<T>::operator=(const PSLIterator<T>& other) {
 }
 
 template < class T >
-void PSLIterator<T>::remove() {
-  this->_node->remove(_time);
+void PSLIterator<T>::remove(void) {
+  SmartPointer<ListNode<T> > node = this->_node;
+  next();
+  node->remove(_time);
 }
 
 #endif
