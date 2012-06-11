@@ -56,6 +56,8 @@ void PSLIterator<T>::down(void) {
 
 template < class T >
 void PSLIterator<T>::next(void) {
+  if(_node->isPositiveInfinity())
+    return;
   TimeStampedArray<SmartPointer<ListNode<T> > >* next = _node->getNext(_time);
   assert(next != NULL);
   assert(_height < next->getSize());
