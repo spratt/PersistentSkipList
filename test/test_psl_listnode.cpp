@@ -29,8 +29,10 @@ int main(int argv, char** argc) {
     shorterNode = tallerNode;
     tallerNode = temp;
   }
-  SmartPointer<ListNode<int> > lnPos(new ListNode<int>(true,tallerNode->getHeight()));
-  SmartPointer<ListNode<int> > lnNeg(new ListNode<int>(false,tallerNode->getHeight()));
+  SmartPointer<ListNode<int> > lnPos(new ListNode<int>(tallerNode->getHeight(),true));
+  SmartPointer<ListNode<int> > lnNeg(new ListNode<int>(tallerNode->getHeight(),false));
+  assert(lnPos->isPositiveInfinity());
+  assert(lnNeg->isNegativeInfinity());
   cout << "success." << endl;
 
   cout << "Number of change indices: ";
