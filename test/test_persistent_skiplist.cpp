@@ -96,6 +96,33 @@ int main(int argv, char** argc) {
   found = psl.find(72,3);
   cout << "Querying for 72 at time 3, found: " << *found << endl;
 
+  found = psl.find(8,0);
+  cout << "Querying for 8 at time 0, found: " << *found << endl;
+  found = psl.find(8,1);
+  cout << "Querying for 8 at time 1, found: " << *found << endl;
+  found = psl.find(8,2);
+  cout << "Querying for 8 at time 2, found: " << *found << endl;
+  found = psl.find(8,3);
+  cout << "Querying for 8 at time 3, found: " << *found << endl;
+
+  found = psl.find(17,0);
+  cout << "Querying for 17 at time 0, found: " << *found << endl;
+  found = psl.find(17,1);
+  cout << "Querying for 17 at time 1, found: " << *found << endl;
+  found = psl.find(17,2);
+  cout << "Querying for 17 at time 2, found: " << *found << endl;
+  found = psl.find(17,3);
+  cout << "Querying for 17 at time 3, found: " << *found << endl;
+
+  found = psl.find(10,0);
+  cout << "Querying for 10 at time 0, found: " << *found << endl;
+  found = psl.find(10,1);
+  cout << "Querying for 10 at time 1, found: " << *found << endl;
+  found = psl.find(10,2);
+  cout << "Querying for 10 at time 2, found: " << *found << endl;
+  found = psl.find(10,3);
+  cout << "Querying for 10 at time 3, found: " << *found << endl;
+
   // success
   return 0;
 }
