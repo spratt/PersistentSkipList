@@ -271,6 +271,8 @@ bool ListNode<T>::isNegativeInfinity() {
 
 template < class T >
 void ListNode<T>::remove(int present) {
+  assert(! this->isNegativeInfinity());
+  assert(! this->isPositiveInfinity());
   // start at the uppermost level
   int start = height-1;
   while(start >= 0) {
