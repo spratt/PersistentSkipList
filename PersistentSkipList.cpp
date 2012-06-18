@@ -243,7 +243,7 @@ int PersistentSkipList<T>::insert(const T& data) {
   assert(this != NULL);
   // check if data exists already
   if(data_set.count(data)>0)
-    return 1;
+    throw "Tried to insert non-unique datum";
   int present = getPresent();
   // otherwise, create node
   SmartPointer<ListNode<T> > new_ln(new ListNode<T>(data));
