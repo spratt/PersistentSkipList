@@ -161,8 +161,8 @@ template < class T >
 void PSLIterator<T>::remove(void) {
   SmartPointer<ListNode<T> > node = this->_node;
   next();
+  _psl.data_set.erase(node->getData());
   node->remove(_time);
-  _psl.data_set.erase(_node->getData());
 }
 
 #endif
