@@ -27,9 +27,15 @@
 
 namespace persistent_skip_list {
   template < class T >
+  class PersistentSkipList;
+  
+  template < class T >
   class PSLIterator {
   public:
-    PSLIterator(SmartPointer<ListNode<T> >& node, int time=0, int height=0);
+    PSLIterator(SmartPointer<ListNode<T> >& node,
+		PersistentSkipList<T>& psl,
+		int time=0,
+		int height=0);
     ~PSLIterator(void);
 
     PSLIterator<T> getNext(void);
@@ -64,6 +70,7 @@ namespace persistent_skip_list {
 
     void remove(void);
   private:
+    PersistentSkipList<T>& _psl;
     SmartPointer<ListNode<T> > _node;
     int _time;
     int _height;

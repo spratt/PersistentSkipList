@@ -183,17 +183,17 @@ void PersistentSkipList<T>::buildHeadAndTail(int new_height) {
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::begin(int t, int h) {
-  return ++(PSLIterator<T>(getHead(t),t,h));
+  return ++(PSLIterator<T>(getHead(t),*this,t,h));
 }
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::end(int t) {
-  return PSLIterator<T>(getTail(t),t);
+  return PSLIterator<T>(getTail(t),*this,t);
 }
 
 template < class T >
 PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
-  PSLIterator<T> iter = PSLIterator<T>(getHead(t),t,getHeight(t)-1);
+  PSLIterator<T> iter = PSLIterator<T>(getHead(t),*this,t,getHeight(t)-1);
   PSLIterator<T> next = iter.getNext();
   const PSLIterator<T> end = this->end(t);
   while( iter.getSearchHeight() >= 0 || next != end ) {

@@ -15,6 +15,7 @@
 #include <iostream>
 
 #include "../PSLIterator.hpp"
+#include "../PersistentSkipList.hpp"
 
 int main(int argc, char** argv) {
   /////////////////////////////////////////////////////////////////////////////
@@ -40,8 +41,9 @@ int main(int argc, char** argv) {
   /////////////////////////////////////////////////////////////////////////////
   
   cout << "Creating iterator on stack...";
-  PSLIterator<int> iter(shorterNode);
-  PSLIterator<int> other(tallerNode);
+  PersistentSkipList<int> psl;
+  PSLIterator<int> iter(shorterNode,psl);
+  PSLIterator<int> other(tallerNode,psl);
   assert(iter == iter);
   assert(iter != other);
   cout << "success." << endl;

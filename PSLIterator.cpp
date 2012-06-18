@@ -20,9 +20,10 @@ using namespace persistent_skip_list;
 
 template < class T >
 PSLIterator<T>::PSLIterator(SmartPointer<ListNode<T> >& node,
+			    PersistentSkipList<T>& psl,
 			    int time,
 			    int height)
-: _node(node), _time(time), _height(height)
+  : _psl(psl), _node(node), _time(time), _height(height)
 {
   assert(time >= 0);
   assert(height >= 0);
@@ -34,7 +35,7 @@ PSLIterator<T>::~PSLIterator(void) {
 
 template < class T >
 PSLIterator<T> PSLIterator<T>::getNext(void) {
-  PSLIterator<T> next(_node,_time,_height);
+  PSLIterator<T> next(_node,_psl,_time,_height);
   return ++next;
 }
 
@@ -143,6 +144,7 @@ const PSLIterator<T>& PSLIterator<T>::operator=(PSLIterator<T>& other) {
   this->_node = other._node;
   this->_time = other._time;
   this->_height = other._height;
+  // this->_psl = other._psl; // must assume same psl
   return *this;
 }
 
@@ -151,6 +153,7 @@ const PSLIterator<T>& PSLIterator<T>::operator=(const PSLIterator<T>& other) {
   this->_node = other._node;
   this->_time = other._time;
   this->_height = other._height;
+  // this->_psl = other._psl; // must assume same psl
   return *this;
 }
 
@@ -159,6 +162,7 @@ void PSLIterator<T>::remove(void) {
   SmartPointer<ListNode<T> > node = this->_node;
   next();
   node->remove(_time);
+  _psl.data_set.erase(_node->getData());
 }
 
 #endif

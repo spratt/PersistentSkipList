@@ -46,6 +46,7 @@ namespace persistent_skip_list {
 
   template < class T >
   class PersistentSkipList {
+    friend class PSLIterator<T>;
   public:
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
