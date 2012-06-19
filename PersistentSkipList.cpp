@@ -196,7 +196,7 @@ PSLIterator<T> PersistentSkipList<T>::find(const T& toFind, int t) {
   PSLIterator<T> iter = PSLIterator<T>(getHead(t),*this,t,getHeight(t)-1);
   PSLIterator<T> next = iter.getNext();
   const PSLIterator<T> end = this->end(t);
-  while( iter.getSearchHeight() >= 0 || next != end ) {
+  while( iter.getSearchHeight() > 0 || next != end ) {
     // loop invariant: we have already determined the value of iter
     //                 precedes the data for which we are searching.
     if(next <= toFind && next != end) {
