@@ -232,6 +232,11 @@ bool ListNode<T>::operator>=(ListNode<T>& other) {
 }
 
 template <class T>
+bool ListNode<T>::operator==(ListNode<T>& other) {
+  return operator<=(other) && operator>=(other);
+}
+
+template <class T>
 bool ListNode<T>::operator<(const T& datum) {
   if(this->_isPositiveInfinity)
     return false;
@@ -257,6 +262,11 @@ bool ListNode<T>::operator<=(const T& datum) {
 template <class T>
 bool ListNode<T>::operator>=(const T& datum) {
   return !(operator<(datum));
+}
+
+template <class T>
+bool ListNode<T>::operator==(const T& datum) {
+  return operator<=(datum) && operator>=(datum);
 }
 
 template <class T>

@@ -120,6 +120,16 @@ bool PSLIterator<T>::operator>=(const PSLIterator<T>& other) {
 // datum
 
 template < class T >
+bool PSLIterator<T>::operator==(const T& datum) {
+  return operator<=(datum) && operator>=(datum);
+}
+
+template < class T >
+bool PSLIterator<T>::operator!=(const T& datum) {
+  return !operator==(datum);
+}
+
+template < class T >
 bool PSLIterator<T>::operator<(const T& datum) {
   return *_node < datum;
 }
