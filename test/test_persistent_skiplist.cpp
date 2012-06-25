@@ -90,8 +90,26 @@ int main(int argv, char** argc) {
   found = psl.find(72,0);
   cout << "Querying for 72 at time 0, found: " << *found << endl;
   found = psl.find(72,1);
+#ifndef NDEBUG
+  cout << "\t Search path:";
+  for(vector<int>::iterator it = psl.lastSearchPath.begin();
+      it != psl.lastSearchPath.end();
+      ++it) {
+    cout << *it << ", ";
+  }
+  cout << endl;
+#endif
   cout << "Querying for 72 at time 1, found: " << *found << endl;
   found = psl.find(72,2);
+#ifndef NDEBUG
+  cout << "\t Search path:";
+  for(vector<int>::iterator it = psl.lastSearchPath.begin();
+      it != psl.lastSearchPath.end();
+      ++it) {
+    cout << *it << ", ";
+  }
+  cout << endl;
+#endif
   cout << "Querying for 72 at time 2, found: " << *found << endl;
   found = psl.find(72,3);
   cout << "Querying for 72 at time 3, found: " << *found << endl;
@@ -107,8 +125,26 @@ int main(int argv, char** argc) {
 
   found = psl.find(17,0);
   cout << "Querying for 17 at time 0, found: " << *found << endl;
+#ifndef NDEBUG
+  cout << "\t Search path:";
+  for(vector<int>::iterator it = psl.lastSearchPath.begin();
+      it != psl.lastSearchPath.end();
+      ++it) {
+    cout << *it << ", ";
+  }
+  cout << endl;
+#endif
   found = psl.find(17,1);
   cout << "Querying for 17 at time 1, found: " << *found << endl;
+#ifndef NDEBUG
+  cout << "\t Search path:";
+  for(vector<int>::iterator it = psl.lastSearchPath.begin();
+      it != psl.lastSearchPath.end();
+      ++it) {
+    cout << *it << ", ";
+  }
+  cout << endl;
+#endif
   found = psl.find(17,2);
   cout << "Querying for 17 at time 2, found: " << *found << endl;
   found = psl.find(17,3);

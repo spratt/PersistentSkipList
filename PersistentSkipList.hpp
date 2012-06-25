@@ -245,6 +245,11 @@ namespace persistent_skip_list {
     bool empty(void);
     bool empty(int t);
 
+    // useful for debugging
+#ifndef NDEBUG
+    vector< T > lastSearchPath;
+#endif
+
     ///////////////////////////////////////////////////////////////////////////
     // Kindly ignore my private parts                                        //
     ///////////////////////////////////////////////////////////////////////////

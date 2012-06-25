@@ -34,7 +34,7 @@ VGOPS		= --leak-check=full -v --show-reachable=yes
 
 # if mode is release, don't include debug info
 ifeq ($(mode),release)
-	CXXFLAGS=-O2 -Wall
+	CXXFLAGS=-O2 -Wall -DNDEBUG
 else
 	mode = debug
 	CXXFLAGS=-g -std=c++98 -pedantic-errors -Wall -Werror
